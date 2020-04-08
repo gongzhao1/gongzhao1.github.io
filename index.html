@@ -315,6 +315,170 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://gongzhao1.coding.me/Kubernetes之Ingress/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="弓昭">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/uploads/panda.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="GZ">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/Kubernetes之Ingress/" itemprop="url">Kubernetes之Ingress</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-04-08T22:50:08+08:00">
+                2020-04-08
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/kubernetes/" itemprop="url" rel="index">
+                    <span itemprop="name">kubernetes</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <p>[TOC]</p>
+<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><ul>
+<li><a href="https://blog.csdn.net/qianghaohao/article/details/99354304" target="_blank" rel="noopener">https://blog.csdn.net/qianghaohao/article/details/99354304</a></li>
+<li><a href="https://github.com/kubernetes/ingress-nginx" target="_blank" rel="noopener">https://github.com/kubernetes/ingress-nginx</a></li>
+<li><a href="https://github.com/kubernetes/ingress-nginx/blob/master/docs/user-guide/nginx-configuration/annotations.md" target="_blank" rel="noopener">https://github.com/kubernetes/ingress-nginx/blob/master/docs/user-guide/nginx-configuration/annotations.md</a></li>
+</ul>
+<h1 id="1-k8s-对外暴露服务的方法"><a href="#1-k8s-对外暴露服务的方法" class="headerlink" title="1 k8s 对外暴露服务的方法"></a>1 k8s 对外暴露服务的方法</h1><p>向 k8s 集群外部暴露服务的方式有三种： nodePort，LoadBalancer 和本文要介绍的 Ingress。每种方式都有各自的优缺点，nodePort 方式在服务变多的情况下会导致节点要开的端口越来越多，不好管理。而 LoadBalancer 更适合结合云提供商的 LB 来使用，但是在 LB 越来越多的情况下对成本的花费也是不可小觑。Ingress 是 k8s 官方提供的用于对外暴露服务的方式，也是在生产环境用的比较多的方式，一般在云环境下是 LB + Ingress Ctroller 方式对外提供服务，这样就可以在一个 LB 的情况下根据域名路由到对应后端的 Service，有点类似于 Nginx 反向代理，只不过在 k8s 集群中，这个反向代理是集群外部流量的统一入口。</p>
+<h1 id="2-Ingress-及-Ingress-Controller-简介"><a href="#2-Ingress-及-Ingress-Controller-简介" class="headerlink" title="2 Ingress 及 Ingress Controller 简介"></a>2 Ingress 及 Ingress Controller 简介</h1><p>Ingress 是 k8s 资源对象，用于对外暴露服务，该资源对象定义了不同主机名（域名）及 URL 和对应后端 Service（k8s Service）的绑定，根据不同的路径路由 http 和 https 流量。而 Ingress Contoller 是一个 pod 服务，封装了一个 web 前端负载均衡器，同时在其基础上实现了动态感知 Ingress 并根据 Ingress 的定义动态生成 前端 web 负载均衡器的配置文件，比如 Nginx Ingress Controller 本质上就是一个 Nginx，只不过它能根据 Ingress 资源的定义动态生成 Nginx 的配置文件，然后动态 Reload。个人觉得 Ingress Controller 的重大作用是将前端负载均衡器和 Kubernetes 完美地结合了起来，一方面在云、容器平台下方便配置的管理，另一方面实现了集群统一的流量入口，而不是像 nodePort 那样给集群打多个孔。<br><img src="https://gongzhao-1256784911.cos.ap-shanghai.myqcloud.com/hexo/images/ingress/1.png" alt="image"></p>
+<p>所以，总的来说要使用 Ingress，得先部署 Ingress Controller 实体（相当于前端 Nginx），然后再创建 Ingress （相当于 Nginx 配置的 k8s 资源体现），Ingress Controller 部署好后会动态检测 Ingress 的创建情况生成相应配置。Ingress Controller 的实现有很多种：有基于 Nginx 的，也有基于 HAProxy的，还有基于 OpenResty 的 Kong Ingress Controller 等，更多 Controller 见：<a href="https://kubernetes.io/docs/concepts/services-networking/ingress-controllers/，本文使用基于" target="_blank" rel="noopener">https://kubernetes.io/docs/concepts/services-networking/ingress-controllers/，本文使用基于</a> Nginx 的 Ingress Controller：<a href="https://github.com/nginxinc/kubernetes-ingress" target="_blank" rel="noopener">ingress-nginx</a>。</p>
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/Kubernetes之Ingress/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+    
+    
+    
+	
+	<div>
+	  
+	</div>
+	
+	<div>
+      
+	</div>
+	
+
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://gongzhao1.coding.me/python模块之logging/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1817,175 +1981,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://gongzhao1.coding.me/基金之绝对收益基金/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="弓昭">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/uploads/panda.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="GZ">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/基金之绝对收益基金/" itemprop="url">基金之绝对收益基金</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-02-28T00:10:58+08:00">
-                2020-02-28
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/基金/" itemprop="url" rel="index">
-                    <span itemprop="name">基金</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <p>[TOC]</p>
-<h1 id="转载（二鸟说）"><a href="#转载（二鸟说）" class="headerlink" title="转载（二鸟说）"></a>转载（二鸟说）</h1><ul>
-<li><a href="https://mp.weixin.qq.com/s/GzzOK5upb4uBRvcO-OBxSA" target="_blank" rel="noopener">https://mp.weixin.qq.com/s/GzzOK5upb4uBRvcO-OBxSA</a></li>
-<li><a href="https://mp.weixin.qq.com/s?__biz=MzI4MTYyODkxMw==&amp;mid=2247485851&amp;idx=1&amp;sn=a9f245e0ad556add1b25b53ff830853b&amp;chksm=eba71005dcd099138b92795378bfe66d078adafc21755ee92062aa8efaf9f728a6ae070f0382&amp;scene=21#wechat_redirect" target="_blank" rel="noopener">https://mp.weixin.qq.com/s?__biz=MzI4MTYyODkxMw==&amp;mid=2247485851&amp;idx=1&amp;sn=a9f245e0ad556add1b25b53ff830853b&amp;chksm=eba71005dcd099138b92795378bfe66d078adafc21755ee92062aa8efaf9f728a6ae070f0382&amp;scene=21#wechat_redirect</a></li>
-<li><a href="https://mp.weixin.qq.com/s?__biz=MzI4MTYyODkxMw==&amp;mid=2247485728&amp;idx=1&amp;sn=c997f8688cb49f7ba91ab249706a66d3&amp;chksm=eba710bedcd099a859aeb47d9166543f27672e2e9ae8d0d8d5360555d31e920f3b511d18626f&amp;scene=21#wechat_redirect" target="_blank" rel="noopener">https://mp.weixin.qq.com/s?__biz=MzI4MTYyODkxMw==&amp;mid=2247485728&amp;idx=1&amp;sn=c997f8688cb49f7ba91ab249706a66d3&amp;chksm=eba710bedcd099a859aeb47d9166543f27672e2e9ae8d0d8d5360555d31e920f3b511d18626f&amp;scene=21#wechat_redirect</a></li>
-<li><a href="https://mp.weixin.qq.com/s?__biz=MzI4MTYyODkxMw==&amp;mid=2247485888&amp;idx=1&amp;sn=f9e925a3ca905bcea8f5d749ca07e1ea&amp;chksm=eba7105edcd099480ae44bb824f787aa29598e988c527abf2546f8c9d815132a4562d14503f1&amp;scene=21#wechat_redirect" target="_blank" rel="noopener">https://mp.weixin.qq.com/s?__biz=MzI4MTYyODkxMw==&amp;mid=2247485888&amp;idx=1&amp;sn=f9e925a3ca905bcea8f5d749ca07e1ea&amp;chksm=eba7105edcd099480ae44bb824f787aa29598e988c527abf2546f8c9d815132a4562d14503f1&amp;scene=21#wechat_redirect</a></li>
-</ul>
-<h1 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h1><p>随着最后一只保本基金的转型，保本基金已经成为历史名称。但投资者对于“类保本”产品的需求并不会因此而消失，绝对收益目标基金应运而生。</p>
-<p>所谓绝对收益目标基金，即以追求绝对收益为目标，不与某个资产价格指数进行比较，而以某个固定的收益值进行比较。由此可见，绝对收益基金在运作策略方面与追求相对收益的普通开放式基金存在明显差异。</p>
-<p>绝对收益策略主要包括“固收+”、保本、对冲、以及多种混合策略等。保本策略对应的就是避险策略基金。这实际上是保本基金转型的产品。这类产品现在很少有基金公司愿意发行。具体原因我在《<a href="http://mp.weixin.qq.com/s?__biz=MzU0MDU0MTk0Mw==&mid=2247483974&idx=1&sn=90d9734f4de7e03f34674073d681fdee&chksm=fb36d4decc415dc8b828ad82c9f53b2141fe0ec5e4f2ddea46c6b2b39cd14253d312a2227761&scene=21#wechat_redirect" target="_blank" rel="noopener">保本基金为何纷纷“大逃亡”</a>》进行了分析。</p>
-<p>所以，目前主要采用固收+和对冲这两种策略。“固收+”策略的本质是以中短期绝对收益率为目标、以安全资产为底仓提供基础收益，并在严格控制回撤的前提下寻求利用高弹性资产增强收益的机会。具体有固收+股票、固收+转债、固收+打新等策略。对冲策略则是利用衍生产品对投资组合进行对冲，将组合的系统性风险控制在一定的范围内，从而达到降低波动，控制回撤的效果。</p>
-<p>无论采用哪种策略，都对基金公司和基金经理的实力提出了较高的要求。管理这类基金，不仅要同时具备固收和权益的投资能力，还需要具备大类资产配置、衍生品交易以及打新等方面的能力。因此，绝对收益目标基金并不是任何基金经理都能管得好的，由此决定了这类产品的稀缺性。</p>
-<p>按合规要求，基金公司原则上是不能公开宣传“绝对收益”的，光从基金名称是看不出什么名堂来的。你要深入研究他的投资策略和净值表现才能确定。因此，在海量的基金中选出这类产品，就是一项极其费脑筋的工作。</p>
-<p>为此，我们通过细致认真地研究，甄选出五个在运作中执行了绝对收益策略的产品。我们认为这几个基金还是比较靠谱的。现详细介绍如下，以供大家参考。</p>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/基金之绝对收益基金/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-	
-	<div>
-	  
-	</div>
-	
-	<div>
-      
-	</div>
-	
-
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -2035,7 +2030,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/archives/">
-                <span class="site-state-item-count">83</span>
+                <span class="site-state-item-count">84</span>
                 <span class="site-state-item-name">日志</span>
               </a>
             </div>
@@ -2057,7 +2052,7 @@
             
             <div class="site-state-item site-state-tags">
               <a href="/tags/index.html">
-                <span class="site-state-item-count">72</span>
+                <span class="site-state-item-count">73</span>
                 <span class="site-state-item-name">标签</span>
               </a>
             </div>
@@ -2177,7 +2172,7 @@
 
 <div class="theme-info">
 
-  <span class="post-count">博客全站共253.1k字</span>
+  <span class="post-count">博客全站共255.2k字</span>
 </div>
 
 
