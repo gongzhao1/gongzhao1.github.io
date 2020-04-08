@@ -1,0 +1,1429 @@
+<!DOCTYPE html>
+
+
+
+
+<html class="theme-next muse" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.2" rel="stylesheet" type="text/css">
+
+
+  <meta name="keywords" content="shell,">
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="GZ" type="application/atom+xml">
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.2">
+
+
+
+
+
+
+<meta name="description" content="参考文章http://www.ruanyifeng.com/blog/2017/11/bash-set.html [TOC]">
+<meta name="keywords" content="shell">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Shell脚本技巧">
+<meta property="og:url" content="https://gongzhao1.coding.me/Shell脚本技巧/index.html">
+<meta property="og:site_name" content="GZ">
+<meta property="og:description" content="参考文章http://www.ruanyifeng.com/blog/2017/11/bash-set.html [TOC]">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="https://gongzhao-1256784911.cos.ap-shanghai.myqcloud.com/hexo/images/shell/shell01.png">
+<meta property="og:image" content="https://gongzhao-1256784911.cos.ap-shanghai.myqcloud.com/hexo/images/shell/shell02.png">
+<meta property="og:updated_time" content="2020-04-08T14:20:25.866Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Shell脚本技巧">
+<meta name="twitter:description" content="参考文章http://www.ruanyifeng.com/blog/2017/11/bash-set.html [TOC]">
+<meta name="twitter:image" content="https://gongzhao-1256784911.cos.ap-shanghai.myqcloud.com/hexo/images/shell/shell01.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: false,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://gongzhao1.coding.me/Shell脚本技巧/">
+
+
+
+
+
+  <title>Shell脚本技巧 | GZ</title>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">GZ</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">痛苦是财富，这话是扯淡。少年，痛苦就是痛苦，对痛苦的思考才是财富</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br>
+            
+            关于
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br>
+            
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off" placeholder="搜索..." spellcheck="false" type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://gongzhao1.coding.me/Shell脚本技巧/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="弓昭">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/uploads/panda.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="GZ">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Shell脚本技巧</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-04-28T22:11:29+08:00">
+                2019-04-28
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/shell脚本/" itemprop="url" rel="index">
+                    <span itemprop="name">shell脚本</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+            <span class="post-meta-divider">|</span>
+            <span class="page-pv"><i class="fa fa-file-o"></i>
+            <span class="busuanzi-value" id="busuanzi_value_page_pv"></span>次阅读
+            </span>
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="参考文章"><a href="#参考文章" class="headerlink" title="参考文章"></a>参考文章</h1><p><a href="http://www.ruanyifeng.com/blog/2017/11/bash-set.html" target="_blank" rel="noopener">http://www.ruanyifeng.com/blog/2017/11/bash-set.html</a></p>
+<p>[TOC]</p>
+<a id="more"></a>
+
+<h1 id="shell语法检查与执行"><a href="#shell语法检查与执行" class="headerlink" title="shell语法检查与执行"></a>shell语法检查与执行</h1><h2 id="verbose模式"><a href="#verbose模式" class="headerlink" title="verbose模式"></a>verbose模式</h2><p>读取脚本时，显示读到的每一行</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ bash -v script.sh</span><br></pre></td></tr></table></figure>
+
+<h2 id="语法检查调试模式"><a href="#语法检查调试模式" class="headerlink" title="语法检查调试模式"></a>语法检查调试模式</h2><p>shell读取脚本时检查语法，一旦发现语法错误即在终端输出，无语法错误不输出</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ bash -n script.sh</span><br></pre></td></tr></table></figure>
+
+<h2 id="分步执行"><a href="#分步执行" class="headerlink" title="分步执行"></a>分步执行</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ bash -x script.sh</span><br></pre></td></tr></table></figure>
+
+<h1 id="shell-中-amp-amp-用法"><a href="#shell-中-amp-amp-用法" class="headerlink" title="shell 中 &amp;&amp; || () {} 用法"></a>shell 中 &amp;&amp; || () {} 用法</h1><h2 id="amp-amp-运算符"><a href="#amp-amp-运算符" class="headerlink" title="&amp;&amp; 运算符:"></a>&amp;&amp; 运算符:</h2><p>格式</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">command1  &amp;&amp; command2</span><br></pre></td></tr></table></figure>
+
+<p>&amp;&amp;左边的命令（命令1）返回真(即返回0，成功被执行）后，&amp;&amp;右边的命令（命令2）才能够被执行；换句话说，“如果这个命令执行成功&amp;&amp;那么执行这个命令”。<br>语法格式如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">command1 &amp;&amp; command2 &amp;&amp; command3 ...</span><br></pre></td></tr></table></figure>
+
+<ol>
+<li>命令之间使用 &amp;&amp; 连接，实现逻辑与的功能。</li>
+<li>只有在 &amp;&amp; 左边的命令返回真（命令返回值 $? == 0），&amp;&amp; 右边的命令才会被执行。</li>
+<li>只要有一个命令返回假（命令返回值 $? == 1），后面的命令就不会被执行。</li>
+</ol>
+<h2 id="运算符"><a href="#运算符" class="headerlink" title="|| 运算符:"></a>|| 运算符:</h2><p>格式</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">command1 || command2</span><br></pre></td></tr></table></figure>
+
+<p>||则与&amp;&amp;相反。如果||左边的命令（command1）未执行成功，那么就执行||右边的命令（command2）；或者换句话说，“如果这个命令执行失败了||那么就执行这个命令。</p>
+<ol>
+<li>命令之间使用 || 连接，实现逻辑或的功能。</li>
+<li>只有在 || 左边的命令返回假（命令返回值 $? == 1），|| 右边的命令才会被执行。这和 c 语言中的逻辑或语法功能相同，即实现短路逻辑或操作。</li>
+<li>只要有一个命令返回真（命令返回值 $? == 0），后面的命令就不会被执行。</li>
+</ol>
+<h2 id="与-amp-amp"><a href="#与-amp-amp" class="headerlink" title="||与&amp;&amp;"></a>||与&amp;&amp;</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">command1 &amp;&amp; command2 || command3</span><br></pre></td></tr></table></figure>
+
+<p>将||与&amp;&amp;组合使用则表达，如果command1执行成功，则执行command2，否则执行command3</p>
+<p>下面是一个shell脚本中常用的||组合示例</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">echo $BASH |grep -q &apos;bash&apos; || &#123; exec bash &quot;$0&quot; &quot;$@&quot; || exit 1; &#125;    系统调用exec是以新的进程去代替原来的进程，但进程的PID保持不变。因此，可以这样认为，exec系统调用并没有创建新的进程，只是替换了原来进程上下文的内容。原进程的代码段，数据段，堆栈段被新的进程所代替。</span><br></pre></td></tr></table></figure>
+
+<h2 id="运算符-1"><a href="#运算符-1" class="headerlink" title="() 运算符:"></a>() 运算符:</h2><p>如果希望把几个命令合在一起执行，shell提供了两种方法。既可以在当前shell也可以在子shell中执行一组命令。<br>格式:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">(command1;command2;command3....)               多个命令之间用;分隔</span><br></pre></td></tr></table></figure>
+
+<ol>
+<li>一条命令需要独占一个物理行，如果需要将多条命令放在同一行，命令之间使用命令分隔符（;）分隔。执行的效果等同于多个独立的命令单独执行的效果。</li>
+<li>() 表示在当前 shell 中将多个命令作为一个整体执行。需要注意的是，使用 () 括起来的命令在执行前面都不会切换当前工作目录，也就是说命令组合都是在当前工作目录下被执行的，尽管命令中有切换目录的命令。</li>
+<li>命令组合常和命令执行控制结合起来使用。</li>
+</ol>
+<h2 id="运算符-2"><a href="#运算符-2" class="headerlink" title="{} 运算符:"></a>{} 运算符:</h2><p>如果使用{}来代替()，那么相应的命令将在子shell而不是当前shell中作为一个整体被执行，只有在{}中所有命令的输出作为一个整体被重定向时，其中的命令才被放到子shell中执行，否则在当前shell执行。<br>它的一般形式为：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#123; command1;command2;command3… &#125;      注意：在使用&#123;&#125;时，&#123;&#125;与命令之间必须使用一个空格</span><br></pre></td></tr></table></figure>
+
+<h1 id="shell脚本获取当前目录和文件夹名"><a href="#shell脚本获取当前目录和文件夹名" class="headerlink" title="shell脚本获取当前目录和文件夹名"></a>shell脚本获取当前目录和文件夹名</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">#!/bin/bash</span><br><span class="line"></span><br><span class="line">project_path = $(cd `dirname $0`;pwd)</span><br><span class="line">project_name = &quot;$&#123;project_path##*/&#125;&quot;</span><br></pre></td></tr></table></figure>
+
+<p>可以用${ }分别替换得到不同的值：file=/dir1/dir2/dir3/my.file.txt<br>${file#<em>/}：删掉第一个 / 及其左边的字符串：dir1/dir2/dir3/my.file.txt<br>${file##</em>/}：删掉最后一个 /  及其左边的字符串：my.file.txt<br>${file#<em>.}：删掉第一个 .  及其左边的字符串：file.txt<br>${file##</em>.}：删掉最后一个 .  及其左边的字符串：txt<br>${file%/<em>}：删掉最后一个  /  及其右边的字符串：/dir1/dir2/dir3<br>${file%%/</em>}：删掉第一个 /  及其右边的字符串：(空值)<br>${file%.<em>}：删掉最后一个  .  及其右边的字符串：/dir1/dir2/dir3/my.file<br>${file%%.</em>}：删掉第一个  .   及其右边的字符串：/dir1/dir2/dir3/my</p>
+<h1 id="Shell脚本输出颜色"><a href="#Shell脚本输出颜色" class="headerlink" title="Shell脚本输出颜色"></a>Shell脚本输出颜色</h1><h2 id="介绍"><a href="#介绍" class="headerlink" title="介绍"></a>介绍</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">echo -e &quot;\033[43;35m david use echo say Hello World \033[0m \n&quot; </span><br><span class="line">printf &quot;\033[44;36m david use printf say Hello World \033[0m \n&quot; </span><br><span class="line">echo -e &quot;\033[47;30;5m david use echo say \033[0m Hello World \n&quot;</span><br><span class="line"></span><br><span class="line">echo -e &quot;\033[字背景颜色;字体颜色m 字符串 \033[0m&quot;  或者</span><br><span class="line">printf &quot;\033[字背景颜色;字体颜色m 字符串 \033[0m&quot;  或者</span><br><span class="line">echo -e &quot;\033[字背景颜色;字体颜色m;ascii码m 字符串 \033[0m 字符串(can null) \n&quot;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">echo -e &quot;\033[47;30;5m david use echo say \033[0m Hello World \n&quot; </span><br><span class="line">作用: </span><br><span class="line">42-&gt;背景色为白色， </span><br><span class="line">30-&gt;字体为黑色， </span><br><span class="line">5-&gt;字体闪烁， </span><br><span class="line">0-&gt;关闭所有属性 </span><br><span class="line">输出字符 “david use echo say”，然后重新设置屏幕到缺省设置，输出字符 “Hello World”后颜色回复正常</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">echo -e &quot;\033[20;1H\033[1;4;32m david use echo say \033[0m Hello World \n&quot;</span><br></pre></td></tr></table></figure>
+
+<p>这行命令首先\033[20;1H将光标移动到终端第20行第1列，之后的\033[1;4;32m将文本属性设置为高亮、带下划线且颜色为绿色，然后输出Hello,world；最后\033[0m将终端属性设为缺省，这样就不会看到连命令完成后的命令提示符也变了样儿了。我们可以通过各种命令的组合可以实现对终端输出地复杂控制。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br></pre></td><td class="code"><pre><span class="line">0 重新设置属性到缺省设置</span><br><span class="line">1 设置粗体</span><br><span class="line">2 设置一半亮度(模拟彩色显示器的颜色)</span><br><span class="line">4 设置下划线(模拟彩色显示器的颜色)</span><br><span class="line">5 设置闪烁</span><br><span class="line">7 设置反向图象</span><br><span class="line">8 消隐 </span><br><span class="line">22 设置一般密度</span><br><span class="line">24 关闭下划线</span><br><span class="line">25 关闭闪烁</span><br><span class="line">27 关闭反向图象</span><br><span class="line"></span><br><span class="line">// 字体颜范围(前景颜色):30~39</span><br><span class="line">30:黑 </span><br><span class="line">31:红 </span><br><span class="line">32:绿 </span><br><span class="line">33:黄 </span><br><span class="line">34:蓝色 </span><br><span class="line">35:紫色 </span><br><span class="line">36:深绿 </span><br><span class="line">37:白色 </span><br><span class="line"></span><br><span class="line">38:在缺省的前景颜色上设置下划线</span><br><span class="line">39:在缺省的前景颜色上关闭下划线</span><br><span class="line"></span><br><span class="line">// 字背景颜色范围(背景颜色):40~49 </span><br><span class="line">40:黑 </span><br><span class="line">41:深红 </span><br><span class="line">42:绿 </span><br><span class="line">43:黄色 </span><br><span class="line">44:蓝色 </span><br><span class="line">45:紫色 </span><br><span class="line">46:深绿 </span><br><span class="line">47:白色 </span><br><span class="line"></span><br><span class="line">nA 光标上移n行 </span><br><span class="line">nB 光标下移n行 </span><br><span class="line">nC 光标右移n行 </span><br><span class="line">nD 光标左移n行 </span><br><span class="line">y;xH设置光标位置 </span><br><span class="line">2J 清屏 </span><br><span class="line">K 清除从光标到行尾的内容 </span><br><span class="line">s 保存光标位置 </span><br><span class="line">u 恢复光标位置 </span><br><span class="line">?25l 隐藏光标 </span><br><span class="line">?25h 显示光标</span><br></pre></td></tr></table></figure>
+
+<h2 id="脚本颜色变量"><a href="#脚本颜色变量" class="headerlink" title="脚本颜色变量"></a>脚本颜色变量</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">RED_COLOR=&apos;\E[1;31m&apos;  </span><br><span class="line">YELOW_COLOR=&apos;\E[1;33m&apos; </span><br><span class="line">BLUE_COLOR=&apos;\E[1;34m&apos;  </span><br><span class="line">RESET=&apos;\E[0m&apos;</span><br><span class="line"></span><br><span class="line">#需要使用echo -e</span><br><span class="line">echo -e  &quot;$&#123;RED_COLOR&#125;===david say red color===$&#123;RESET&#125;&quot;</span><br><span class="line">echo -e  &quot;$&#123;YELOW_COLOR&#125;===david say yelow color===$&#123;RESET&#125;&quot;</span><br><span class="line">echo -e  &quot;$&#123;BLUE_COLOR&#125;===david say green color===$&#123;RESET&#125;&quot;</span><br></pre></td></tr></table></figure>
+
+<h1 id="set命令"><a href="#set命令" class="headerlink" title="set命令"></a>set命令</h1><ol>
+<li><p><code>set -u</code></p>
+<p>遇到不存在的变量，Bash报错并停止执行。还有另外一中写法<code>-u</code>还有另一种写法<code>-o nounset</code>，两者是等价的。</p>
+</li>
+<li><p><code>set -x</code></p>
+<p>默认情况下，脚本执行后，屏幕只显示运行结果，没有其他内容。如果多个命令连续执行，它们的运行结果就会连续输出。有时会分不清，某一段内容是什么命令产生的。<code>set -x</code>用来在运行结果之前，先输出执行的那一行命令。<code>-x</code>还有另一种写法<code>-o xtrace</code>。</p>
+</li>
+<li><p><code>set -e</code></p>
+<p>它使得脚本只要发生错误，就终止执行。<code>set -e</code>根据返回值来判断，一个命令是否运行失败。但是，某些命令的非零返回值可能不表示失败，或者开发者希望在命令失败的情况下，脚本继续执行下去。这时可以暂时关闭<code>set -e</code>，该命令执行结束后，再重新打开<code>set -e</code></p>
+<p><code>set +e</code>表示关闭<code>-e</code>选项，<code>set -e</code>表示重新打开<code>-e</code>选项。</p>
+<p><code>-e</code>还有另一种写法<code>-o errexit</code></p>
+</li>
+<li><p><code>set -o pipefail</code></p>
+<p><code>set -e</code>有一个例外情况，就是不适用于管道命令。所谓管道命令，就是多个子命令通过管道运算符（<code>|</code>）组合成为一个大的命令。Bash 会把最后一个子命令的返回值，作为整个命令的返回值。也就是说，只要最后一个子命令不失败，管道命令总是会执行成功，因此它后面命令依然会执行，<code>set -e</code>就失效了。</p>
+</li>
+</ol>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p><code>set</code>命令的上面这四个参数，一般都放在一起使用</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"># 写法一</span><br><span class="line">set -euxo pipefail</span><br><span class="line"></span><br><span class="line"># 写法二</span><br><span class="line">set -eux</span><br><span class="line">set -o pipefail</span><br></pre></td></tr></table></figure>
+
+<p>这两种写法建议放在所有 Bash 脚本的头部。</p>
+<p>另一种办法是在执行 Bash 脚本的时候，从命令行传入这些参数。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ bash -euxo pipefail script.sh</span><br></pre></td></tr></table></figure>
+
+<h1 id="Bash的错误处理"><a href="#Bash的错误处理" class="headerlink" title="Bash的错误处理"></a>Bash的错误处理</h1><p>如果脚本里面有运行失败的命令（返回值非0），Bash 默认会继续执行后面的命令。</p>
+<blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&gt; #!/usr/bin/env bash</span><br><span class="line">&gt;</span><br><span class="line">&gt; foo</span><br><span class="line">&gt; echo bar</span><br><span class="line">&gt;</span><br></pre></td></tr></table></figure>
+</blockquote>
+<p>上面脚本中，<code>foo</code>是一个不存在的命令，执行时会报错。但是，Bash 会忽略这个错误，继续往下执行。</p>
+<blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">&gt; $ bash script.sh</span><br><span class="line">&gt; script.sh:行3: foo: 未找到命令</span><br><span class="line">&gt; bar</span><br><span class="line">&gt;</span><br></pre></td></tr></table></figure>
+</blockquote>
+<p>可以看到，Bash 只是显示有错误，并没有终止执行。</p>
+<p>这种行为很不利于脚本安全和除错。实际开发中，如果某个命令失败，往往需要脚本停止执行，防止错误累积。这时，一般采用下面的写法。</p>
+<blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">&gt; command || exit 1</span><br><span class="line">&gt;</span><br></pre></td></tr></table></figure>
+</blockquote>
+<p>上面的写法表示只要<code>command</code>有非零返回值，脚本就会停止执行。</p>
+<p>如果停止执行之前需要完成多个操作，就要采用下面三种写法。</p>
+<blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">&gt; # 写法一</span><br><span class="line">&gt; command || &#123; echo &quot;command failed&quot;; exit 1; &#125;</span><br><span class="line">&gt;</span><br><span class="line">&gt; # 写法二</span><br><span class="line">&gt; if ! command; then echo &quot;command failed&quot;; exit 1; fi</span><br><span class="line">&gt;</span><br><span class="line">&gt; # 写法三</span><br><span class="line">&gt; command</span><br><span class="line">&gt; if [ &quot;$?&quot; -ne 0 ]; then echo &quot;command failed&quot;; exit 1; fi</span><br><span class="line">&gt;</span><br></pre></td></tr></table></figure>
+</blockquote>
+<p>另外，除了停止执行，还有一种情况。如果两个命令有继承关系，只有第一个命令成功了，才能继续执行第二个命令，那么就要采用下面的写法。</p>
+<blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">&gt; command1 &amp;&amp; command2</span><br><span class="line">&gt;</span><br></pre></td></tr></table></figure>
+</blockquote>
+<p><code>command || true</code>，使得该命令即使执行失败，脚本也不会终止执行。</p>
+<blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">&gt; #!/bin/bash</span><br><span class="line">&gt; set -e</span><br><span class="line">&gt;</span><br><span class="line">&gt; foo || true</span><br><span class="line">&gt; echo bar</span><br><span class="line">&gt;</span><br></pre></td></tr></table></figure>
+</blockquote>
+<p>上面代码中，<code>true</code>使得这一行语句总是会执行成功，后面的<code>echo bar</code>会执行。</p>
+<h1 id="常用表达式"><a href="#常用表达式" class="headerlink" title="常用表达式"></a>常用表达式</h1><h2 id="文件表达式"><a href="#文件表达式" class="headerlink" title="文件表达式"></a>文件表达式</h2><ul>
+<li>-e filename 如果 filename存在，则为真</li>
+<li>-d filename 如果 filename为目录，则为真 </li>
+<li>-f filename 如果 filename为常规文件，则为真</li>
+<li>-L filename 如果 filename为符号链接，则为真</li>
+<li>-r filename 如果 filename可读，则为真 </li>
+<li>-w filename 如果 filename可写，则为真 </li>
+<li>-x filename 如果 filename可执行，则为真</li>
+<li>-s filename 如果文件长度不为0，则为真</li>
+<li>-h filename 如果文件是软链接，则为真</li>
+<li>filename1 -nt filename2 如果 filename1比 filename2新，则为真。</li>
+<li>filename1 -ot filename2 如果 filename1比 filename2旧，则为真。</li>
+</ul>
+<h2 id="整数变量表达式"><a href="#整数变量表达式" class="headerlink" title="整数变量表达式"></a>整数变量表达式</h2><ul>
+<li>-eq 等于</li>
+<li>-ne 不等于</li>
+<li>-gt 大于</li>
+<li>-ge 大于等于</li>
+<li>-lt 小于</li>
+<li>-le 小于等于</li>
+</ul>
+<h2 id="字符串变量表达式"><a href="#字符串变量表达式" class="headerlink" title="字符串变量表达式"></a>字符串变量表达式</h2><ul>
+<li>If  [ $a = $b ]                 如果string1等于string2，则为真，字符串允许使用赋值号做等号</li>
+<li>if  [ $string1 !=  $string2 ]   如果string1不等于string2，则为真       </li>
+<li>if  [ -n $string  ]             如果string 非空(非0），返回0(true)  </li>
+<li>if  [ -z $string  ]             如果string 为空，则为真</li>
+<li>if  [ $sting ]                  如果string 非空，返回0 (和-n类似)</li>
+<li>if [ ! -d $num ]</li>
+<li>if [ 表达式1  –a  表达式2 ]</li>
+<li>if [ 表达式1  –o 表达式2 ]</li>
+</ul>
+<h1 id="Shell脚本中调用另外一个脚本的方法"><a href="#Shell脚本中调用另外一个脚本的方法" class="headerlink" title="Shell脚本中调用另外一个脚本的方法"></a>Shell脚本中调用另外一个脚本的方法</h1><p>在Linux平台上开发，经常会在console(控制台)上执行另外一个脚本文件，经常用的方法有：<strong>./my.sh</strong> 或 <strong>source my.sh</strong> 或 <strong>. my.sh</strong>；这三种方法有什么不同呢？我们先来了解一下在一个shell脚本中如何调用另外一个shell脚本，其方法有 <strong>fork    exec    source。</strong></p>
+<ol>
+<li><p>fork  ( /directory/script.sh) ：</p>
+<p>如果shell中包含执行命令，那么子命令并不影响父级的命令，在子命令执行完后再执行父级命令。子级的环境变量不会影响到父级。</p>
+<p>fork是最普通的, 就是直接在脚本里面用/directory/script.sh来调用script.sh这个脚本. 运行的时候开一个sub-shell执行调用的脚本，sub-shell执行的时候,parent-shell还在。</p>
+<p>sub-shell执行完毕后返回parent-shell. sub-shell从parent-shell继承环境变量.但是sub-shell中的环境变量不会带回parent-shell</p>
+</li>
+<li><p>exec (exec /directory/script.sh)：</p>
+<p>执行子级的命令后，不再执行父级命令。</p>
+<p>exec与fork不同，不需要新开一个sub-shell来执行被调用的脚本.  被调用的脚本与父脚本在同一个shell内执行。但是使用exec调用一个新脚本以后, 父脚本中exec行之后的内容就不会再执行了。这是exec和source的区别</p>
+</li>
+<li><p>source (source /directory/script.sh)：</p>
+<p>执行子级命令后继续执行父级命令，同时子级设置的环境变量会影响到父级的环境变量。</p>
+<p>与fork的区别是不新开一个sub-shell来执行被调用的脚本，而是在同一个shell中执行. 所以被调用的脚本中声明的变量和环境变量, 都可以在主脚本中得到和使用.</p>
+</li>
+</ol>
+<p>以上三种就是调用shell脚本的不同方法，./my.sh即是fork的方法，source my.sh和. my.sh（点加空格加脚本文件）既是source的方法。</p>
+<p>在linux系统上，搭建嵌入式开发平台，在交叉编译代码之前，都需要执行脚本设置环境变量，切记需要使用sourc 或 点的方式执行shell脚本，原因如上。</p>
+<h1 id="Shell脚本执行mysql命令"><a href="#Shell脚本执行mysql命令" class="headerlink" title="Shell脚本执行mysql命令"></a>Shell脚本执行mysql命令</h1><ol>
+<li><p>mysql -hhostname -uuser -ppasswd -e “mysql_cmd”</p>
+</li>
+<li><p>mysql -hhostname -uuser -ppasswd &lt;&lt; EOF</p>
+<p>  mysql_cmd</p>
+<p>EOF</p>
+</li>
+</ol>
+<h1 id="Shell-for循环多个变量"><a href="#Shell-for循环多个变量" class="headerlink" title="Shell for循环多个变量"></a>Shell for循环多个变量</h1><p>需求：需要输出以下2开头的端口号和其对应的文件</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">port and port_k8s_xxx.conf</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://gongzhao-1256784911.cos.ap-shanghai.myqcloud.com/hexo/images/shell/shell01.png" alt="image"></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">#! /bash/shell</span><br><span class="line"></span><br><span class="line">#以value_name=(value1 value2 value3)的形式定义数组</span><br><span class="line">a=(`ls |grep -v ^1|grep -v 22281_k8s_qkd_http.conf|grep -v for.sh| awk -F &apos;_&apos; &apos;&#123;print $1&#125;&apos;`)</span><br><span class="line">b=(`ls |grep -v ^1|grep -v 22281_k8s_qkd_http.conf|grep -v for.sh`)</span><br><span class="line"></span><br><span class="line">#以 $&#123;a[number]&#125; 的形式调用数组的第 number 个变量</span><br><span class="line">for (( i=0; i&lt;16; i++ ))</span><br><span class="line">do</span><br><span class="line">        echo $&#123;a[$i]&#125; and $&#123;b[$i]&#125;</span><br><span class="line">done</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://gongzhao-1256784911.cos.ap-shanghai.myqcloud.com/hexo/images/shell/shell02.png" alt="image"></p>
+<h1 id="Shell中去除字符串前后空格的方法"><a href="#Shell中去除字符串前后空格的方法" class="headerlink" title="Shell中去除字符串前后空格的方法"></a>Shell中去除字符串前后空格的方法</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line">[root@localhost ~]# echo &apos; A B C &apos; | awk &apos;&#123;gsub(/^\s+|\s+$/, &quot;&quot;);print&#125;&apos;</span><br><span class="line">^\s+            匹配行首一个或多个空格</span><br><span class="line">\s+$            匹配行末一个或多个空格</span><br><span class="line">^\s+|\s+$       同时匹配行首或者行末的空格</span><br><span class="line"></span><br><span class="line">[root@local ~]# echo &quot; A BC &quot;</span><br><span class="line">  A BC</span><br><span class="line">[root@local ~]# eval echo &quot; A BC &quot;</span><br><span class="line">A BC</span><br><span class="line"></span><br><span class="line">[root@linux ~]# echo &apos; A BC &apos; | python -c &quot;s=raw_input();print(s.strip())&quot;</span><br><span class="line">A BC</span><br><span class="line"></span><br><span class="line">[root@linux ~]# s=`echo &quot; A BC &quot;`</span><br><span class="line">[root@linux ~]# echo $s</span><br><span class="line">A BC</span><br><span class="line"></span><br><span class="line">[root@linux ~]# echo &apos; A BC &apos; | sed -e &apos;s/^[ ]*//g&apos; | sed -e &apos;s/[ ]*$//g&apos;</span><br><span class="line">A BC</span><br><span class="line"></span><br><span class="line">[root@linux ~]# echo &quot; A BC &quot; | awk &apos;$1=$1&apos;</span><br><span class="line">A BC</span><br><span class="line"></span><br><span class="line">[root@linux ~]# echo &quot; A BC &quot; | sed -r &apos;s/^[ \t]+(.*)[ \t]+$//g&apos;</span><br><span class="line">A BC</span><br><span class="line"></span><br><span class="line">[root@linux ~]# echo &apos; A BC &apos; | awk &apos;&#123;sub(/^ */, &quot;&quot;);sub(/ *$/, &quot;&quot;)&#125;1&apos;</span><br><span class="line">A BC</span><br></pre></td></tr></table></figure>
+
+<h1 id="Shell脚本操作mysql数据库"><a href="#Shell脚本操作mysql数据库" class="headerlink" title="Shell脚本操作mysql数据库"></a>Shell脚本操作mysql数据库</h1><p>mysql  -hhostname -Pport -uusername -ppassword  -e  相关mysql的sql语句，不用在mysql的提示符下运行mysql，即可以在shell中操作mysql的方法。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">#!/bin/bash</span><br><span class="line"></span><br><span class="line">HOSTNAME=&quot;192.168.111.84&quot;                                           #数据库信息</span><br><span class="line">PORT=&quot;3306&quot;</span><br><span class="line">USERNAME=&quot;root&quot;</span><br><span class="line">PASSWORD=&quot;&quot;</span><br><span class="line"></span><br><span class="line">DBNAME=&quot;test_db_test&quot;                                                       #数据库名称</span><br><span class="line">TABLENAME=&quot;test_table_test&quot;                                            #数据库中表的名称</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line">#创建数据库</span><br><span class="line">create_db_sql=&quot;create database IF NOT EXISTS $&#123;DBNAME&#125;&quot;</span><br><span class="line">mysql -h$&#123;HOSTNAME&#125;  -P$&#123;PORT&#125;  -u$&#123;USERNAME&#125; -p$&#123;PASSWORD&#125; -e &quot;$&#123;create_db_sql&#125;&quot;</span><br><span class="line"></span><br><span class="line">#创建表</span><br><span class="line">create_table_sql=&quot;create table IF NOT EXISTS $&#123;TABLENAME&#125; (  name varchar(20), id int(11) default 0 )&quot;</span><br><span class="line">mysql -h$&#123;HOSTNAME&#125;  -P$&#123;PORT&#125;  -u$&#123;USERNAME&#125; -p$&#123;PASSWORD&#125; $&#123;DBNAME&#125; -e &quot;$&#123;create_table_sql&#125;&quot;</span><br><span class="line"></span><br><span class="line">#插入数据</span><br><span class="line">insert_sql=&quot;insert into $&#123;TABLENAME&#125; values(&apos;billchen&apos;,2)&quot;</span><br><span class="line">mysql -h$&#123;HOSTNAME&#125;  -P$&#123;PORT&#125;  -u$&#123;USERNAME&#125; -p$&#123;PASSWORD&#125; $&#123;DBNAME&#125; -e &quot;$&#123;insert_sql&#125;&quot;</span><br><span class="line"></span><br><span class="line">#查询</span><br><span class="line">select_sql=&quot;select * from $&#123;TABLENAME&#125;&quot;</span><br><span class="line">mysql -h$&#123;HOSTNAME&#125;  -P$&#123;PORT&#125;  -u$&#123;USERNAME&#125; -p$&#123;PASSWORD&#125; $&#123;DBNAME&#125; -e &quot;$&#123;select_sql&#125;&quot;</span><br><span class="line"></span><br><span class="line">#更新数据</span><br><span class="line">update_sql=&quot;update $&#123;TABLENAME&#125; set id=3&quot;</span><br><span class="line">mysql -h$&#123;HOSTNAME&#125;  -P$&#123;PORT&#125;  -u$&#123;USERNAME&#125; -p$&#123;PASSWORD&#125; $&#123;DBNAME&#125; -e &quot;$&#123;update_sql&#125;&quot;</span><br><span class="line">mysql -h$&#123;HOSTNAME&#125;  -P$&#123;PORT&#125;  -u$&#123;USERNAME&#125; -p$&#123;PASSWORD&#125; $&#123;DBNAME&#125; -e &quot;$&#123;select_sql&#125;&quot;</span><br><span class="line"></span><br><span class="line">#删除数据</span><br><span class="line">delete_sql=&quot;delete from $&#123;TABLENAME&#125;&quot;</span><br><span class="line">mysql -h$&#123;HOSTNAME&#125;  -P$&#123;PORT&#125;  -u$&#123;USERNAME&#125; -p$&#123;PASSWORD&#125; $&#123;DBNAME&#125; -e &quot;$&#123;delete_sql&#125;&quot;</span><br><span class="line">mysql -h$&#123;HOSTNAME&#125;  -P$&#123;PORT&#125;  -u$&#123;USERNAME&#125; -p$&#123;PASSWORD&#125; $&#123;DBNAME&#125; -e &quot;$&#123;select_sql&#125;&quot;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">show processlist如何过滤的问题我终于知道如何解决了</span><br><span class="line">mysql -uroot -e  -p password  &apos;show processlist\G&apos;;</span><br><span class="line"></span><br><span class="line">mysql -uroot -e &apos;show processlist\G&apos;|grep &apos;Info&apos;|grep -v &quot;NULL&quot;|awk -F &quot;:&quot; &apos;&#123;print $2&#125;&apos;|sort|uniq -c|sort -rn;(查看正在执行的语句有哪些,并做好归并排序:)</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">mysql -uroot -h$host -p$password &lt;&lt; EOF</span><br><span class="line">create database if not exists $&#123;database&#125;;</span><br><span class="line">EOF</span><br></pre></td></tr></table></figure>
+
+
+      
+    </div>
+    
+    
+    
+	
+	<div>
+	  
+		<div>
+    
+        <div style="text-align:center;color: #ccc;font-size:14px;">--------------------本文结束，感谢您的阅读--------------------</div>
+    
+</div>
+	  
+	</div>
+	
+	<div>
+      
+        
+<div class="my_post_copyright">
+  <script src="//cdn.bootcss.com/clipboard.js/1.5.10/clipboard.min.js"></script>
+  
+  <!-- JS库 sweetalert 可修改路径 -->
+  <script src="https://cdn.bootcss.com/jquery/2.0.0/jquery.min.js"></script>
+  <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+  <p><span>本文标题:</span><a href="/Shell脚本技巧/">Shell脚本技巧</a></p>
+  <p><span>文章作者:</span><a href="/" title="访问 弓昭 的个人博客">弓昭</a></p>
+  <p><span>发布时间:</span>2019年04月28日 - 22:11</p>
+  <p><span>最后更新:</span>2020年04月08日 - 22:20</p>
+  <p><span>原始链接:</span><a href="/Shell脚本技巧/" title="Shell脚本技巧">https://gongzhao1.coding.me/Shell脚本技巧/</a>
+    <span class="copy-path" title="点击复制文章链接"><i class="fa fa-clipboard" data-clipboard-text="https://gongzhao1.coding.me/Shell脚本技巧/" aria-label="复制成功！"></i></span>
+  </p>
+  <p><span>联系邮箱:</span>gongzhao1@foxmail.com</p>  
+</div>
+<script> 
+    var clipboard = new Clipboard('.fa-clipboard');
+    $(".fa-clipboard").click(function(){
+      clipboard.on('success', function(){
+        swal({   
+          title: "",   
+          text: '复制成功',
+          icon: "success", 
+          showConfirmButton: true
+          });
+	});
+    });  
+</script>
+
+      
+	</div>
+	
+
+
+    
+
+    
+      <div>
+        <div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center;">
+  <div></div>
+  <button id="rewardButton" disable="enable" onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}">
+    <span>Donate</span>
+  </button>
+  <div id="QR" style="display: none;">
+
+    
+      <div id="wechat" style="display: inline-block">
+        <img id="wechat_qr" src="/images/wechat.jpg" alt="弓昭 WeChat Pay">
+        <p>WeChat Pay</p>
+      </div>
+    
+
+    
+      <div id="alipay" style="display: inline-block">
+        <img id="alipay_qr" src="/images/ali.jpg" alt="弓昭 Alipay">
+        <p>Alipay</p>
+      </div>
+    
+
+    
+
+  </div>
+</div>
+
+      </div>
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/shell/" rel="tag"><i class="fa fa-tag"></i>shell</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/crontab定时执行任务/" rel="next" title="crontab定时执行任务">
+                <i class="fa fa-chevron-left"></i> crontab定时执行任务
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/linux常用命令/" rel="prev" title="linux常用命令">
+                linux常用命令 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div id="lv-container" data-id="city" data-uid="MTAyMC80MTcyNy8xODI3Mw=="></div>
+    
+  </div>
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image" src="/uploads/panda.jpg" alt="弓昭">
+          <p class="site-author-name" itemprop="name">弓昭</p>
+           
+              <p class="site-description motion-element" itemprop="description">弓昭的个人主页，主要涉及网络、运维、前端、Python等等知识</p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives/">
+                <span class="site-state-item-count">83</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">25</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">72</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+          <div class="feed-link motion-element">
+            <a href="/atom.xml" rel="alternate">
+              <i class="fa fa-rss"></i>
+              RSS
+            </a>
+          </div>
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/gongzhao1" target="_blank" title="GitHub">
+                  
+                    <i class="fa fa-fw fa-github"></i>
+                  
+                    
+                      GitHub
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://blog.csdn.net/zhao12795969" target="_blank" title="csdn">
+                  
+                    <i class="fa fa-fw fa-crosshairs"></i>
+                  
+                    
+                      csdn
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://www.jianshu.com/u/1dbca13c6043" target="_blank" title="简书">
+                  
+                    <i class="fa fa-fw fa-heartbeat"></i>
+                  
+                    
+                      简书
+                    
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+          <div class="links-of-blogroll motion-element links-of-blogroll-inline">
+            <div class="links-of-blogroll-title">
+              <i class="fa  fa-fw fa-globe"></i>
+              Links
+            </div>
+            <ul class="links-of-blogroll-list">
+              
+                <li class="links-of-blogroll-item">
+                  <a href="http://ccieh3c.com/" title="网络之路" target="_blank">网络之路</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="http://jm.taobao.org/" title="阿里云中间件" target="_blank">阿里云中间件</a>
+                </li>
+              
+            </ul>
+          </div>
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#参考文章"><span class="nav-number">1.</span> <span class="nav-text">参考文章</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#shell语法检查与执行"><span class="nav-number">2.</span> <span class="nav-text">shell语法检查与执行</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#verbose模式"><span class="nav-number">2.1.</span> <span class="nav-text">verbose模式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#语法检查调试模式"><span class="nav-number">2.2.</span> <span class="nav-text">语法检查调试模式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#分步执行"><span class="nav-number">2.3.</span> <span class="nav-text">分步执行</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#shell-中-amp-amp-用法"><span class="nav-number">3.</span> <span class="nav-text">shell 中 &amp;&amp; || () {} 用法</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#amp-amp-运算符"><span class="nav-number">3.1.</span> <span class="nav-text">&amp;&amp; 运算符:</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#运算符"><span class="nav-number">3.2.</span> <span class="nav-text">|| 运算符:</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#与-amp-amp"><span class="nav-number">3.3.</span> <span class="nav-text">||与&amp;&amp;</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#运算符-1"><span class="nav-number">3.4.</span> <span class="nav-text">() 运算符:</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#运算符-2"><span class="nav-number">3.5.</span> <span class="nav-text">{} 运算符:</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#shell脚本获取当前目录和文件夹名"><span class="nav-number">4.</span> <span class="nav-text">shell脚本获取当前目录和文件夹名</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Shell脚本输出颜色"><span class="nav-number">5.</span> <span class="nav-text">Shell脚本输出颜色</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#介绍"><span class="nav-number">5.1.</span> <span class="nav-text">介绍</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#脚本颜色变量"><span class="nav-number">5.2.</span> <span class="nav-text">脚本颜色变量</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#set命令"><span class="nav-number">6.</span> <span class="nav-text">set命令</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#总结"><span class="nav-number">6.1.</span> <span class="nav-text">总结</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Bash的错误处理"><span class="nav-number">7.</span> <span class="nav-text">Bash的错误处理</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#常用表达式"><span class="nav-number">8.</span> <span class="nav-text">常用表达式</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#文件表达式"><span class="nav-number">8.1.</span> <span class="nav-text">文件表达式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#整数变量表达式"><span class="nav-number">8.2.</span> <span class="nav-text">整数变量表达式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#字符串变量表达式"><span class="nav-number">8.3.</span> <span class="nav-text">字符串变量表达式</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Shell脚本中调用另外一个脚本的方法"><span class="nav-number">9.</span> <span class="nav-text">Shell脚本中调用另外一个脚本的方法</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Shell脚本执行mysql命令"><span class="nav-number">10.</span> <span class="nav-text">Shell脚本执行mysql命令</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Shell-for循环多个变量"><span class="nav-number">11.</span> <span class="nav-text">Shell for循环多个变量</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Shell中去除字符串前后空格的方法"><span class="nav-number">12.</span> <span class="nav-text">Shell中去除字符串前后空格的方法</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Shell脚本操作mysql数据库"><span class="nav-number">13.</span> <span class="nav-text">Shell脚本操作mysql数据库</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+<div class="copyright">
+  
+  &copy;  2018 - 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">弓昭</span>
+</div>
+
+
+<div class="powered-by">
+	<i class="fa fa-user-md"></i><span id="busuanzi_container_site_uv">
+	  本站访客数:<span id="busuanzi_value_site_uv"></span>
+	</span>
+</div>
+
+
+<div class="theme-info">
+
+  <span class="post-count">博客全站共253.1k字</span>
+</div>
+
+
+
+        
+<div class="busuanzi-count">
+  <script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+
+  
+</div>
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.2"></script>
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.2"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+    <script type="text/javascript">
+      (function(d, s) {
+        var j, e = d.getElementsByTagName(s)[0];
+        if (typeof LivereTower === 'function') { return; }
+        j = d.createElement(s);
+        j.src = 'https://cdn-city.livere.com/js/embed.dist.js';
+        j.async = true;
+        e.parentNode.insertBefore(j, e);
+      })(document, 'script');
+    </script>
+  
+
+
+
+
+
+
+  
+
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url);
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

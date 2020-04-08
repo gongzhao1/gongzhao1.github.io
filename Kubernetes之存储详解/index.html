@@ -1,0 +1,1417 @@
+<!DOCTYPE html>
+
+
+
+
+<html class="theme-next muse" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.2" rel="stylesheet" type="text/css">
+
+
+  <meta name="keywords" content="kubernetes,">
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="GZ" type="application/atom+xml">
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.2">
+
+
+
+
+
+
+<meta name="description" content="[TOC] 参考 https://www.kubernetes.org.cn/pvpvcstorageclass https://www.jianshu.com/p/99e610067bc8  简书介绍前面我们学习了Kubernetes中的Volume，我们可以发现前文中的Volume（无论何种类型）和使用它的Pod都是一种静态绑定关系，在Pod定义文件中，同时定义了它使用的Volume。在这种情">
+<meta name="keywords" content="kubernetes">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Kubernetes之存储详解">
+<meta property="og:url" content="https://gongzhao1.coding.me/Kubernetes之存储详解/index.html">
+<meta property="og:site_name" content="GZ">
+<meta property="og:description" content="[TOC] 参考 https://www.kubernetes.org.cn/pvpvcstorageclass https://www.jianshu.com/p/99e610067bc8  简书介绍前面我们学习了Kubernetes中的Volume，我们可以发现前文中的Volume（无论何种类型）和使用它的Pod都是一种静态绑定关系，在Pod定义文件中，同时定义了它使用的Volume。在这种情">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2020-04-08T14:20:25.835Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Kubernetes之存储详解">
+<meta name="twitter:description" content="[TOC] 参考 https://www.kubernetes.org.cn/pvpvcstorageclass https://www.jianshu.com/p/99e610067bc8  简书介绍前面我们学习了Kubernetes中的Volume，我们可以发现前文中的Volume（无论何种类型）和使用它的Pod都是一种静态绑定关系，在Pod定义文件中，同时定义了它使用的Volume。在这种情">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: false,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://gongzhao1.coding.me/Kubernetes之存储详解/">
+
+
+
+
+
+  <title>Kubernetes之存储详解 | GZ</title>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">GZ</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">痛苦是财富，这话是扯淡。少年，痛苦就是痛苦，对痛苦的思考才是财富</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br>
+            
+            关于
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br>
+            
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off" placeholder="搜索..." spellcheck="false" type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://gongzhao1.coding.me/Kubernetes之存储详解/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="弓昭">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/uploads/panda.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="GZ">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Kubernetes之存储详解</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-02-27T23:42:55+08:00">
+                2020-02-27
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/kubernetes/" itemprop="url" rel="index">
+                    <span itemprop="name">kubernetes</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+            <span class="post-meta-divider">|</span>
+            <span class="page-pv"><i class="fa fa-file-o"></i>
+            <span class="busuanzi-value" id="busuanzi_value_page_pv"></span>次阅读
+            </span>
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>[TOC]</p>
+<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><ul>
+<li><a href="https://www.kubernetes.org.cn/pvpvcstorageclass" target="_blank" rel="noopener">https://www.kubernetes.org.cn/pvpvcstorageclass</a></li>
+<li><a href="https://www.jianshu.com/p/99e610067bc8" target="_blank" rel="noopener">https://www.jianshu.com/p/99e610067bc8</a></li>
+</ul>
+<h1 id="简书介绍"><a href="#简书介绍" class="headerlink" title="简书介绍"></a>简书介绍</h1><p>前面我们学习了Kubernetes中的Volume，我们可以发现前文中的Volume（无论何种类型）和使用它的Pod都是一种静态绑定关系，在Pod定义文件中，同时定义了它使用的Volume。在这种情况下，Volume是Pod的附属品，我们无法像创建其他资源（例如Pod，Node，Deployment等等）一样创建一个Volume。</p>
+<p>因此Kubernetes提出了PersistentVolume（PV）的概念。PersistentVolume和Volume一样，代表了集群中的一块存储区域，然而Kubernetes将PersistentVolume抽象成了一种集群资源，类似于集群中的Node对象，这意味着我们可以使用Kubernetes API来创建PersistentVolume对象。PV与Volume最大的不同是PV拥有着独立于Pod的生命周期。</p>
+<p>而PersistentVolumeClaim（PVC）代表了用户对PV资源的请求。用户需要使用PV资源时，只需要创建一个PVC对象（包括指定使用何种存储资源，使用多少GB，以何种模式使用PV等信息），Kubernetes会自动为我们分配我们所需的PV。如果把PersistentVolume类比成集群中的Node，那么PersistentVolumeClaim就相当于集群中的Pod，Kubernetes为Pod分配可用的Node，为PersistentVolumeClaim分配可用的PersistentVolume。</p>
+<a id="more"></a>
+
+<h2 id="PV的静态创建"><a href="#PV的静态创建" class="headerlink" title="PV的静态创建"></a>PV的静态创建</h2><p>首先是一个创建PV的简单例子：</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">apiVersion:</span> <span class="string">v1</span></span><br><span class="line"><span class="attr">kind:</span> <span class="string">PersistentVolume</span></span><br><span class="line"><span class="attr">metadata:</span></span><br><span class="line"><span class="attr">  name:</span> <span class="string">pv0003</span></span><br><span class="line"><span class="attr">spec:</span></span><br><span class="line"><span class="attr">  capacity:</span></span><br><span class="line"><span class="attr">    storage:</span> <span class="number">5</span><span class="string">Gi</span></span><br><span class="line"><span class="attr">  volumeMode:</span> <span class="string">Filesystem</span></span><br><span class="line"><span class="attr">  accessModes:</span></span><br><span class="line"><span class="bullet">    -</span> <span class="string">ReadWriteOnce</span></span><br><span class="line"><span class="attr">  persistentVolumeReclaimPolicy:</span> <span class="string">Recycle</span></span><br><span class="line"><span class="attr">  storageClassName:</span> <span class="string">slow</span></span><br><span class="line"><span class="attr">  mountOptions:</span></span><br><span class="line"><span class="bullet">    -</span> <span class="string">hard</span></span><br><span class="line"><span class="bullet">    -</span> <span class="string">nfsvers=4.1</span></span><br><span class="line"><span class="attr">  nfs:</span></span><br><span class="line"><span class="attr">    path:</span> <span class="string">/tmp</span></span><br><span class="line"><span class="attr">    server:</span> <span class="number">172.17</span><span class="number">.0</span><span class="number">.2</span></span><br></pre></td></tr></table></figure>
+
+<p>PV 的访问模式（accessModes）有三种：</p>
+<ul>
+<li>ReadWriteOnce（RWO）：是最基本的方式，可读可写，但只支持被单个 Pod 挂载。</li>
+<li>ReadOnlyMany（ROX）：可以以只读的方式被多个 Pod 挂载。</li>
+<li>ReadWriteMany（RWX）：这种存储可以以读写的方式被多个 Pod 共享。</li>
+</ul>
+<blockquote>
+<p>不是每一种PV都支持这三种方式，例如ReadWriteMany，目前支持的还比较少。在 PVC 绑定 PV 时通常根据两个条件来绑定，一个是存储的大小，另一个就是访问模式。</p>
+</blockquote>
+<p>PV 的回收策略（persistentVolumeReclaimPolicy，即 PVC 释放卷的时候 PV 该如何操作）也有三种：</p>
+<ul>
+<li>Retain，不清理, 保留 Volume（需要手动清理）</li>
+<li>Recycle，删除数据，即 rm -rf /thevolume/*（只有 NFS 和 HostPath 支持）</li>
+<li>Delete，删除存储资源，比如删除 AWS EBS 卷（只有 AWS EBS, GCE PD, Azure Disk 和 Cinder 支持）</li>
+</ul>
+<blockquote>
+<p>PVC释放卷是指用户删除一个PVC对象时，那么与该PVC对象绑定的PV就会被释放。</p>
+</blockquote>
+<h2 id="PV支持的类型"><a href="#PV支持的类型" class="headerlink" title="PV支持的类型"></a>PV支持的类型</h2><p>定义PV时，我们需要指定其底层存储的类型，例如上文中创建的PV，底层使用nfs存储。目前Kuberntes支持以下类型：</p>
+<ul>
+<li>GCEPersistentDisk</li>
+<li>AWSElasticBlockStore</li>
+<li>AzureFile</li>
+<li>AzureDisk</li>
+<li>FC (Fibre Channel)**</li>
+<li>FlexVolume</li>
+<li>Flocker</li>
+<li>NFS</li>
+<li>iSCSI</li>
+<li>RBD (Ceph Block Device)</li>
+<li>CephFS</li>
+<li>Cinder (OpenStack block storage)</li>
+<li>Glusterfs</li>
+<li>VsphereVolume</li>
+<li>Quobyte Volumes</li>
+<li>HostPath (Single node testing only – local storage is not supported in any way and WILL NOT WORK in a multi-node cluster)</li>
+<li>VMware Photon</li>
+<li>Portworx Volumes</li>
+<li>ScaleIO Volumes</li>
+<li>StorageOS</li>
+</ul>
+<h2 id="PVC的创建"><a href="#PVC的创建" class="headerlink" title="PVC的创建"></a>PVC的创建</h2><p>当我们定义好一个PV后，我们希望像使用Volume那样使用这个PV，那么我们需要做的就是创建一个PVC对象，并在Pod定义中使用这个PVC。<br> 定义一个PVC：</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">kind:</span> <span class="string">PersistentVolumeClaim</span></span><br><span class="line"><span class="attr">apiVersion:</span> <span class="string">v1</span></span><br><span class="line"><span class="attr">metadata:</span></span><br><span class="line"><span class="attr">  name:</span> <span class="string">myclaim</span></span><br><span class="line"><span class="attr">spec:</span></span><br><span class="line"><span class="attr">  accessModes:</span></span><br><span class="line"><span class="bullet">    -</span> <span class="string">ReadWriteOnce</span></span><br><span class="line"><span class="attr">  resources:</span></span><br><span class="line"><span class="attr">    requests:</span></span><br><span class="line"><span class="attr">      storage:</span> <span class="number">8</span><span class="string">Gi</span></span><br><span class="line"><span class="attr">  storageClassName:</span> <span class="string">slow</span></span><br><span class="line"><span class="attr">  selector:</span></span><br><span class="line"><span class="attr">    matchLabels:</span></span><br><span class="line"><span class="attr">      release:</span> <span class="string">"stable"</span></span><br></pre></td></tr></table></figure>
+
+<p>Pod通过挂在Volume的方式应用PVC：</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">kind:</span> <span class="string">Pod</span></span><br><span class="line"><span class="attr">apiVersion:</span> <span class="string">v1</span></span><br><span class="line"><span class="attr">metadata:</span></span><br><span class="line"><span class="attr">  name:</span> <span class="string">mypod</span></span><br><span class="line"><span class="attr">spec:</span></span><br><span class="line"><span class="attr">  containers:</span></span><br><span class="line"><span class="attr">    - name:</span> <span class="string">myfrontend</span></span><br><span class="line"><span class="attr">      image:</span> <span class="string">dockerfile/nginx</span></span><br><span class="line"><span class="attr">      volumeMounts:</span></span><br><span class="line"><span class="attr">      - mountPath:</span> <span class="string">"/var/www/html"</span></span><br><span class="line"><span class="attr">        name:</span> <span class="string">mypd</span></span><br><span class="line"><span class="attr">  volumes:</span></span><br><span class="line"><span class="attr">    - name:</span> <span class="string">mypd</span></span><br><span class="line"><span class="attr">      persistentVolumeClaim:</span></span><br><span class="line"><span class="attr">        claimName:</span> <span class="string">myclaim</span></span><br></pre></td></tr></table></figure>
+
+<p>下面简要分析一下定义的PVC文件的关键：</p>
+<ul>
+<li>首先关注这个配置：<code>storageClassName: slow</code>。此配置用于绑定PVC和PV。这表明这个PVC希望使用<code>storageClassName=slow</code>的PV。返回到上文中PV的定义，我们可以看到PV定义中也包含<code>storageClassName=slow</code>的配置。</li>
+<li>接下来是<code>accessModes = ReadWriteOnce</code>。这表明这个PV希望使用<code>storageClassName=slow</code>，并且<code>accessModes = ReadWriteOnce</code>的PV。</li>
+<li>在上述条件都满足后，PVC还可以指定PV必须满足的Label，如<code>matchLabels: release: &quot;stable&quot;</code>。这表明此PVC希望使用<code>storageClassName=slow</code>，<code>accessModes = ReadWriteOnce</code>并且拥有Label：<code>release: &quot;stable&quot;</code>的PV。</li>
+<li>最后是<code>storage: 8Gi</code>。这表明此PVC希望使用8G的Volume资源。</li>
+</ul>
+<blockquote>
+<p>通过上面的分析，我们可以看到PVC和PV的绑定，不是简单的通过Label来进行。而是要综合<code>storageClassName</code>，<code>accessModes</code>，<code>matchLabels</code>以及<code>storage</code>来进行绑定。</p>
+</blockquote>
+<h2 id="PV的动态创建"><a href="#PV的动态创建" class="headerlink" title="PV的动态创建"></a>PV的动态创建</h2><p>上文中我们通过PersistentVolume描述文件创建了一个PV。这样的创建方式我们成为<strong>静态创建</strong>。这样的创建方式有一个弊端，那就是假如我们创建PV时指定大小为50G，而PVC请求80G的PV，那么此PVC就无法找到合适的PV来绑定。因此产生了了PV的动态创建。</p>
+<p>PV的动态创建依赖于StorageClass对象。我们不需要手动创建任何PV，所有的工作都由StorageClass为我们完成。一个例子如下：</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">kind:</span> <span class="string">StorageClass</span></span><br><span class="line"><span class="attr">apiVersion:</span> <span class="string">storage.k8s.io/v1</span></span><br><span class="line"><span class="attr">metadata:</span></span><br><span class="line"><span class="attr">  name:</span> <span class="string">slow</span></span><br><span class="line"><span class="attr">provisioner:</span> <span class="string">kubernetes.io/aws-ebs</span></span><br><span class="line"><span class="attr">parameters:</span></span><br><span class="line"><span class="attr">  type:</span> <span class="string">io1</span></span><br><span class="line"><span class="attr">  zones:</span> <span class="string">us-east-1d,</span> <span class="string">us-east-1c</span></span><br><span class="line"><span class="attr">  iopsPerGB:</span> <span class="string">"10"</span></span><br></pre></td></tr></table></figure>
+
+<p>这个例子使用AWS提供的插件（ kubernetes.io/aws-ebs）创建了一个基于AWS底层存储的StorageClass。这意味着使用这个StorageClass，那么所有的PV都是AWSElasticBlockStore类型的。</p>
+<p>StorageClass的定义包含四个部分：</p>
+<ul>
+<li>provisioner：指定 Volume 插件的类型，包括内置插件（如 <code>kubernetes.io/aws-ebs</code>）和外部插件（如 <a href="https://link.jianshu.com?t=https%3A%2F%2Fgithub.com%2Fkubernetes-incubator%2Fexternal-storage%2Ftree%2Fmaster%2Fceph%2Fcephfs" target="_blank" rel="noopener">external-storage</a> 提供的 <code>ceph.com/cephfs</code>）。</li>
+<li>mountOptions：指定挂载选项，当 PV 不支持指定的选项时会直接失败。比如 NFS 支持 hard 和 nfsvers=4.1 等选项。</li>
+<li>parameters：指定 provisioner 的选项，比如 kubernetes.io/aws-ebs 支持 type、zone、iopsPerGB 等参数。</li>
+<li>reclaimPolicy：指定回收策略，同 PV 的回收策略。</li>
+</ul>
+<p>手动创建的PV时，我们指定了<code>storageClassName=slow</code>的配置项，然后Pod定义中也通过指定<code>storageClassName=slow</code>，从而完成绑定。而通过StorageClass实现动态PV时，我们只需要指定StorageClass的<code>metadata.name</code>。</p>
+<p>回到上文中创建PVC的例子，此时PVC指定了<code>storageClassName=slow</code>。那么Kubernetes会在集群中寻找是否存在<code>metadata.name=slow</code>的StorageClass，如果存在，此StorageClass会自动为此PVC创建一个<code>accessModes = ReadWriteOnce</code>，并且大小为8GB的PV。</p>
+<blockquote>
+<p>通过StorageClass的使用，使我们从提前构建静态PV池的工作中解放出来。</p>
+</blockquote>
+<h2 id="PV的生命周期"><a href="#PV的生命周期" class="headerlink" title="PV的生命周期"></a>PV的生命周期</h2><p>PV的生命周期包括 5 个阶段：</p>
+<ul>
+<li>Provisioning，即 PV 的创建，可以直接创建 PV（静态方式），也可以使用 StorageClass 动态创建</li>
+<li>Binding，将 PV 分配给 PVC</li>
+<li>Using，Pod 通过 PVC 使用该 Volume，并可以通过准入控制 StorageProtection（1.9及以前版本为PVCProtection）阻止删除正在使用的 PVC</li>
+<li>Releasing，Pod 释放 Volume 并删除 PVC</li>
+<li>Reclaiming，回收 PV，可以保留 PV 以便下次使用，也可以直接从云存储中删除<br> Deleting，删除 PV 并从云存储中删除后段存储</li>
+</ul>
+<p>根据这 5 个阶段，PV 的状态有以下 4 种</p>
+<ul>
+<li>Available：可用</li>
+<li>Bound：已经分配给 PVC</li>
+<li>Released：PVC 解绑但还未执行回收策略</li>
+<li>Failed：发生错误</li>
+</ul>
+<p>一个PV从创建到销毁的具体流程如下：</p>
+<ol>
+<li>一个PV创建完后状态会变成Available，等待被PVC绑定。</li>
+<li>一旦被PVC邦定，PV的状态会变成Bound，就可以被定义了相应PVC的Pod使用。</li>
+<li>Pod使用完后会释放PV，PV的状态变成Released。</li>
+<li>变成Released的PV会根据定义的回收策略做相应的回收工作。有三种回收策略，Retain、Delete 和 Recycle。Retain就是保留现场，K8S什么也不做，等待用户手动去处理PV里的数据，处理完后，再手动删除PV。Delete 策略，K8S会自动删除该PV及里面的数据。Recycle方式，K8S会将PV里的数据删除，然后把PV的状态变成Available，又可以被新的PVC绑定使用。</li>
+</ol>
+<h2 id="DefaultStorageClass"><a href="#DefaultStorageClass" class="headerlink" title="DefaultStorageClass"></a>DefaultStorageClass</h2><p>前面我们说到，PVC和PV的绑定是通过StorageClassName进行的。然而如果定义PVC时没有指定StorageClassName呢？这取决与<a href="https://link.jianshu.com?t=https%3A%2F%2Fkubernetes.io%2Fdocs%2Fadmin%2Fadmission-controllers%2F%23defaultstorageclass" target="_blank" rel="noopener">admission插件</a>是否开启了DefaultDefaultStorageClass功能：</p>
+<ul>
+<li>如果DefaultDefaultStorageClass功能开启，那么此PVC的StorageClassName就会被指定为DefaultStorageClass。DefaultStorageClass从何处而来呢？原来在定义StorageClass时，可以在Annotation中添加一个键值对：<code>storageclass.kubernetes.io/is-default-class: true</code>，那么此StorageClass就变成默认的StorageClass了。</li>
+<li>如果DefaultDefaultStorageClass功能没有开启，那么没有指定StorageClassName的PVC只能被绑定到同样没有指定StorageClassName的PV。</li>
+</ul>
+<h1 id="中文文档介绍之PV-PVC-StorageClass"><a href="#中文文档介绍之PV-PVC-StorageClass" class="headerlink" title="中文文档介绍之PV/PVC/StorageClass"></a>中文文档介绍之PV/PVC/StorageClass</h1><h2 id="介绍"><a href="#介绍" class="headerlink" title="介绍"></a>介绍</h2><p>PersistentVolume（PV）是集群中已由管理员配置的一段网络存储。 集群中的资源就像一个节点是一个集群资源。 PV是诸如卷之类的卷插件，但是具有独立于使用PV的任何单个pod的生命周期。 该API对象捕获存储的实现细节，即NFS，iSCSI或云提供商特定的存储系统。</p>
+<p>PersistentVolumeClaim（PVC）是用户存储的请求。 它类似于pod。Pod消耗节点资源，PVC消耗存储资源。 pod可以请求特定级别的资源（CPU和内存）。 权限要求可以请求特定的大小和访问模式。</p>
+<p>虽然PersistentVolumeClaims允许用户使用抽象存储资源，但是常见的是，用户需要具有不同属性（如性能）的PersistentVolumes，用于不同的问题。 群集管理员需要能够提供多种不同于PersistentVolumes的PersistentVolumes，而不仅仅是大小和访问模式，而不会使用户了解这些卷的实现细节。 对于这些需求，存在StorageClass资源。</p>
+<p>StorageClass为管理员提供了一种描述他们提供的存储的“类”的方法。 不同的类可能映射到服务质量级别，或备份策略，或者由群集管理员确定的任意策略。 Kubernetes本身对于什么类别代表是不言而喻的。 这个概念有时在其他存储系统中称为“配置文件”</p>
+<p>例子<br><a href="https://kubernetes.io/docs/user-guide/persistent-volumes/walkthrough/" target="_blank" rel="noopener">https://kubernetes.io/docs/user-guide/persistent-volumes/walkthrough/</a></p>
+<h2 id="Lifecycle-of-a-volume-and-claim"><a href="#Lifecycle-of-a-volume-and-claim" class="headerlink" title="Lifecycle of a volume and claim"></a>Lifecycle of a volume and claim</h2><p>PV是集群中的资源。 PVC是对这些资源的请求，也是对资源的索赔检查。 PV和PVC之间的相互作用遵循这个生命周期:</p>
+<p>Provisioning ——-&gt; Binding ——–&gt;Using——&gt;Releasing——&gt;Recycling</p>
+<p><strong>Provisioning</strong></p>
+<p>这里有两种PV的提供方式:静态或者动态</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">Static</span><br><span class="line">集群管理员创建多个PV。 它们携带可供集群用户使用的真实存储的详细信息。 它们存在于Kubernetes API中，可用于消费。</span><br><span class="line">Dynamic</span><br><span class="line">当管理员创建的静态PV都不匹配用户的PersistentVolumeClaim时，集群可能会尝试为PVC动态配置卷。 此配置基于StorageClasses：PVC必须请求一个类，并且管理员必须已创建并配置该类才能进行动态配置。 要求该类的声明有效地为自己禁用动态配置</span><br></pre></td></tr></table></figure>
+
+<p><strong>Binding</strong></p>
+<p>在动态配置的情况下，用户创建或已经创建了具有特定数量的存储请求和特定访问模式的PersistentVolumeClaim。 主机中的控制回路监视新的PVC，找到匹配的PV（如果可能），并将它们绑定在一起。 如果为新的PVC动态配置PV，则循环将始终将该PV绑定到PVC。 否则，用户总是至少得到他们要求的内容，但是卷可能超出了要求。 一旦绑定，PersistentVolumeClaim绑定是排他的，不管用于绑定它们的模式。</p>
+<p>如果匹配的卷不存在，PVC将保持无限期。 随着匹配卷变得可用，PVC将被绑定。 例如，提供许多50Gi PV的集群将不匹配要求100Gi的PVC。 当集群中添加100Gi PV时，可以绑定PVC。</p>
+<p><strong>Using</strong></p>
+<p>Pod使用PVC作为卷。 集群检查声明以找到绑定的卷并挂载该卷的卷。 对于支持多种访问模式的卷，用户在将其声明用作pod中的卷时指定所需的模式。</p>
+<p>一旦用户有声明并且该声明被绑定，绑定的PV属于用户，只要他们需要它。 用户通过在其Pod的卷块中包含persistentVolumeClaim来安排Pods并访问其声明的PV。</p>
+<p><strong>Releasing</strong></p>
+<p>当用户完成卷时，他们可以从允许资源回收的API中删除PVC对象。 当声明被删除时，卷被认为是“释放的”，但是它还不能用于另一个声明。 以前的索赔人的数据仍然保留在必须根据政策处理的卷上.</p>
+<p><strong>Reclaiming</strong><br>PersistentVolume的回收策略告诉集群在释放其声明后，该卷应该如何处理。 目前，卷可以是保留，回收或删除。 保留可以手动回收资源。 对于那些支持它的卷插件，删除将从Kubernetes中删除PersistentVolume对象，以及删除外部基础架构（如AWS EBS，GCE PD，Azure Disk或Cinder卷）中关联的存储资产。 动态配置的卷始终被删除</p>
+<p><strong>Recycling</strong></p>
+<p>如果受适当的卷插件支持，回收将对卷执行基本的擦除（rm -rf / thevolume / *），并使其再次可用于新的声明。<br>但是，管理员可以使用Kubernetes控制器管理器命令行参数来配置自定义的回收站pod模板，如这里所述。 定制回收站模板必须包含卷规范，如下例所示：</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">apiVersion:</span> <span class="string">v1</span></span><br><span class="line"><span class="attr">kind:</span> <span class="string">Pod</span></span><br><span class="line"><span class="attr">metadata:</span></span><br><span class="line"><span class="attr">  name:</span> <span class="string">pv-recycler-</span></span><br><span class="line"><span class="attr">  namespace:</span> <span class="string">default</span></span><br><span class="line"><span class="attr">spec:</span></span><br><span class="line"><span class="attr">  restartPolicy:</span> <span class="string">Never</span></span><br><span class="line"><span class="attr">  volumes:</span></span><br><span class="line"><span class="attr">  - name:</span> <span class="string">vol</span></span><br><span class="line"><span class="attr">    hostPath:</span></span><br><span class="line"><span class="attr">      path:</span> <span class="string">/any/path/it/will/be/replaced</span></span><br><span class="line"><span class="attr">  containers:</span></span><br><span class="line"><span class="attr">  - name:</span> <span class="string">pv-recycler</span></span><br><span class="line"><span class="attr">    image:</span> <span class="string">"gcr.io/google_containers/busybox"</span></span><br><span class="line"><span class="attr">    command:</span> <span class="string">["/bin/sh",</span> <span class="string">"-c"</span><span class="string">,</span> <span class="string">"test -e /scrub &amp;&amp; rm -rf /scrub/..?* /scrub/.[!.]* /scrub/*  &amp;&amp; test -z \"$(ls -A /scrub)\" || exit 1"</span><span class="string">]</span></span><br><span class="line"><span class="attr">    volumeMounts:</span></span><br><span class="line"><span class="attr">    - name:</span> <span class="string">vol</span></span><br><span class="line"><span class="attr">      mountPath:</span> <span class="string">/scrub</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="Types-of-Persistent-Volumes"><a href="#Types-of-Persistent-Volumes" class="headerlink" title="Types of Persistent Volumes"></a>Types of Persistent Volumes</h2><p>PV当前支持的类型</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">GCEPersistentDisk </span><br><span class="line">AWSElasticBlockStore </span><br><span class="line">AzureFile </span><br><span class="line">AzureDisk </span><br><span class="line">FC (Fibre Channel) </span><br><span class="line">FlexVolume </span><br><span class="line">Flocker </span><br><span class="line">NFS </span><br><span class="line">iSCSI </span><br><span class="line">RBD (Ceph Block Device) </span><br><span class="line">CephFS </span><br><span class="line">Cinder (OpenStack block storage) </span><br><span class="line">Glusterfs </span><br><span class="line">VsphereVolume </span><br><span class="line">Quobyte Volumes </span><br><span class="line">HostPath (single node testing only – local storage is not supported in any way and WILL NOT WORK in a multi-node cluster) </span><br><span class="line">VMware Photon </span><br><span class="line">Portworx Volumes </span><br><span class="line">ScaleIO Volumes</span><br></pre></td></tr></table></figure>
+
+<h2 id="Persistent-Volumes"><a href="#Persistent-Volumes" class="headerlink" title="Persistent Volumes"></a>Persistent Volumes</h2><p>每个PV包含了Spec和Staus, 在PV的定义中指定该内容</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">apiVersion: v1</span><br><span class="line">kind: PersistentVolume</span><br><span class="line">metadata:</span><br><span class="line">  name: pv0003</span><br><span class="line">spec:</span><br><span class="line">  capacity:</span><br><span class="line">    storage: 5Gi</span><br><span class="line">  accessModes:</span><br><span class="line">    - ReadWriteOnce</span><br><span class="line">  persistentVolumeReclaimPolicy: Recycle</span><br><span class="line">  storageClassName: slow</span><br><span class="line">  nfs:</span><br><span class="line">    path: /tmp</span><br><span class="line">    server: 172.17.0.2</span><br></pre></td></tr></table></figure>
+
+<p><strong>Capacity</strong></p>
+<p>通常，PV将具有特定的存储容量。 这是使用PV的容量属性设置的。 看到库伯纳斯资源模型，以了解容量预期的单位。</p>
+<p>目前，存储大小是唯一可以设置或请求的资源。 未来的属性可能包括IOPS，吞吐量等</p>
+<p><strong>Access Modes</strong></p>
+<p>PersistentVolume可以以资源提供者支持的任何方式安装在主机上。 如下表所示，提供商将具有不同的功能，每个PV的访问模式都被设置为该特定卷支持的特定模式。 例如，NFS可以支持多个读/写客户端，但是特定的NFS PV可能会以只读方式在服务器上导出。 每个PV都有自己的一组访问模式来描述具体的PV功能。<br>访问模式:<br>ReadWriteOnce – the volume can be mounted as read-write by a single node (单node的读写)<br>ReadOnlyMany – the volume can be mounted read-only by many nodes (多node的只读)<br>ReadWriteMany – the volume can be mounted as read-write by many nodes (多node的读写)<br>Notice:单个PV挂载的时候只支持一种访问模式<br>PV提供插件支持的access mode参考kubernetes官方文档</p>
+<p><strong>Class</strong></p>
+<p>PV可以有一个类，通过将storageClassName属性设置为StorageClass的名称来指定。 特定类的PV只能绑定到请求该类的PVC。 没有storageClassName的PV没有类，只能绑定到不需要特定类的PVC。<br>在过去，使用了注释volume.beta.kubernetes.io/storage-class而不是storageClassName属性。 该注释仍然可以工作，但将来Kubernetes版本将不再适用。</p>
+<p><strong>Reclaim Policy</strong></p>
+<p>目前的回收政策是：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">Retain – manual reclamation </span><br><span class="line">Recycle – basic scrub (“rm -rf /thevolume/*”) </span><br><span class="line">Delete – associated storage asset such as AWS EBS, GCE PD, Azure Disk, or OpenStack Cinder volume is deleted</span><br></pre></td></tr></table></figure>
+
+<p>目前，只有NFS和HostPath支持回收。 AWS EBS，GCE PD，Azure Disk和Cinder卷支持删除</p>
+<p><strong>Phase</strong></p>
+<p>卷将处于以下阶段之一：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">Available – a free resource that is not yet bound to a claim </span><br><span class="line">Bound – the volume is bound to a claim </span><br><span class="line">Released – the claim has been deleted, but the resource is not yet reclaimed by the cluster </span><br><span class="line">Failed – the volume has failed its automatic reclamation</span><br></pre></td></tr></table></figure>
+
+<h2 id="PersistentVolumeClaims"><a href="#PersistentVolumeClaims" class="headerlink" title="PersistentVolumeClaims"></a>PersistentVolumeClaims</h2><p>每个PVC包含spec和status</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">kind: PersistentVolumeClaim</span><br><span class="line">apiVersion: v1</span><br><span class="line">metadata:</span><br><span class="line">  name: myclaim</span><br><span class="line">spec:</span><br><span class="line">  accessModes:</span><br><span class="line">    - ReadWriteOnce</span><br><span class="line">  resources:</span><br><span class="line">    requests:</span><br><span class="line">      storage: 8Gi</span><br><span class="line">  storageClassName: slow</span><br><span class="line">  selector:</span><br><span class="line">    matchLabels:</span><br><span class="line">      release: &quot;stable&quot;</span><br><span class="line">    matchExpressions:</span><br><span class="line">      - &#123;key: environment, operator: In, values: [dev]&#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>Access Modes</strong></p>
+<p>当请求具有特定访问模式的存储时，声明使用与卷相同的约定</p>
+<p><strong>Resources</strong></p>
+<p>声明（如pod）可以请求特定数量的资源。 在这种情况下，请求用于存储。 相同的资源模型适用于卷和声明</p>
+<p><strong>Selector</strong></p>
+<p>声明可以指定标签选择器以进一步过滤该卷集。 只有标签与选择器匹配的卷才能绑定到声明。 选择器可以由两个字段组成：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">matchLabels - 卷必须具有带此值的标签</span><br><span class="line">matchExpressions - 通过指定关键字和值的关键字，值列表和运算符所做的要求列表。 有效运算符包括In，NotIn，Exists和DoesNotExist。</span><br></pre></td></tr></table></figure>
+
+<p>所有来自matchLabels和matchExpressions的要求都与AND一起使用，所有这些要求都必须满足才能匹配。</p>
+<p><strong>Class</strong></p>
+<p>声明可以通过使用属性storageClassName指定StorageClass的名称来请求特定的类。只有所请求的类的PV，与PVC相同的storageClassName的PV可以绑定到PVC。</p>
+<p>PVC不一定要求一个班级。它的storageClassName设置为等于“”的PVC总是被解释为请求没有类的PV，因此它只能绑定到没有类的PV（没有注释或一个等于“”）。没有storageClassName的PVC不完全相同，并且根据是否启用了DefaultStorageClass入门插件，集群的处理方式不同。</p>
+<p>如果接纳插件已打开，则管理员可以指定默认的StorageClass。没有storageClassName的所有PVC只能绑定到该默认的PV。通过将StorageClass对象中的annotation storageclass.kubernetes.io/is-default-class设置为“true”来指定默认的StorageClass。如果管理员没有指定默认值，则集群会对PVC创建做出响应，就像入门插件被关闭一样。如果指定了多个默认值，则验收插件禁止创建所有PVC。<br>如果入门插件已关闭，则不存在默认StorageClass的概念。没有storageClassName的所有PVC只能绑定到没有类的PV。在这种情况下，没有storageClassName的PVC的处理方式与将其storageClassName设置为“”的PVC相同。</p>
+<p>根据安装方法，安装过程中可以通过addon manager在Kubernetes群集中部署默认的StorageClass。</p>
+<p>当PVC指定一个选择器，除了请求一个StorageClass之外，这些要求被AND组合在一起：只有所请求的类和所请求的标签的PV可能被绑定到PVC。请注意，当前，具有非空选择器的PVC不能为其动态配置PV。</p>
+<p>在过去，使用了注释volume.beta.kubernetes.io/storage-class，而不是storageClassName属性。该注释仍然可以工作，但在未来的Kubernetes版本中它将不被支持。</p>
+<p><strong>声明PVC作为Volumes</strong></p>
+<p>Pods通过将声明用作卷来访问存储。 声明必须存在于与使用声明的pod相同的命名空间中。 群集在pod的命名空间中查找声明，并使用它来获取支持声明的PersistentVolume。 然后将体积安装到主机并进入Pod。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">kind: Pod</span><br><span class="line">apiVersion: v1</span><br><span class="line">metadata:</span><br><span class="line">  name: mypod</span><br><span class="line">spec:</span><br><span class="line">  containers:</span><br><span class="line">    - name: myfrontend</span><br><span class="line">      image: dockerfile/nginx</span><br><span class="line">      volumeMounts:</span><br><span class="line">      - mountPath: &quot;/var/www/html&quot;</span><br><span class="line">        name: mypd</span><br><span class="line">  volumes:</span><br><span class="line">    - name: mypd</span><br><span class="line">      persistentVolumeClaim:</span><br><span class="line">        claimName: myclaim</span><br></pre></td></tr></table></figure>
+
+<p>PersistentVolumes绑定是独占的，并且由于PersistentVolumeClaims是命名空间对象，所以只能在一个命名空间内安装“许多”模式（ROX，RWX）—PVC支持被多个pod挂载</p>
+<h2 id="StorageClasses"><a href="#StorageClasses" class="headerlink" title="StorageClasses"></a>StorageClasses</h2><p>每个StorageClass包含字段provisioninger和参数，当属于类的PersistentVolume需要动态配置时使用。</p>
+<p>StorageClass对象的名称很重要，用户可以如何请求特定的类。 管理员在首次创建StorageClass对象时设置类的名称和其他参数，并且在创建对象后无法更新对象。</p>
+<p>管理员可以仅为不要求任何特定类绑定的PVC指定默认的StorageClass：有关详细信息，请参阅PersistentVolumeClaim部分。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">kind: StorageClass</span><br><span class="line">apiVersion: storage.k8s.io/v1</span><br><span class="line">metadata:</span><br><span class="line">  name: standard</span><br><span class="line">provisioner: kubernetes.io/aws-ebs</span><br><span class="line">parameters:</span><br><span class="line">  type: gp2</span><br></pre></td></tr></table></figure>
+
+<p><strong>Provisioner</strong></p>
+<p>存储类有一个供应商，它确定用于配置PV的卷插件。 必须指定此字段。</p>
+<p>您不限于指定此处列出的“内部”供应商（其名称前缀为“kubernetes.io”并与Kubernetes一起运送）。 您还可以运行和指定外部提供程序，它们是遵循Kubernetes定义的规范的独立程序。 外部提供者的作者对代码的生命周期，供应商的运输状况，运行状况以及使用的卷插件（包括Flex）等都有充分的自主权。存储库kubernetes-incubator /外部存储库包含一个库 用于编写实施大部分规范的外部提供者以及各种社区维护的外部提供者。</p>
+<p><strong>Parameters</strong></p>
+<p>存储类具有描述属于存储类的卷的参数。 取决于供应商，可以接受不同的参数。 例如，参数类型的值io1和参数iopsPerGB特定于EBS。 当省略参数时，使用一些默认值。</p>
+<p>AWS/GCE/Glusterfs/</p>
+<p>OpenStack Cinder</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">kind: StorageClass</span><br><span class="line">apiVersion: storage.k8s.io/v1</span><br><span class="line">metadata:</span><br><span class="line">  name: gold</span><br><span class="line">provisioner: kubernetes.io/cinder</span><br><span class="line">parameters:</span><br><span class="line">  type: fast</span><br><span class="line">  availability: nova</span><br><span class="line">type: VolumeType created in Cinder. Default is empty. </span><br><span class="line">availability: Availability Zone. If not specified, volumes are generally round-robin-ed across all active zones where Kubernetes cluster has a node.</span><br></pre></td></tr></table></figure>
+
+<p>其它类型的storageClass配置参考</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">https://kubernetes.io/docs/concepts/storage/persistent-volumes/#types-of-persistent-volumes</span><br></pre></td></tr></table></figure>
+
+<p><strong>配置</strong></p>
+<p>如果您正在编写在各种群集上运行并需要持久存储的配置模板或示例，我们建议您使用以下模式：</p>
+<p>在您的配置文件夹（包括部署，ConfigMaps等）中包含PersistentVolumeClaim对象。<br>在配置中不要包含PersistentVolume对象，因为实例化配置的用户可能没有创建PersistentVolumes的权限。<br>给用户提供实例化模板时提供存储类名称的选项。<br>１．　如果用户提供存储类名称，并且集群是1.4或更高版本，请将该值放入PVC的volume.beta.kubernetes.io/storage-class注释中。如果集群的管理员启用了StorageClasses，这将导致PVC与正确的存储类匹配。<br>２．　如果用户不提供存储类名称或者集群是版本1.3，那么在PVC上放置一个volume.alpha.kubernetes.io/storage-class：default注释。<br>这将导致在某些群集上为用户自动配置PV，并具有合理的默认特性。<br>尽管在名称中使用了alpha，但这个注释背后的代码具有beta级别的支持。<br>３．　不要使用volume.beta.kubernetes.io/storage-class：包含空字符串的任何值，因为它将阻止DefaultStorageClass接纳控制器运行（如果启用）。</p>
+<p>在您的工具中，请注意在一段时间后未绑定的PVC，并将其表示给用户，因为这可能表明集群没有动态存储支持（在这种情况下，用户应创建匹配的PV）或集群没有存储系统（在这种情况下，用户无法部署需要PVC的配置）。</p>
+<p>在将来，我们预计大多数集群都将启用DefaultStorageClass，并提供某种形式的存储。但是，可能没有任何存储类名可用于所有集群，因此默认情况下继续不设置。在某种程度上，alpha注释将不再有意义，但PVC上的未设置的storageClass字段将具有所需的效果。</p>
+
+      
+    </div>
+    
+    
+    
+	
+	<div>
+	  
+		<div>
+    
+        <div style="text-align:center;color: #ccc;font-size:14px;">--------------------本文结束，感谢您的阅读--------------------</div>
+    
+</div>
+	  
+	</div>
+	
+	<div>
+      
+        
+      
+	</div>
+	
+
+
+    
+
+    
+      <div>
+        <div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center;">
+  <div></div>
+  <button id="rewardButton" disable="enable" onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}">
+    <span>Donate</span>
+  </button>
+  <div id="QR" style="display: none;">
+
+    
+      <div id="wechat" style="display: inline-block">
+        <img id="wechat_qr" src="/images/wechat.jpg" alt="弓昭 WeChat Pay">
+        <p>WeChat Pay</p>
+      </div>
+    
+
+    
+      <div id="alipay" style="display: inline-block">
+        <img id="alipay_qr" src="/images/ali.jpg" alt="弓昭 Alipay">
+        <p>Alipay</p>
+      </div>
+    
+
+    
+
+  </div>
+</div>
+
+      </div>
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/kubernetes/" rel="tag"><i class="fa fa-tag"></i>kubernetes</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/Kubernetes集群监控之pushgateway/" rel="next" title="Kubernetes集群监控之pushgateway">
+                <i class="fa fa-chevron-left"></i> Kubernetes集群监控之pushgateway
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/基金之绝对收益基金/" rel="prev" title="基金之绝对收益基金">
+                基金之绝对收益基金 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div id="lv-container" data-id="city" data-uid="MTAyMC80MTcyNy8xODI3Mw=="></div>
+    
+  </div>
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image" src="/uploads/panda.jpg" alt="弓昭">
+          <p class="site-author-name" itemprop="name">弓昭</p>
+           
+              <p class="site-description motion-element" itemprop="description">弓昭的个人主页，主要涉及网络、运维、前端、Python等等知识</p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives/">
+                <span class="site-state-item-count">83</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">25</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">72</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+          <div class="feed-link motion-element">
+            <a href="/atom.xml" rel="alternate">
+              <i class="fa fa-rss"></i>
+              RSS
+            </a>
+          </div>
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/gongzhao1" target="_blank" title="GitHub">
+                  
+                    <i class="fa fa-fw fa-github"></i>
+                  
+                    
+                      GitHub
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://blog.csdn.net/zhao12795969" target="_blank" title="csdn">
+                  
+                    <i class="fa fa-fw fa-crosshairs"></i>
+                  
+                    
+                      csdn
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://www.jianshu.com/u/1dbca13c6043" target="_blank" title="简书">
+                  
+                    <i class="fa fa-fw fa-heartbeat"></i>
+                  
+                    
+                      简书
+                    
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+          <div class="links-of-blogroll motion-element links-of-blogroll-inline">
+            <div class="links-of-blogroll-title">
+              <i class="fa  fa-fw fa-globe"></i>
+              Links
+            </div>
+            <ul class="links-of-blogroll-list">
+              
+                <li class="links-of-blogroll-item">
+                  <a href="http://ccieh3c.com/" title="网络之路" target="_blank">网络之路</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="http://jm.taobao.org/" title="阿里云中间件" target="_blank">阿里云中间件</a>
+                </li>
+              
+            </ul>
+          </div>
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#参考"><span class="nav-number">1.</span> <span class="nav-text">参考</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#简书介绍"><span class="nav-number">2.</span> <span class="nav-text">简书介绍</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#PV的静态创建"><span class="nav-number">2.1.</span> <span class="nav-text">PV的静态创建</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#PV支持的类型"><span class="nav-number">2.2.</span> <span class="nav-text">PV支持的类型</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#PVC的创建"><span class="nav-number">2.3.</span> <span class="nav-text">PVC的创建</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#PV的动态创建"><span class="nav-number">2.4.</span> <span class="nav-text">PV的动态创建</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#PV的生命周期"><span class="nav-number">2.5.</span> <span class="nav-text">PV的生命周期</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#DefaultStorageClass"><span class="nav-number">2.6.</span> <span class="nav-text">DefaultStorageClass</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#中文文档介绍之PV-PVC-StorageClass"><span class="nav-number">3.</span> <span class="nav-text">中文文档介绍之PV/PVC/StorageClass</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#介绍"><span class="nav-number">3.1.</span> <span class="nav-text">介绍</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Lifecycle-of-a-volume-and-claim"><span class="nav-number">3.2.</span> <span class="nav-text">Lifecycle of a volume and claim</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Types-of-Persistent-Volumes"><span class="nav-number">3.3.</span> <span class="nav-text">Types of Persistent Volumes</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Persistent-Volumes"><span class="nav-number">3.4.</span> <span class="nav-text">Persistent Volumes</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#PersistentVolumeClaims"><span class="nav-number">3.5.</span> <span class="nav-text">PersistentVolumeClaims</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#StorageClasses"><span class="nav-number">3.6.</span> <span class="nav-text">StorageClasses</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+<div class="copyright">
+  
+  &copy;  2018 - 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">弓昭</span>
+</div>
+
+
+<div class="powered-by">
+	<i class="fa fa-user-md"></i><span id="busuanzi_container_site_uv">
+	  本站访客数:<span id="busuanzi_value_site_uv"></span>
+	</span>
+</div>
+
+
+<div class="theme-info">
+
+  <span class="post-count">博客全站共253.1k字</span>
+</div>
+
+
+
+        
+<div class="busuanzi-count">
+  <script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+
+  
+</div>
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.2"></script>
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.2"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+    <script type="text/javascript">
+      (function(d, s) {
+        var j, e = d.getElementsByTagName(s)[0];
+        if (typeof LivereTower === 'function') { return; }
+        j = d.createElement(s);
+        j.src = 'https://cdn-city.livere.com/js/embed.dist.js';
+        j.async = true;
+        e.parentNode.insertBefore(j, e);
+      })(document, 'script');
+    </script>
+  
+
+
+
+
+
+
+  
+
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url);
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

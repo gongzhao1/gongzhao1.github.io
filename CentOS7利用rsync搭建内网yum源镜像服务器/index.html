@@ -1,0 +1,1285 @@
+<!DOCTYPE html>
+
+
+
+
+<html class="theme-next muse" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.2" rel="stylesheet" type="text/css">
+
+
+  <meta name="keywords" content="centos7,rsync,yum,">
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="GZ" type="application/atom+xml">
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.2">
+
+
+
+
+
+
+<meta name="description" content="rsync同步基本说明rsync的目的是实现本地主机和远程主机上的文件同步(包括本地推到远程，远程拉到本地两种同步方式)，也可以实现本地不同路径下文件的同步，但不能实现远程路径1到远程路径2之间的同步(scp可以实现)。 不考虑rsync的实现细节，就文件同步而言，涉及了源文件和目标文件的概念，还涉及了以哪边文件为同步基准。例如，想让目标主机上的文件和本地文件保持同步，则是以本地文件为同步基准，将">
+<meta name="keywords" content="centos7,rsync,yum">
+<meta property="og:type" content="article">
+<meta property="og:title" content="CentOS7利用rsync搭建内网yum源镜像服务器">
+<meta property="og:url" content="https://gongzhao1.coding.me/CentOS7利用rsync搭建内网yum源镜像服务器/index.html">
+<meta property="og:site_name" content="GZ">
+<meta property="og:description" content="rsync同步基本说明rsync的目的是实现本地主机和远程主机上的文件同步(包括本地推到远程，远程拉到本地两种同步方式)，也可以实现本地不同路径下文件的同步，但不能实现远程路径1到远程路径2之间的同步(scp可以实现)。 不考虑rsync的实现细节，就文件同步而言，涉及了源文件和目标文件的概念，还涉及了以哪边文件为同步基准。例如，想让目标主机上的文件和本地文件保持同步，则是以本地文件为同步基准，将">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2020-04-08T14:20:25.815Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="CentOS7利用rsync搭建内网yum源镜像服务器">
+<meta name="twitter:description" content="rsync同步基本说明rsync的目的是实现本地主机和远程主机上的文件同步(包括本地推到远程，远程拉到本地两种同步方式)，也可以实现本地不同路径下文件的同步，但不能实现远程路径1到远程路径2之间的同步(scp可以实现)。 不考虑rsync的实现细节，就文件同步而言，涉及了源文件和目标文件的概念，还涉及了以哪边文件为同步基准。例如，想让目标主机上的文件和本地文件保持同步，则是以本地文件为同步基准，将">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: false,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://gongzhao1.coding.me/CentOS7利用rsync搭建内网yum源镜像服务器/">
+
+
+
+
+
+  <title>CentOS7利用rsync搭建内网yum源镜像服务器 | GZ</title>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">GZ</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">痛苦是财富，这话是扯淡。少年，痛苦就是痛苦，对痛苦的思考才是财富</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br>
+            
+            关于
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br>
+            
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off" placeholder="搜索..." spellcheck="false" type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://gongzhao1.coding.me/CentOS7利用rsync搭建内网yum源镜像服务器/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="弓昭">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/uploads/panda.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="GZ">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">CentOS7利用rsync搭建内网yum源镜像服务器</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-01-08T21:38:38+08:00">
+                2019-01-08
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/服务部署/" itemprop="url" rel="index">
+                    <span itemprop="name">服务部署</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+            <span class="post-meta-divider">|</span>
+            <span class="page-pv"><i class="fa fa-file-o"></i>
+            <span class="busuanzi-value" id="busuanzi_value_page_pv"></span>次阅读
+            </span>
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="rsync同步基本说明"><a href="#rsync同步基本说明" class="headerlink" title="rsync同步基本说明"></a>rsync同步基本说明</h2><p>rsync的目的是实现本地主机和远程主机上的文件同步(包括本地推到远程，远程拉到本地两种同步方式)，也可以实现本地不同路径下文件的同步，但不能实现远程路径1到远程路径2之间的同步(scp可以实现)。</p>
+<p>不考虑rsync的实现细节，就文件同步而言，涉及了源文件和目标文件的概念，还涉及了以哪边文件为同步基准。例如，想让目标主机上的文件和本地文件保持同步，则是以本地文件为同步基准，将本地文件作为源文件推送到目标主机上。反之，如果想让本地主机上的文件和目标主机上的文件保持同步，则目标主机上的文件为同步基准，实现方式是将目标主机上的文件作为源文件拉取到本地。当然，要保持本地的两个文件相互同步，rsync也一样能实现，这就像Linux中cp命令一样，以本地某文件作为源，另一文件作为目标文件，但请注意，虽然rsync和cp能达到相同的目的，但它们的实现方式是不一样的。</p>
+<p>既然是文件同步，在同步过程中必然会涉及到源和目标两文件之间版本控制的问题，例如是否要删除源主机上没有但目标上多出来的文件，目标文件比源文件更新(newer than source)时是否仍要保持同步，遇到软链接时是拷贝软链接本身还是拷贝软链接所指向的文件，目标文件已存在时是否要先对其做个备份等等。</p>
+<p><strong>rsync同步过程中由两部分模式组成：决定哪些文件需要同步的检查模式以及文件同步时的同步模式。</strong></p>
+<ol>
+<li>检查模式是指按照指定规则来检查哪些文件需要被同步，例如哪些文件是明确被排除不传输的。<strong>默认情况下，rsync使用”quick check”算法快速检查源文件和目标文件的大小、mtime(修改时间)是否一致，如果不一致则需要传输。</strong>当然，也可以通过在rsync命令行中指定某些选项来改变quick check的检查模式，比如”–size-only”选项表示”quick check”将仅检查文件大小不同的文件作为待传输文件。rsync支持非常多的选项，其中检查模式的自定义性是非常有弹性的。</li>
+<li>同步模式是指在文件确定要被同步后，在同步过程发生之前要做哪些额外工作。例如上文所说的是否要先删除源主机上没有但目标主机上有的文件，是否要先备份已存在的目标文件，是否要追踪链接文件等额外操作。rsync也提供非常多的选项使得同步模式变得更具弹性。</li>
+</ol>
+<p>相对来说，为rsync手动指定同步模式的选项更常见一些，只有在有特殊需求时才指定检查模式，因为大多数检查模式选项都可能会影响rsync的性能。</p>
+<a id="more"></a>
+
+<h2 id="安装步骤"><a href="#安装步骤" class="headerlink" title="安装步骤"></a>安装步骤</h2><h3 id="安装nginx"><a href="#安装nginx" class="headerlink" title="安装nginx"></a>安装nginx</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">yum -y install nginx</span><br></pre></td></tr></table></figure>
+
+<h4 id="配置nginx"><a href="#配置nginx" class="headerlink" title="配置nginx"></a>配置nginx</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">vim /usr/local/nginx/conf/nginx.conf #编辑配置文件，在http &#123;下面添加以下内容：</span><br><span class="line"></span><br><span class="line">autoindex on; #开启nginx目录浏览功能</span><br><span class="line">autoindex_exact_size off; #文件大小从KB开始显示</span><br><span class="line">autoindex_localtime on; #显示文件修改时间为服务器本地时间</span><br></pre></td></tr></table></figure>
+
+<h4 id="重启nginx"><a href="#重启nginx" class="headerlink" title="重启nginx"></a>重启nginx</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">systemctl restart nginx</span><br></pre></td></tr></table></figure>
+
+<p>此时可在浏览器输入服务器IP地址查看是否开启了目录浏览</p>
+<h3 id="同步镜像源"><a href="#同步镜像源" class="headerlink" title="同步镜像源"></a>同步镜像源</h3><h4 id="安装rsync同步软件"><a href="#安装rsync同步软件" class="headerlink" title="安装rsync同步软件"></a>安装rsync同步软件</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">yum -y install rsync xinetd</span><br></pre></td></tr></table></figure>
+
+<h4 id="创建目录"><a href="#创建目录" class="headerlink" title="创建目录"></a>创建目录</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">mkdir -p /usr/local/nginx/html/centos #CentOS官方标准源</span><br><span class="line">mkdir -p /usr/local/nginx/html/epel #第三方epel源</span><br></pre></td></tr></table></figure>
+
+<h4 id="确定源同步地址"><a href="#确定源同步地址" class="headerlink" title="确定源同步地址"></a>确定源同步地址</h4><p>此处选择清华大学TUNA镜像源</p>
+<h4 id="创建同步源脚本"><a href="#创建同步源脚本" class="headerlink" title="创建同步源脚本"></a>创建同步源脚本</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">mkdir -p /home/crontab #创建目录</span><br><span class="line"></span><br><span class="line">vim /home/crontab/yum_rsync.sh #添加以下代码</span><br><span class="line"></span><br><span class="line">#!/bin/bash</span><br><span class="line"></span><br><span class="line">/usr/bin/rsync -avrt rsync://mirrors.tuna.tsinghua.edu.cn/centos/ --exclude-from=/usr/local/nginx/html/exclude_centos.list /usr/local/nginx/html/centos/</span><br><span class="line"></span><br><span class="line">/usr/bin/rsync -avrt rsync://mirrors.tuna.tsinghua.edu.cn/epel/ --exclude-from=/usr/local/nginx/html/exclude_epel.list /usr/local/nginx/html/epel/</span><br></pre></td></tr></table></figure>
+
+<h4 id="给脚本添加执行权限"><a href="#给脚本添加执行权限" class="headerlink" title="给脚本添加执行权限"></a>给脚本添加执行权限</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">chmod +x /home/crontab/yum_rsync.sh</span><br></pre></td></tr></table></figure>
+
+<h4 id="创建不需要同步的文件列表"><a href="#创建不需要同步的文件列表" class="headerlink" title="创建不需要同步的文件列表"></a>创建不需要同步的文件列表</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">cd /usr/local/nginx/html/   #进入目录</span><br><span class="line"></span><br><span class="line">touch exclude_centos.list   #创建文件</span><br><span class="line"></span><br><span class="line">touch exclude_epel.list   #创建文件</span><br></pre></td></tr></table></figure>
+
+<p>把不需要同步的目录写到上面对应的文件中，每行一个目录，如：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">vim exclude_epel.list</span><br><span class="line"></span><br><span class="line">4/</span><br><span class="line">4AS/</span><br><span class="line">4ES/</span><br><span class="line">4WS/</span><br></pre></td></tr></table></figure>
+
+<h4 id="添加定时脚本任务"><a href="#添加定时脚本任务" class="headerlink" title="添加定时脚本任务"></a>添加定时脚本任务</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">vim /etc/crontab  #在最后一行添加以下代码</span><br><span class="line"></span><br><span class="line">0 1 * * * root /home/crontab/yum_rsync.sh #设置每天凌晨1点整开始执行脚本</span><br><span class="line">:wq! #保存退出</span><br><span class="line"></span><br><span class="line">service crond restart #重启</span><br></pre></td></tr></table></figure>
+
+<p>注意：等待脚本执行完毕，首次同步，耗费的时间比较长！</p>
+<h3 id="创建repo配置文件"><a href="#创建repo配置文件" class="headerlink" title="创建repo配置文件"></a>创建repo配置文件</h3><h4 id="CentOS7-centos配置文件"><a href="#CentOS7-centos配置文件" class="headerlink" title="CentOS7-centos配置文件"></a>CentOS7-centos配置文件</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><span class="line"># CentOS-Base.repo</span><br><span class="line">#</span><br><span class="line"># The mirror system uses the connecting IP address of the client and the</span><br><span class="line"># update status of each mirror to pick mirrors that are updated to and</span><br><span class="line"># geographically close to the client.  You should use this for CentOS updates</span><br><span class="line"># unless you are manually picking other mirrors.</span><br><span class="line">#</span><br><span class="line"># If the mirrorlist= does not work for you, as a fall back you can try the</span><br><span class="line"># remarked out baseurl= line instead.</span><br><span class="line">#</span><br><span class="line">#</span><br><span class="line"></span><br><span class="line">[base]</span><br><span class="line">name=CentOS-$releasever - Base</span><br><span class="line">baseurl=http://192.168.100.250/centos/$releasever/os/$basearch/</span><br><span class="line">#mirrorlist=http://mirrorlist.centos.org/?release=$releasever&amp;arch=$basearch&amp;repo=os</span><br><span class="line">gpgcheck=1</span><br><span class="line">gpgkey=http://192.168.100.250/centos/RPM-GPG-KEY-CentOS-7</span><br><span class="line"></span><br><span class="line">#released updates</span><br><span class="line">[updates]</span><br><span class="line">name=CentOS-$releasever - Updates</span><br><span class="line">baseurl=http://192.168.100.250/centos/$releasever/updates/$basearch/</span><br><span class="line">#mirrorlist=http://mirrorlist.centos.org/?release=$releasever&amp;arch=$basearch&amp;repo=updates</span><br><span class="line">gpgcheck=1</span><br><span class="line">gpgkey=http://192.168.100.250/centos/RPM-GPG-KEY-CentOS-7</span><br><span class="line"></span><br><span class="line">#additional packages that may be useful</span><br><span class="line">[extras]</span><br><span class="line">name=CentOS-$releasever - Extras</span><br><span class="line">baseurl=http://192.168.100.250/centos/$releasever/extras/$basearch/</span><br><span class="line">#mirrorlist=http://mirrorlist.centos.org/?release=$releasever&amp;arch=$basearch&amp;repo=extras</span><br><span class="line">gpgcheck=1</span><br><span class="line">gpgkey=http://192.168.100.250/centos/RPM-GPG-KEY-CentOS-7</span><br><span class="line"></span><br><span class="line">#additional packages that extend functionality of existing packages</span><br><span class="line">[centosplus]</span><br><span class="line">name=CentOS-$releasever - Plus</span><br><span class="line">baseurl=http://192.168.100.250/centos/$releasever/centosplus/$basearch/</span><br><span class="line">#mirrorlist=http://mirrorlist.centos.org/?release=$releasever&amp;arch=$basearch&amp;repo=centosplus</span><br><span class="line">gpgcheck=1</span><br><span class="line">enabled=0</span><br><span class="line">gpgkey=http://192.168.100.250/centos/RPM-GPG-KEY-CentOS-7</span><br></pre></td></tr></table></figure>
+
+<h4 id="CentOS7-epel配置文件"><a href="#CentOS7-epel配置文件" class="headerlink" title="CentOS7-epel配置文件"></a>CentOS7-epel配置文件</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line">[epel]</span><br><span class="line">name=Extra Packages for Enterprise Linux 7 - $basearch</span><br><span class="line">baseurl=http://192.168.100.250/epel/7/$basearch</span><br><span class="line">#mirrorlist=http://mirrors.fedoraproject.org/metalink?repo=epel-7&amp;arch=$basearch</span><br><span class="line">failovermethod=priority</span><br><span class="line">enabled=1</span><br><span class="line">gpgcheck=1</span><br><span class="line">gpgkey=http://192.168.100.250/epel/RPM-GPG-KEY-EPEL-7</span><br><span class="line"></span><br><span class="line">[epel-debuginfo]</span><br><span class="line">name=Extra Packages for Enterprise Linux 7 - $basearch - Debug</span><br><span class="line">baseurl=http://192.168.100.250/epel/7/$basearch/debug</span><br><span class="line">#mirrorlist=http://mirrors.fedoraproject.org/metalink?repo=epel-debug-7&amp;arch=$basearch</span><br><span class="line">failovermethod=priority</span><br><span class="line">enabled=0</span><br><span class="line">gpgkey=http://192.168.100.250/epel/RPM-GPG-KEY-EPEL-7</span><br><span class="line">gpgcheck=1</span><br><span class="line"></span><br><span class="line">[epel-source]</span><br><span class="line">name=Extra Packages for Enterprise Linux 7 - $basearch - Source</span><br><span class="line">baseurl=http://192.168.100.250/epel/7/SRPMS</span><br><span class="line">#mirrorlist=http://mirrors.fedoraproject.org/metalink?repo=epel-source-7&amp;arch=$basearch</span><br><span class="line">failovermethod=priority</span><br><span class="line">enabled=0</span><br><span class="line">gpgkey=http://192.168.100.250/epel/RPM-GPG-KEY-EPEL-7</span><br><span class="line">gpgcheck=1</span><br></pre></td></tr></table></figure>
+
+<h2 id="测试"><a href="#测试" class="headerlink" title="测试"></a>测试</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">yum clean all</span><br><span class="line">yum makecache</span><br><span class="line">yum repolist</span><br><span class="line">yum instll ntp</span><br></pre></td></tr></table></figure>
+
+
+      
+    </div>
+    
+    
+    
+	
+	<div>
+	  
+		<div>
+    
+        <div style="text-align:center;color: #ccc;font-size:14px;">--------------------本文结束，感谢您的阅读--------------------</div>
+    
+</div>
+	  
+	</div>
+	
+	<div>
+      
+        
+<div class="my_post_copyright">
+  <script src="//cdn.bootcss.com/clipboard.js/1.5.10/clipboard.min.js"></script>
+  
+  <!-- JS库 sweetalert 可修改路径 -->
+  <script src="https://cdn.bootcss.com/jquery/2.0.0/jquery.min.js"></script>
+  <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+  <p><span>本文标题:</span><a href="/CentOS7利用rsync搭建内网yum源镜像服务器/">CentOS7利用rsync搭建内网yum源镜像服务器</a></p>
+  <p><span>文章作者:</span><a href="/" title="访问 弓昭 的个人博客">弓昭</a></p>
+  <p><span>发布时间:</span>2019年01月08日 - 21:38</p>
+  <p><span>最后更新:</span>2020年04月08日 - 22:20</p>
+  <p><span>原始链接:</span><a href="/CentOS7利用rsync搭建内网yum源镜像服务器/" title="CentOS7利用rsync搭建内网yum源镜像服务器">https://gongzhao1.coding.me/CentOS7利用rsync搭建内网yum源镜像服务器/</a>
+    <span class="copy-path" title="点击复制文章链接"><i class="fa fa-clipboard" data-clipboard-text="https://gongzhao1.coding.me/CentOS7利用rsync搭建内网yum源镜像服务器/" aria-label="复制成功！"></i></span>
+  </p>
+  <p><span>联系邮箱:</span>gongzhao1@foxmail.com</p>  
+</div>
+<script> 
+    var clipboard = new Clipboard('.fa-clipboard');
+    $(".fa-clipboard").click(function(){
+      clipboard.on('success', function(){
+        swal({   
+          title: "",   
+          text: '复制成功',
+          icon: "success", 
+          showConfirmButton: true
+          });
+	});
+    });  
+</script>
+
+      
+	</div>
+	
+
+
+    
+
+    
+      <div>
+        <div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center;">
+  <div></div>
+  <button id="rewardButton" disable="enable" onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}">
+    <span>Donate</span>
+  </button>
+  <div id="QR" style="display: none;">
+
+    
+      <div id="wechat" style="display: inline-block">
+        <img id="wechat_qr" src="/images/wechat.jpg" alt="弓昭 WeChat Pay">
+        <p>WeChat Pay</p>
+      </div>
+    
+
+    
+      <div id="alipay" style="display: inline-block">
+        <img id="alipay_qr" src="/images/ali.jpg" alt="弓昭 Alipay">
+        <p>Alipay</p>
+      </div>
+    
+
+    
+
+  </div>
+</div>
+
+      </div>
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/centos7/" rel="tag"><i class="fa fa-tag"></i>centos7</a>
+          
+            <a href="/tags/rsync/" rel="tag"><i class="fa fa-tag"></i>rsync</a>
+          
+            <a href="/tags/yum/" rel="tag"><i class="fa fa-tag"></i>yum</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/CentOS7安装配置mysql5-5为utf-8编码/" rel="next" title="CentOS7安装配置mysql5.5为utf-8编码">
+                <i class="fa fa-chevron-left"></i> CentOS7安装配置mysql5.5为utf-8编码
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/CentOS7初始化配置-做标准化/" rel="prev" title="CentOS7初始化配置(做标准化)">
+                CentOS7初始化配置(做标准化) <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div id="lv-container" data-id="city" data-uid="MTAyMC80MTcyNy8xODI3Mw=="></div>
+    
+  </div>
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image" src="/uploads/panda.jpg" alt="弓昭">
+          <p class="site-author-name" itemprop="name">弓昭</p>
+           
+              <p class="site-description motion-element" itemprop="description">弓昭的个人主页，主要涉及网络、运维、前端、Python等等知识</p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives/">
+                <span class="site-state-item-count">83</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">25</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">72</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+          <div class="feed-link motion-element">
+            <a href="/atom.xml" rel="alternate">
+              <i class="fa fa-rss"></i>
+              RSS
+            </a>
+          </div>
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/gongzhao1" target="_blank" title="GitHub">
+                  
+                    <i class="fa fa-fw fa-github"></i>
+                  
+                    
+                      GitHub
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://blog.csdn.net/zhao12795969" target="_blank" title="csdn">
+                  
+                    <i class="fa fa-fw fa-crosshairs"></i>
+                  
+                    
+                      csdn
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://www.jianshu.com/u/1dbca13c6043" target="_blank" title="简书">
+                  
+                    <i class="fa fa-fw fa-heartbeat"></i>
+                  
+                    
+                      简书
+                    
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+          <div class="links-of-blogroll motion-element links-of-blogroll-inline">
+            <div class="links-of-blogroll-title">
+              <i class="fa  fa-fw fa-globe"></i>
+              Links
+            </div>
+            <ul class="links-of-blogroll-list">
+              
+                <li class="links-of-blogroll-item">
+                  <a href="http://ccieh3c.com/" title="网络之路" target="_blank">网络之路</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="http://jm.taobao.org/" title="阿里云中间件" target="_blank">阿里云中间件</a>
+                </li>
+              
+            </ul>
+          </div>
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#rsync同步基本说明"><span class="nav-number">1.</span> <span class="nav-text">rsync同步基本说明</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#安装步骤"><span class="nav-number">2.</span> <span class="nav-text">安装步骤</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#安装nginx"><span class="nav-number">2.1.</span> <span class="nav-text">安装nginx</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#配置nginx"><span class="nav-number">2.1.1.</span> <span class="nav-text">配置nginx</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#重启nginx"><span class="nav-number">2.1.2.</span> <span class="nav-text">重启nginx</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#同步镜像源"><span class="nav-number">2.2.</span> <span class="nav-text">同步镜像源</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#安装rsync同步软件"><span class="nav-number">2.2.1.</span> <span class="nav-text">安装rsync同步软件</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#创建目录"><span class="nav-number">2.2.2.</span> <span class="nav-text">创建目录</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#确定源同步地址"><span class="nav-number">2.2.3.</span> <span class="nav-text">确定源同步地址</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#创建同步源脚本"><span class="nav-number">2.2.4.</span> <span class="nav-text">创建同步源脚本</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#给脚本添加执行权限"><span class="nav-number">2.2.5.</span> <span class="nav-text">给脚本添加执行权限</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#创建不需要同步的文件列表"><span class="nav-number">2.2.6.</span> <span class="nav-text">创建不需要同步的文件列表</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#添加定时脚本任务"><span class="nav-number">2.2.7.</span> <span class="nav-text">添加定时脚本任务</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#创建repo配置文件"><span class="nav-number">2.3.</span> <span class="nav-text">创建repo配置文件</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#CentOS7-centos配置文件"><span class="nav-number">2.3.1.</span> <span class="nav-text">CentOS7-centos配置文件</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#CentOS7-epel配置文件"><span class="nav-number">2.3.2.</span> <span class="nav-text">CentOS7-epel配置文件</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#测试"><span class="nav-number">3.</span> <span class="nav-text">测试</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+<div class="copyright">
+  
+  &copy;  2018 - 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">弓昭</span>
+</div>
+
+
+<div class="powered-by">
+	<i class="fa fa-user-md"></i><span id="busuanzi_container_site_uv">
+	  本站访客数:<span id="busuanzi_value_site_uv"></span>
+	</span>
+</div>
+
+
+<div class="theme-info">
+
+  <span class="post-count">博客全站共253.1k字</span>
+</div>
+
+
+
+        
+<div class="busuanzi-count">
+  <script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+
+  
+</div>
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.2"></script>
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.2"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+    <script type="text/javascript">
+      (function(d, s) {
+        var j, e = d.getElementsByTagName(s)[0];
+        if (typeof LivereTower === 'function') { return; }
+        j = d.createElement(s);
+        j.src = 'https://cdn-city.livere.com/js/embed.dist.js';
+        j.async = true;
+        e.parentNode.insertBefore(j, e);
+      })(document, 'script');
+    </script>
+  
+
+
+
+
+
+
+  
+
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url);
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

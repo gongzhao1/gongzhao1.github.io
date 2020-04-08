@@ -1,0 +1,1346 @@
+<!DOCTYPE html>
+
+
+
+
+<html class="theme-next muse" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.2" rel="stylesheet" type="text/css">
+
+
+  <meta name="keywords" content="ubuntu,hadoop,">
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="GZ" type="application/atom+xml">
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.2">
+
+
+
+
+
+
+<meta name="description" content="前言 本文尝试源码安装部署hadoop3.1.0 系统为ubuntu16.04 需要具有一定基础，一些基本操作只是简略带过 我主要把各个部署方案的配置文件综合了起来，把一些常用的配置以及说明都写了上来 适合快速部署hadoop的朋友">
+<meta name="keywords" content="ubuntu,hadoop">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Ubuntu16.04-hadoop3.1.0安装与配置">
+<meta property="og:url" content="https://gongzhao1.coding.me/Ubuntu16.04-hadoop3.1.0安装与配置/index.html">
+<meta property="og:site_name" content="GZ">
+<meta property="og:description" content="前言 本文尝试源码安装部署hadoop3.1.0 系统为ubuntu16.04 需要具有一定基础，一些基本操作只是简略带过 我主要把各个部署方案的配置文件综合了起来，把一些常用的配置以及说明都写了上来 适合快速部署hadoop的朋友">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2020-04-08T14:20:25.867Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Ubuntu16.04-hadoop3.1.0安装与配置">
+<meta name="twitter:description" content="前言 本文尝试源码安装部署hadoop3.1.0 系统为ubuntu16.04 需要具有一定基础，一些基本操作只是简略带过 我主要把各个部署方案的配置文件综合了起来，把一些常用的配置以及说明都写了上来 适合快速部署hadoop的朋友">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: false,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://gongzhao1.coding.me/Ubuntu16.04-hadoop3.1.0安装与配置/">
+
+
+
+
+
+  <title>Ubuntu16.04-hadoop3.1.0安装与配置 | GZ</title>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">GZ</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">痛苦是财富，这话是扯淡。少年，痛苦就是痛苦，对痛苦的思考才是财富</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br>
+            
+            关于
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br>
+            
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off" placeholder="搜索..." spellcheck="false" type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://gongzhao1.coding.me/Ubuntu16.04-hadoop3.1.0安装与配置/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="弓昭">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/uploads/panda.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="GZ">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Ubuntu16.04-hadoop3.1.0安装与配置</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-12-26T20:22:53+08:00">
+                2018-12-26
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/大数据/" itemprop="url" rel="index">
+                    <span itemprop="name">大数据</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+            <span class="post-meta-divider">|</span>
+            <span class="page-pv"><i class="fa fa-file-o"></i>
+            <span class="busuanzi-value" id="busuanzi_value_page_pv"></span>次阅读
+            </span>
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><blockquote>
+<p>本文尝试源码安装部署hadoop3.1.0</p>
+<p>系统为ubuntu16.04</p>
+<p>需要具有一定基础，一些基本操作只是简略带过</p>
+<p>我主要把各个部署方案的配置文件综合了起来，把一些常用的配置以及说明都写了上来</p>
+<p>适合快速部署hadoop的朋友</p>
+</blockquote>
+<a id="more"></a>
+
+<h2 id="服务器概览"><a href="#服务器概览" class="headerlink" title="服务器概览"></a>服务器概览</h2><table>
+<thead>
+<tr>
+<th>序号</th>
+<th>主机名</th>
+<th>IP</th>
+<th>配置</th>
+<th>功能</th>
+<th>备注</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>1</td>
+<td>master</td>
+<td>192.168.136.148</td>
+<td>内存：4G<br>CPU：2vCores</td>
+<td>主节点<br>namenode<br>resourcemanager</td>
+<td></td>
+</tr>
+<tr>
+<td>2</td>
+<td>standby</td>
+<td>192.168.136</td>
+<td>内存：4G<br>CPU：2vCores</td>
+<td>备用主节点<br>secondaryNameNode</td>
+<td>默认在master上</td>
+</tr>
+<tr>
+<td>3</td>
+<td>slave1</td>
+<td>192.168.136.149</td>
+<td>内存：2G<br>CPU：1vCores</td>
+<td>从节点<br>DataNode<br>NodeManager</td>
+<td></td>
+</tr>
+<tr>
+<td>4</td>
+<td>slave2</td>
+<td>192.168.136.150</td>
+<td>内存：2G<br>CPU：1vCores</td>
+<td>从节点<br>DataNode<br>NodeManager</td>
+<td></td>
+</tr>
+</tbody></table>
+<h2 id="部署"><a href="#部署" class="headerlink" title="部署"></a>部署</h2><h3 id="配置hosts文件，设置静态IP与主机名"><a href="#配置hosts文件，设置静态IP与主机名" class="headerlink" title="配置hosts文件，设置静态IP与主机名"></a>配置hosts文件，设置静态IP与主机名</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">root@master:~# cat /etc/hosts</span><br><span class="line">127.0.0.1	localhost</span><br><span class="line"></span><br><span class="line"># The following lines are desirable for IPv6 capable hosts</span><br><span class="line">::1     localhost ip6-localhost ip6-loopback</span><br><span class="line">ff02::1 ip6-allnodes</span><br><span class="line">ff02::2 ip6-allrouters</span><br><span class="line"></span><br><span class="line">192.168.136.148 master</span><br><span class="line">192.168.136.149 slave1</span><br><span class="line">192.168.136.150 slave2</span><br></pre></td></tr></table></figure>
+
+<h3 id="配置时间同步"><a href="#配置时间同步" class="headerlink" title="配置时间同步"></a>配置时间同步</h3><h3 id="关闭防火墙（centos关闭selinux）"><a href="#关闭防火墙（centos关闭selinux）" class="headerlink" title="关闭防火墙（centos关闭selinux）"></a>关闭防火墙（centos关闭selinux）</h3><h3 id="配置master免密登录其它节点"><a href="#配置master免密登录其它节点" class="headerlink" title="配置master免密登录其它节点"></a>配置master免密登录其它节点</h3><h3 id="JDK安装"><a href="#JDK安装" class="headerlink" title="JDK安装"></a>JDK安装</h3><ul>
+<li><p>源码安装或者apt安装</p>
+<p>环境变量（apt安装不需要配置环境变量）</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">export JAVA_HOME=/opt/java/jdk1.8.0_172</span><br><span class="line">export JRE_HOME=$&#123;JAVA_HOME&#125;/jre</span><br><span class="line">export CLASSPATH=.:$&#123;JAVA_HOME&#125;/lib:$&#123;JRE_HOME&#125;/lib</span><br><span class="line">export PATH=$&#123;JAVA_HOME&#125;/bin:$PATH</span><br></pre></td></tr></table></figure>
+
+</li>
+</ul>
+<h3 id="安装hadoop"><a href="#安装hadoop" class="headerlink" title="安装hadoop"></a>安装hadoop</h3><p>下载hadoop，将其解压至/opt/目录下</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">[root@node1 opt]# cd /opt/ &amp; mkdir hadoop &amp;&amp; cd hadoop</span><br><span class="line">#解压hadoop-3.1.0.tar.gz</span><br><span class="line">[root@node1 hadoop]# tar -zxvf hadoop-3.1.0.tar.gz</span><br><span class="line"></span><br><span class="line">#修改环境变量</span><br><span class="line">[root@node1 hadoop]# vim /etc/profile</span><br><span class="line"></span><br><span class="line"># 在最后下添加</span><br><span class="line">export HADOOP_HOME=/opt/hadoop/hadoop-3.1.0</span><br><span class="line">export PATH=$PATH:$HADOOP_HOME/bin</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">source /etc/profile</span><br></pre></td></tr></table></figure>
+
+<h3 id="编辑配置文件"><a href="#编辑配置文件" class="headerlink" title="编辑配置文件"></a>编辑配置文件</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">修改配置文件</span><br><span class="line"></span><br><span class="line">&gt; 共需要配置/opt/hadoop/hadoop-3.1.0/etc/hadoop/下的六个个文件，分别是</span><br><span class="line">&gt;</span><br><span class="line">&gt; hadoop-env.sh、core-site.xml、hdfs-site.xml、yarn-site.xml、mapred-site.xml、workers</span><br></pre></td></tr></table></figure>
+
+<h4 id="hadoop-env-sh"><a href="#hadoop-env-sh" class="headerlink" title="hadoop-env.sh"></a>hadoop-env.sh</h4><pre><code>vim hadoop-env.sh
+
+ export JAVA_HOME=/opt/java/jdk1.8.0_172/
+
+ export HDFS_NAMENODE_USER=&quot;root&quot;
+ export HDFS_DATANODE_USER=&quot;root&quot;
+ export HDFS_SECONDARYNAMENODE_USER=&quot;root&quot;
+ export YARN_RESOURCEMANAGER_USER=&quot;root&quot;
+ export YARN_NODEMANAGER_USER=&quot;root&quot;</code></pre><h4 id="core-site-xml"><a href="#core-site-xml" class="headerlink" title="core-site.xml"></a>core-site.xml</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">&lt;configuration&gt;</span><br><span class="line">    &lt;!-- 指定HDFS老大（namenode）的通信地址 --&gt;</span><br><span class="line">    &lt;property&gt;</span><br><span class="line">        &lt;name&gt;fs.defaultFS&lt;/name&gt;</span><br><span class="line">        &lt;value&gt;hdfs://master:9000&lt;/value&gt;</span><br><span class="line">    &lt;/property&gt;</span><br><span class="line">    &lt;!-- 指定hadoop运行时产生文件的存储路径 --&gt;</span><br><span class="line">    &lt;property&gt;</span><br><span class="line">        &lt;name&gt;hadoop.tmp.dir&lt;/name&gt;</span><br><span class="line">        &lt;value&gt;/opt/hadoop/data/tmp&lt;/value&gt;</span><br><span class="line">    &lt;/property&gt;</span><br><span class="line">    &lt;!-- 指定hadoop流文件的缓冲区,单位为K --&gt;</span><br><span class="line">    &lt;property&gt;</span><br><span class="line">    	&lt;name&gt;io.file.buffer.size&lt;/name&gt;</span><br><span class="line">    	&lt;value&gt;131072&lt;/value&gt;</span><br><span class="line">    &lt;/property&gt;</span><br><span class="line">&lt;/configuration&gt;</span><br></pre></td></tr></table></figure>
+
+<h4 id="hdfs-site-xml"><a href="#hdfs-site-xml" class="headerlink" title="hdfs-site.xml"></a>hdfs-site.xml</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br></pre></td><td class="code"><pre><span class="line">&lt;configuration&gt;</span><br><span class="line"></span><br><span class="line">    &lt;!-- 设置namenode的http通讯地址 --&gt;</span><br><span class="line">    &lt;property&gt;</span><br><span class="line">        &lt;name&gt;dfs.namenode.http-address&lt;/name&gt;</span><br><span class="line">        &lt;value&gt;master:50070&lt;/value&gt;</span><br><span class="line">    &lt;/property&gt;</span><br><span class="line"></span><br><span class="line">    &lt;!-- 设置secondarynamenode的http通讯地址 --&gt;</span><br><span class="line">    &lt;property&gt;</span><br><span class="line">        &lt;name&gt;dfs.namenode.secondary.http-address&lt;/name&gt;</span><br><span class="line">        &lt;value&gt;standby:50090&lt;/value&gt;</span><br><span class="line">    &lt;/property&gt;</span><br><span class="line">     &lt;!-- 设置dfs块大小，单位K，默认128Mb --&gt;</span><br><span class="line">	&lt;property&gt;</span><br><span class="line">  		&lt;name&gt;dfs.blocksize&lt;/name&gt;</span><br><span class="line">  		&lt;value&gt;268435456&lt;/value&gt;</span><br><span class="line">	&lt;/property&gt;</span><br><span class="line"></span><br><span class="line">	&lt;property&gt;</span><br><span class="line"> 		 &lt;name&gt;dfs.namenode.handler.count  &lt;/name&gt;</span><br><span class="line">  		&lt;value&gt;100&lt;/value&gt;</span><br><span class="line">	&lt;/property&gt;</span><br><span class="line">	</span><br><span class="line">    &lt;!-- 设置namenode存放的路径 (最好指定多个路径，包括NFS，用逗号分隔，便于容灾)--&gt;</span><br><span class="line">    &lt;property&gt;</span><br><span class="line">        &lt;name&gt;dfs.namenode.name.dir&lt;/name&gt;</span><br><span class="line">        &lt;value&gt;/opt/hadoop/data/name&lt;/value&gt;</span><br><span class="line">    &lt;/property&gt;</span><br><span class="line"></span><br><span class="line">    &lt;!-- 设置hdfs副本数量 --&gt;</span><br><span class="line">    &lt;property&gt;</span><br><span class="line">        &lt;name&gt;dfs.replication&lt;/name&gt;</span><br><span class="line">        &lt;value&gt;2&lt;/value&gt;</span><br><span class="line">    &lt;/property&gt;</span><br><span class="line">    &lt;!-- 设置datanode存放的路径（可以指定多个路径，多个路径最好分别为不同的磁盘，提高效率） --&gt;</span><br><span class="line">    &lt;property&gt;</span><br><span class="line">        &lt;name&gt;dfs.datanode.data.dir&lt;/name&gt;</span><br><span class="line">        &lt;value&gt;/opt/hadoop/data/datanode&lt;/value&gt;</span><br><span class="line">    &lt;/property&gt;</span><br><span class="line">    </span><br><span class="line">    &lt;property&gt;</span><br><span class="line">        &lt;name&gt;dfs.permissions&lt;/name&gt;</span><br><span class="line">        &lt;value&gt;false&lt;/value&gt;</span><br><span class="line">    &lt;/property&gt;</span><br><span class="line">&lt;/configuration&gt;</span><br></pre></td></tr></table></figure>
+
+<h4 id="mapred-site-xml"><a href="#mapred-site-xml" class="headerlink" title="mapred-site.xml"></a>mapred-site.xml</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">&lt;configuration&gt;</span><br><span class="line">    &lt;!-- 通知框架MR使用YARN --&gt;</span><br><span class="line">    &lt;property&gt;</span><br><span class="line">        &lt;name&gt;mapreduce.framework.name&lt;/name&gt;</span><br><span class="line">        &lt;value&gt;yarn&lt;/value&gt;</span><br><span class="line">    &lt;/property&gt;</span><br><span class="line">    &lt;property&gt;  </span><br><span class="line">        &lt;name&gt;mapreduce.application.classpath&lt;/name&gt;  </span><br><span class="line">        &lt;value&gt;  </span><br><span class="line">        /opt/hadoop/hadoop-3.1.0/etc/hadoop,  </span><br><span class="line">        /opt/hadoop/hadoop-3.1.0/share/hadoop/common/*,  </span><br><span class="line">        /opt/hadoop/hadoop-3.1.0/share/hadoop/common/lib/*,  </span><br><span class="line">        /opt/hadoop/hadoop-3.1.0/share/hadoop/hdfs/*,  </span><br><span class="line">        /opt/hadoop/hadoop-3.1.0/share/hadoop/hdfs/lib/*,  </span><br><span class="line">        /opt/hadoop/hadoop-3.1.0/share/hadoop/mapreduce/*,  </span><br><span class="line">        /opt/hadoop/hadoop-3.1.0/share/hadoop/mapreduce/lib/*,  </span><br><span class="line">        /opt/hadoop/hadoop-3.1.0/share/hadoop/yarn/*,  </span><br><span class="line">        /opt/hadoop/hadoop-3.1.0/share/hadoop/yarn/lib/*  </span><br><span class="line">        &lt;/value&gt;  </span><br><span class="line">    &lt;/property&gt;</span><br><span class="line">&lt;/configuration&gt;</span><br></pre></td></tr></table></figure>
+
+<h4 id="yarn-site-xml"><a href="#yarn-site-xml" class="headerlink" title="yarn-site.xml"></a>yarn-site.xml</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line">&lt;configuration&gt;</span><br><span class="line"> 	&lt;property&gt;</span><br><span class="line">         &lt;name&gt;yarn.resourcemanager.hostname&lt;/name&gt;</span><br><span class="line">         &lt;value&gt;master&lt;/value&gt;</span><br><span class="line">  	&lt;/property&gt;</span><br><span class="line">  	&lt;!-- 配置外网只需要替换外网ip为真实ip，否则默认为 localhost:8088 --&gt;</span><br><span class="line"> 	&lt;!-- &lt;property&gt;</span><br><span class="line">          &lt;name&gt;yarn.resourcemanager.webapp.address&lt;/name&gt;</span><br><span class="line">          &lt;value&gt;外网ip:8088&lt;/value&gt;</span><br><span class="line">  	&lt;/property&gt; --&gt;</span><br><span class="line">  	</span><br><span class="line">    &lt;property&gt;  </span><br><span class="line">        &lt;name&gt;yarn.nodemanager.aux-services&lt;/name&gt;  </span><br><span class="line">        &lt;value&gt;mapreduce_shuffle&lt;/value&gt;  </span><br><span class="line">    &lt;/property&gt;</span><br><span class="line">    </span><br><span class="line">    &lt;property&gt;  </span><br><span class="line">        &lt;name&gt;yarn.nodemanager.aux-services.mapreduce.shuffle.class&lt;/name&gt;  </span><br><span class="line">        &lt;value&gt;org.apache.hadoop.mapred.ShuffleHandle&lt;/value&gt;  </span><br><span class="line">    &lt;/property&gt;  </span><br><span class="line">    &lt;property&gt;  </span><br><span class="line">        &lt;name&gt;yarn.resourcemanager.resource-tracker.address&lt;/name&gt;  </span><br><span class="line">        &lt;value&gt;master:8025&lt;/value&gt;  </span><br><span class="line">    &lt;/property&gt;  </span><br><span class="line">    &lt;property&gt;  </span><br><span class="line">        &lt;name&gt;yarn.resourcemanager.scheduler.address&lt;/name&gt;  </span><br><span class="line">        &lt;value&gt;master:8030&lt;/value&gt;  </span><br><span class="line">    &lt;/property&gt;  </span><br><span class="line">    &lt;property&gt;  </span><br><span class="line">        &lt;name&gt;yarn.resourcemanager.address&lt;/name&gt;  </span><br><span class="line">        &lt;value&gt;master:8040&lt;/value&gt;  </span><br><span class="line">    &lt;/property&gt;  </span><br><span class="line">&lt;/configuration&gt;</span><br></pre></td></tr></table></figure>
+
+<h4 id="masters"><a href="#masters" class="headerlink" title="masters"></a>masters</h4><p>新建一个masters的文件,这里指定的是secondary namenode 的主机</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">[root@node1 hadoop]# touch /opt/hadoop/hadoop-3.1.0/etc/hadoop/masters</span><br><span class="line">[root@node1 hadoop]# vim /opt/hadoop/hadoop-3.1.0/etc/hadoop/masters</span><br><span class="line">#添加</span><br><span class="line">standby</span><br></pre></td></tr></table></figure>
+
+<h4 id="workers"><a href="#workers" class="headerlink" title="workers"></a>workers</h4><p>在workers文件中添加slave节点</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">[root@node1 hadoop]# vim /opt/hadoop/hadoop-3.1.0/etc/hadoop/workers</span><br><span class="line">#添加</span><br><span class="line">slave1</span><br><span class="line">slave2</span><br></pre></td></tr></table></figure>
+
+<h4 id="创建文件夹"><a href="#创建文件夹" class="headerlink" title="创建文件夹"></a>创建文件夹</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">[root@node1 hadoop]# mkdir -p /opt/hadoop/data/tmp</span><br><span class="line">[root@node1 hadoop]# mkdir -p /opt/hadoop/data/name</span><br><span class="line">[root@node1 hadoop]# mkdir -p /opt/hadoop/data/datanode</span><br></pre></td></tr></table></figure>
+
+<h4 id="复制到其他主机"><a href="#复制到其他主机" class="headerlink" title="复制到其他主机"></a>复制到其他主机</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[root@node1 opt]# scp -r /opt/hadoop spark.node2:/opt/</span><br><span class="line">[root@node1 opt]# scp -r /opt/hadoop spark.node3:/opt/</span><br></pre></td></tr></table></figure>
+
+<h4 id="格式化-第一次启动得格式化"><a href="#格式化-第一次启动得格式化" class="headerlink" title="格式化 第一次启动得格式化"></a>格式化 第一次启动得格式化</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[root@node1 opt]#  /opt/hadoop/hadoop-3.1.0/bin/hdfs namenode -format</span><br></pre></td></tr></table></figure>
+
+<h4 id="启动"><a href="#启动" class="headerlink" title="启动"></a>启动</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">/opt/hadoop/hadoop-3.1.0/sbin/start-dfs.sh</span><br><span class="line">/opt/hadoop/hadoop-3.1.0/sbin/start-yarn.sh</span><br></pre></td></tr></table></figure>
+
+<h4 id="查看"><a href="#查看" class="headerlink" title="查看"></a>查看</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">jps</span><br></pre></td></tr></table></figure>
+
+<h3 id="关闭-【只在master上操作】"><a href="#关闭-【只在master上操作】" class="headerlink" title="关闭 【只在master上操作】"></a>关闭 【只在master上操作】</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">/opt/hadoop/hadoop-3.1.0/sbin/stop-dfs.sh</span><br><span class="line">/opt/hadoop/hadoop-3.1.0/sbin/stop-yarn.sh</span><br></pre></td></tr></table></figure>
+
+<h3 id="删除（谨慎操作，只在master上操作）"><a href="#删除（谨慎操作，只在master上操作）" class="headerlink" title="删除（谨慎操作，只在master上操作）"></a>删除（谨慎操作，只在master上操作）</h3><p>重置hadoop环境 [移除hadoop hdfs log文件] </p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">rm -rf /opt/hadoop/hadoop-3.1.0/logs/*</span><br><span class="line">rm -rf /opt/hadoop/data</span><br></pre></td></tr></table></figure>
+      
+    </div>
+    
+    
+    
+	
+	<div>
+	  
+		<div>
+    
+        <div style="text-align:center;color: #ccc;font-size:14px;">--------------------本文结束，感谢您的阅读--------------------</div>
+    
+</div>
+	  
+	</div>
+	
+	<div>
+      
+        
+<div class="my_post_copyright">
+  <script src="//cdn.bootcss.com/clipboard.js/1.5.10/clipboard.min.js"></script>
+  
+  <!-- JS库 sweetalert 可修改路径 -->
+  <script src="https://cdn.bootcss.com/jquery/2.0.0/jquery.min.js"></script>
+  <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+  <p><span>本文标题:</span><a href="/Ubuntu16.04-hadoop3.1.0安装与配置/">Ubuntu16.04-hadoop3.1.0安装与配置</a></p>
+  <p><span>文章作者:</span><a href="/" title="访问 弓昭 的个人博客">弓昭</a></p>
+  <p><span>发布时间:</span>2018年12月26日 - 20:22</p>
+  <p><span>最后更新:</span>2020年04月08日 - 22:20</p>
+  <p><span>原始链接:</span><a href="/Ubuntu16.04-hadoop3.1.0安装与配置/" title="Ubuntu16.04-hadoop3.1.0安装与配置">https://gongzhao1.coding.me/Ubuntu16.04-hadoop3.1.0安装与配置/</a>
+    <span class="copy-path" title="点击复制文章链接"><i class="fa fa-clipboard" data-clipboard-text="https://gongzhao1.coding.me/Ubuntu16.04-hadoop3.1.0安装与配置/" aria-label="复制成功！"></i></span>
+  </p>
+  <p><span>联系邮箱:</span>gongzhao1@foxmail.com</p>  
+</div>
+<script> 
+    var clipboard = new Clipboard('.fa-clipboard');
+    $(".fa-clipboard").click(function(){
+      clipboard.on('success', function(){
+        swal({   
+          title: "",   
+          text: '复制成功',
+          icon: "success", 
+          showConfirmButton: true
+          });
+	});
+    });  
+</script>
+
+      
+	</div>
+	
+
+
+    
+
+    
+      <div>
+        <div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center;">
+  <div></div>
+  <button id="rewardButton" disable="enable" onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}">
+    <span>Donate</span>
+  </button>
+  <div id="QR" style="display: none;">
+
+    
+      <div id="wechat" style="display: inline-block">
+        <img id="wechat_qr" src="/images/wechat.jpg" alt="弓昭 WeChat Pay">
+        <p>WeChat Pay</p>
+      </div>
+    
+
+    
+      <div id="alipay" style="display: inline-block">
+        <img id="alipay_qr" src="/images/ali.jpg" alt="弓昭 Alipay">
+        <p>Alipay</p>
+      </div>
+    
+
+    
+
+  </div>
+</div>
+
+      </div>
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/ubuntu/" rel="tag"><i class="fa fa-tag"></i>ubuntu</a>
+          
+            <a href="/tags/hadoop/" rel="tag"><i class="fa fa-tag"></i>hadoop</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/CentOS7-NFS服务的安装配置详解/" rel="next" title="CentOS7-NFS服务的安装配置详解">
+                <i class="fa fa-chevron-left"></i> CentOS7-NFS服务的安装配置详解
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/内部CA服务器和自签名证书/" rel="prev" title="内部CA服务器和自签名证书">
+                内部CA服务器和自签名证书 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div id="lv-container" data-id="city" data-uid="MTAyMC80MTcyNy8xODI3Mw=="></div>
+    
+  </div>
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image" src="/uploads/panda.jpg" alt="弓昭">
+          <p class="site-author-name" itemprop="name">弓昭</p>
+           
+              <p class="site-description motion-element" itemprop="description">弓昭的个人主页，主要涉及网络、运维、前端、Python等等知识</p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives/">
+                <span class="site-state-item-count">83</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">25</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">72</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+          <div class="feed-link motion-element">
+            <a href="/atom.xml" rel="alternate">
+              <i class="fa fa-rss"></i>
+              RSS
+            </a>
+          </div>
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/gongzhao1" target="_blank" title="GitHub">
+                  
+                    <i class="fa fa-fw fa-github"></i>
+                  
+                    
+                      GitHub
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://blog.csdn.net/zhao12795969" target="_blank" title="csdn">
+                  
+                    <i class="fa fa-fw fa-crosshairs"></i>
+                  
+                    
+                      csdn
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://www.jianshu.com/u/1dbca13c6043" target="_blank" title="简书">
+                  
+                    <i class="fa fa-fw fa-heartbeat"></i>
+                  
+                    
+                      简书
+                    
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+          <div class="links-of-blogroll motion-element links-of-blogroll-inline">
+            <div class="links-of-blogroll-title">
+              <i class="fa  fa-fw fa-globe"></i>
+              Links
+            </div>
+            <ul class="links-of-blogroll-list">
+              
+                <li class="links-of-blogroll-item">
+                  <a href="http://ccieh3c.com/" title="网络之路" target="_blank">网络之路</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="http://jm.taobao.org/" title="阿里云中间件" target="_blank">阿里云中间件</a>
+                </li>
+              
+            </ul>
+          </div>
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#前言"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#服务器概览"><span class="nav-number">2.</span> <span class="nav-text">服务器概览</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#部署"><span class="nav-number">3.</span> <span class="nav-text">部署</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#配置hosts文件，设置静态IP与主机名"><span class="nav-number">3.1.</span> <span class="nav-text">配置hosts文件，设置静态IP与主机名</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#配置时间同步"><span class="nav-number">3.2.</span> <span class="nav-text">配置时间同步</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#关闭防火墙（centos关闭selinux）"><span class="nav-number">3.3.</span> <span class="nav-text">关闭防火墙（centos关闭selinux）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#配置master免密登录其它节点"><span class="nav-number">3.4.</span> <span class="nav-text">配置master免密登录其它节点</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#JDK安装"><span class="nav-number">3.5.</span> <span class="nav-text">JDK安装</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#安装hadoop"><span class="nav-number">3.6.</span> <span class="nav-text">安装hadoop</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#编辑配置文件"><span class="nav-number">3.7.</span> <span class="nav-text">编辑配置文件</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#hadoop-env-sh"><span class="nav-number">3.7.1.</span> <span class="nav-text">hadoop-env.sh</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#core-site-xml"><span class="nav-number">3.7.2.</span> <span class="nav-text">core-site.xml</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#hdfs-site-xml"><span class="nav-number">3.7.3.</span> <span class="nav-text">hdfs-site.xml</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#mapred-site-xml"><span class="nav-number">3.7.4.</span> <span class="nav-text">mapred-site.xml</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#yarn-site-xml"><span class="nav-number">3.7.5.</span> <span class="nav-text">yarn-site.xml</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#masters"><span class="nav-number">3.7.6.</span> <span class="nav-text">masters</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#workers"><span class="nav-number">3.7.7.</span> <span class="nav-text">workers</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#创建文件夹"><span class="nav-number">3.7.8.</span> <span class="nav-text">创建文件夹</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#复制到其他主机"><span class="nav-number">3.7.9.</span> <span class="nav-text">复制到其他主机</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#格式化-第一次启动得格式化"><span class="nav-number">3.7.10.</span> <span class="nav-text">格式化 第一次启动得格式化</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#启动"><span class="nav-number">3.7.11.</span> <span class="nav-text">启动</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#查看"><span class="nav-number">3.7.12.</span> <span class="nav-text">查看</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#关闭-【只在master上操作】"><span class="nav-number">3.8.</span> <span class="nav-text">关闭 【只在master上操作】</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#删除（谨慎操作，只在master上操作）"><span class="nav-number">3.9.</span> <span class="nav-text">删除（谨慎操作，只在master上操作）</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+<div class="copyright">
+  
+  &copy;  2018 - 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">弓昭</span>
+</div>
+
+
+<div class="powered-by">
+	<i class="fa fa-user-md"></i><span id="busuanzi_container_site_uv">
+	  本站访客数:<span id="busuanzi_value_site_uv"></span>
+	</span>
+</div>
+
+
+<div class="theme-info">
+
+  <span class="post-count">博客全站共253.1k字</span>
+</div>
+
+
+
+        
+<div class="busuanzi-count">
+  <script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+
+  
+</div>
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.2"></script>
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.2"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+    <script type="text/javascript">
+      (function(d, s) {
+        var j, e = d.getElementsByTagName(s)[0];
+        if (typeof LivereTower === 'function') { return; }
+        j = d.createElement(s);
+        j.src = 'https://cdn-city.livere.com/js/embed.dist.js';
+        j.async = true;
+        e.parentNode.insertBefore(j, e);
+      })(document, 'script');
+    </script>
+  
+
+
+
+
+
+
+  
+
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url);
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

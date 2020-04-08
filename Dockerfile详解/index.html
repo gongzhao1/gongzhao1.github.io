@@ -1,0 +1,1474 @@
+<!DOCTYPE html>
+
+
+
+
+<html class="theme-next muse" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.2" rel="stylesheet" type="text/css">
+
+
+  <meta name="keywords" content="docker,">
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="GZ" type="application/atom+xml">
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.2">
+
+
+
+
+
+
+<meta name="description" content="什么是DockerfileDocker 镜像是一个特殊的文件系统，除了提供容器运行时所需的程序、库、资源、配置等文件外，还包含了一些为运行时准备的一些配置参数（如匿名卷、环境变量、用户等）。镜像不包含任何动态数据，其内容在构建之后也不会被改变。 镜像的定制实际上就是定制每一层所添加的配置、文件。如果我们可以把每一层修改、安装、构建、操作的命令都写入一个脚本，用这个脚本来构建、定制镜像，那么之前提及">
+<meta name="keywords" content="docker">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Dockerfile详解">
+<meta property="og:url" content="https://gongzhao1.coding.me/Dockerfile详解/index.html">
+<meta property="og:site_name" content="GZ">
+<meta property="og:description" content="什么是DockerfileDocker 镜像是一个特殊的文件系统，除了提供容器运行时所需的程序、库、资源、配置等文件外，还包含了一些为运行时准备的一些配置参数（如匿名卷、环境变量、用户等）。镜像不包含任何动态数据，其内容在构建之后也不会被改变。 镜像的定制实际上就是定制每一层所添加的配置、文件。如果我们可以把每一层修改、安装、构建、操作的命令都写入一个脚本，用这个脚本来构建、定制镜像，那么之前提及">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="https://gongzhao-1256784911.cos.ap-shanghai.myqcloud.com/hexo/images/docker/docker01.png">
+<meta property="og:image" content="https://gongzhao-1256784911.cos.ap-shanghai.myqcloud.com/hexo/images/docker/docker02.png">
+<meta property="og:image" content="https://gongzhao-1256784911.cos.ap-shanghai.myqcloud.com/hexo/images/docker/docker03.png">
+<meta property="og:updated_time" content="2020-04-08T14:20:25.817Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Dockerfile详解">
+<meta name="twitter:description" content="什么是DockerfileDocker 镜像是一个特殊的文件系统，除了提供容器运行时所需的程序、库、资源、配置等文件外，还包含了一些为运行时准备的一些配置参数（如匿名卷、环境变量、用户等）。镜像不包含任何动态数据，其内容在构建之后也不会被改变。 镜像的定制实际上就是定制每一层所添加的配置、文件。如果我们可以把每一层修改、安装、构建、操作的命令都写入一个脚本，用这个脚本来构建、定制镜像，那么之前提及">
+<meta name="twitter:image" content="https://gongzhao-1256784911.cos.ap-shanghai.myqcloud.com/hexo/images/docker/docker01.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: false,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://gongzhao1.coding.me/Dockerfile详解/">
+
+
+
+
+
+  <title>Dockerfile详解 | GZ</title>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">GZ</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">痛苦是财富，这话是扯淡。少年，痛苦就是痛苦，对痛苦的思考才是财富</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br>
+            
+            关于
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br>
+            
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off" placeholder="搜索..." spellcheck="false" type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://gongzhao1.coding.me/Dockerfile详解/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="弓昭">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/uploads/panda.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="GZ">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Dockerfile详解</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-08-05T22:24:21+08:00">
+                2019-08-05
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/kubernetes/" itemprop="url" rel="index">
+                    <span itemprop="name">kubernetes</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+            <span class="post-meta-divider">|</span>
+            <span class="page-pv"><i class="fa fa-file-o"></i>
+            <span class="busuanzi-value" id="busuanzi_value_page_pv"></span>次阅读
+            </span>
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="什么是Dockerfile"><a href="#什么是Dockerfile" class="headerlink" title="什么是Dockerfile"></a>什么是Dockerfile</h1><p>Docker 镜像是一个特殊的文件系统，除了提供容器运行时所需的程序、库、资源、配置等文件外，还包含了一些为运行时准备的一些配置参数（如匿名卷、环境变量、用户等）。镜像不包含任何动态数据，其内容在构建之后也不会被改变。</p>
+<p>镜像的定制实际上就是定制每一层所添加的配置、文件。如果我们可以把每一层修改、安装、构建、操作的命令都写入一个脚本，用这个脚本来构建、定制镜像，那么之前提及的无法重复的问题、镜像构建透明性的问题、体积的问题就都会解决。这个脚本就是 Dockerfile。</p>
+<p>Dockerfile 是一个文本文件，其内包含了一条条的指令(Instruction)，每一条指令构建一层，因此每一条指令的内容，就是描述该层应当如何构建。有了 Dockerfile，当我们需要定制自己额外的需求时，只需在 Dockerfile 上添加或者修改指令，重新生成 image 即可，省去了敲命令的麻烦。</p>
+<p>例：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker build -f /path/to/a/Dockerfile</span><br></pre></td></tr></table></figure>
+
+<a id="more"></a>
+
+<h1 id="Dockerfile的基本结构"><a href="#Dockerfile的基本结构" class="headerlink" title="Dockerfile的基本结构"></a>Dockerfile的基本结构</h1><p>Dockerfile 一般分为四部分：基础镜像信息、维护者信息、镜像操作指令和容器启动时执行指令，’#’ 为 Dockerfile 中的注释。</p>
+<table>
+<thead>
+<tr>
+<th>四部分</th>
+<th>指令</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>基础镜像信息</td>
+<td>FROM</td>
+</tr>
+<tr>
+<td>维护者信息</td>
+<td>MAINTAINER</td>
+</tr>
+<tr>
+<td>镜像操作指令</td>
+<td>RUN、COPY、ADD、EXPOSE等</td>
+</tr>
+<tr>
+<td>容器启动时执行指令</td>
+<td>CMD、ENTRYPOINT</td>
+</tr>
+</tbody></table>
+<p>Dockerfile文件的第一条指令必须是FROM，其后可以是各种镜像的操作指令，最后是CMD或ENTRYPOINT指定容器启动时执行的命令。</p>
+<p>下面引用<a href="https://github.com/yeasy/docker_practice/blob/master/dockerfile/instructions.md" target="_blank" rel="noopener">yeasy/docker_practice</a>对Dockerfile中各个指令的介绍，</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br></pre></td><td class="code"><pre><span class="line">指令</span><br><span class="line">指令的一般格式为 INSTRUCTION arguments，指令包括 FROM、MAINTAINER、RUN 等。</span><br><span class="line"></span><br><span class="line">FROM</span><br><span class="line">格式为 FROM &lt;image&gt;或FROM &lt;image&gt;:&lt;tag&gt;。</span><br><span class="line">第一条指令必须为 FROM 指令。并且，如果在同一个Dockerfile中创建多个镜像时，可以使用多个 FROM 指令（每个镜像一次）。</span><br><span class="line"></span><br><span class="line">MAINTAINER</span><br><span class="line">格式为 MAINTAINER &lt;name&gt;，指定维护者信息。</span><br><span class="line"></span><br><span class="line">RUN</span><br><span class="line">格式为 RUN &lt;command&gt; 或 RUN [&quot;executable&quot;, &quot;param1&quot;, &quot;param2&quot;]。</span><br><span class="line">前者将在 shell 终端中运行命令，即 /bin/sh -c；后者则使用 exec 执行。指定使用其它终端可以通过第二种方式实现，例如 RUN [&quot;/bin/bash&quot;, &quot;-c&quot;, &quot;echo hello&quot;]。</span><br><span class="line">每条 RUN 指令将在当前镜像基础上执行指定命令，并提交为新的镜像。当命令较长时可以使用 \ 来换行。</span><br><span class="line"></span><br><span class="line">CMD</span><br><span class="line">支持三种格式</span><br><span class="line">    CMD [&quot;executable&quot;,&quot;param1&quot;,&quot;param2&quot;] 使用 exec 执行，推荐方式；</span><br><span class="line">    CMD command param1 param2 在 /bin/sh 中执行，提供给需要交互的应用；</span><br><span class="line">    CMD [&quot;param1&quot;,&quot;param2&quot;] 提供给 ENTRYPOINT 的默认参数；</span><br><span class="line">指定启动容器时执行的命令，每个 Dockerfile 只能有一条 CMD 命令。如果指定了多条命令，只有最后一条会被执行。</span><br><span class="line">如果用户启动容器时候指定了运行的命令，则会覆盖掉 CMD 指定的命令。</span><br><span class="line"></span><br><span class="line">EXPOSE</span><br><span class="line">格式为 EXPOSE &lt;port&gt; [&lt;port&gt;...]。</span><br><span class="line">告诉 Docker 服务端容器暴露的端口号，供互联系统使用。在启动容器时需要通过 -P，Docker 主机会自动分配一个端口转发到指定的端口。</span><br><span class="line"></span><br><span class="line">ENV</span><br><span class="line">格式为 ENV &lt;key&gt; &lt;value&gt;。 指定一个环境变量，会被后续 RUN 指令使用，并在容器运行时保持。</span><br><span class="line">例如</span><br><span class="line">ENV PG_MAJOR 9.3</span><br><span class="line">ENV PG_VERSION 9.3.4</span><br><span class="line">RUN curl -SL http://example.com/postgres-$PG_VERSION.tar.xz | tar -xJC /usr/src/postgress &amp;&amp; …</span><br><span class="line">ENV PATH /usr/local/postgres-$PG_MAJOR/bin:$PATH</span><br><span class="line"></span><br><span class="line">ADD</span><br><span class="line">格式为 ADD &lt;src&gt; &lt;dest&gt;。</span><br><span class="line">该命令将复制指定的 &lt;src&gt; 到容器中的 &lt;dest&gt;。 其中 &lt;src&gt; 可以是Dockerfile所在目录的一个相对路径；也可以是一个 URL；还可以是一个 tar 文件（自动解压为目录）。</span><br><span class="line"></span><br><span class="line">COPY</span><br><span class="line">格式为 COPY &lt;src&gt; &lt;dest&gt;。</span><br><span class="line">复制本地主机的 &lt;src&gt;（为 Dockerfile 所在目录的相对路径）到容器中的 &lt;dest&gt;。</span><br><span class="line">当使用本地目录为源目录时，推荐使用 COPY。</span><br><span class="line"></span><br><span class="line">ENTRYPOINT</span><br><span class="line">两种格式：</span><br><span class="line">    ENTRYPOINT [&quot;executable&quot;, &quot;param1&quot;, &quot;param2&quot;]</span><br><span class="line">    ENTRYPOINT command param1 param2（shell中执行）。</span><br><span class="line">配置容器启动后执行的命令，并且不可被 docker run 提供的参数覆盖。</span><br><span class="line">每个 Dockerfile 中只能有一个 ENTRYPOINT，当指定多个时，只有最后一个起效。</span><br><span class="line"></span><br><span class="line">VOLUME</span><br><span class="line">格式为 VOLUME [&quot;/data&quot;]。</span><br><span class="line">创建一个可以从本地主机或其他容器挂载的挂载点，一般用来存放数据库和需要保持的数据等。</span><br><span class="line"></span><br><span class="line">USER</span><br><span class="line">格式为 USER daemon。</span><br><span class="line">指定运行容器时的用户名或 UID，后续的 RUN 也会使用指定用户。</span><br><span class="line">当服务不需要管理员权限时，可以通过该命令指定运行用户。并且可以在之前创建所需要的用户，例如：RUN groupadd -r postgres &amp;&amp; useradd -r -g postgres postgres。要临时获取管理员权限可以使用 gosu，而不推荐 sudo。</span><br><span class="line"></span><br><span class="line">WORKDIR</span><br><span class="line">格式为 WORKDIR /path/to/workdir。</span><br><span class="line">为后续的 RUN、CMD、ENTRYPOINT 指令配置工作目录。</span><br><span class="line">可以使用多个 WORKDIR 指令，后续命令如果参数是相对路径，则会基于之前命令指定的路径。例如</span><br><span class="line">WORKDIR /a</span><br><span class="line">WORKDIR b</span><br><span class="line">WORKDIR c</span><br><span class="line">RUN pwd</span><br><span class="line">则最终路径为 /a/b/c。</span><br><span class="line"></span><br><span class="line">ONBUILD</span><br><span class="line">格式为 ONBUILD [INSTRUCTION]。</span><br><span class="line">配置当所创建的镜像作为其它新创建镜像的基础镜像时，所执行的操作指令。</span><br><span class="line">例如，Dockerfile 使用如下的内容创建了镜像 image-A。</span><br><span class="line">[...]</span><br><span class="line">ONBUILD ADD . /app/src</span><br><span class="line">ONBUILD RUN /usr/local/bin/python-build --dir /app/src</span><br><span class="line">[...]</span><br><span class="line">如果基于 image-A 创建新的镜像时，新的Dockerfile中使用 FROM image-A指定基础镜像时，会自动执行 ONBUILD 指令内容，等价于在后面添加了两条指令。</span><br><span class="line">FROM image-A #Automatically run the followingADD . /app/srcRUN /usr/local/bin/python-build --dir /app/src</span><br><span class="line">使用 ONBUILD 指令的镜像，推荐在标签中注明，例如 ruby:1.9-onbuild。</span><br></pre></td></tr></table></figure>
+
+<h1 id="Dockerfile文件说明"><a href="#Dockerfile文件说明" class="headerlink" title="Dockerfile文件说明"></a>Dockerfile文件说明</h1><p>Docker以从上到下的顺序运行Dockerfile的指令。为了指定基本映像，第一条指令必须是<em>FROM</em>。一个声明以<code>＃</code>字符开头则被视为注释。可以在Docker文件中使用<code>RUN</code>，<code>CMD</code>，<code>FROM</code>，<code>EXPOSE</code>，<code>ENV</code>等指令。</p>
+<p><strong>在这里列出了一些常用的指令。</strong></p>
+<p><strong>FROM：指定基础镜像，必须为第一个命令</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">格式：</span><br><span class="line">　　FROM &lt;image&gt;</span><br><span class="line">　　FROM &lt;image&gt;:&lt;tag&gt;</span><br><span class="line">　　FROM &lt;image&gt;@&lt;digest&gt;</span><br><span class="line">示例：</span><br><span class="line">　　FROM mysql:5.6</span><br><span class="line">注：</span><br><span class="line">　　tag或digest是可选的，如果不使用这两个值时，会使用latest版本的基础镜像</span><br></pre></td></tr></table></figure>
+
+<p><strong>MAINTAINER: 维护者信息</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">格式：</span><br><span class="line">    MAINTAINER &lt;name&gt;</span><br><span class="line">示例：</span><br><span class="line">    MAINTAINER Jasper Xu</span><br><span class="line">    MAINTAINER sorex@163.com</span><br><span class="line">    MAINTAINER Jasper Xu &lt;sorex@163.com&gt;</span><br></pre></td></tr></table></figure>
+
+<p><strong>RUN：构建镜像时执行的命令</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">RUN用于在镜像容器中执行命令，其有以下两种命令执行方式：</span><br><span class="line">shell执行</span><br><span class="line">格式：</span><br><span class="line">    RUN &lt;command&gt;</span><br><span class="line">exec执行</span><br><span class="line">格式：</span><br><span class="line">    RUN [&quot;executable&quot;, &quot;param1&quot;, &quot;param2&quot;]</span><br><span class="line">示例：</span><br><span class="line">    RUN [&quot;executable&quot;, &quot;param1&quot;, &quot;param2&quot;]</span><br><span class="line">    RUN apk update</span><br><span class="line">    RUN [&quot;/etc/execfile&quot;, &quot;arg1&quot;, &quot;arg1&quot;]</span><br><span class="line">注：</span><br><span class="line">　　RUN指令创建的中间镜像会被缓存，并会在下次构建中使用。如果不想使用这些缓存镜像，可以在构建时指定--no-cache参数，如：docker build --no-cache</span><br></pre></td></tr></table></figure>
+
+<p><strong>ADD：将本地文件添加到容器中，tar类型文件会自动解压(网络压缩资源不会被解压)，可以访问网络资源，类似wget</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">格式：</span><br><span class="line">    ADD &lt;src&gt;... &lt;dest&gt;</span><br><span class="line">    ADD [&quot;&lt;src&gt;&quot;,... &quot;&lt;dest&gt;&quot;] 用于支持包含空格的路径</span><br><span class="line">示例：</span><br><span class="line">    ADD hom* /mydir/          # 添加所有以&quot;hom&quot;开头的文件</span><br><span class="line">    ADD hom?.txt /mydir/      # ? 替代一个单字符,例如：&quot;home.txt&quot;</span><br><span class="line">    ADD test relativeDir/     # 添加 &quot;test&quot; 到 `WORKDIR`/relativeDir/</span><br><span class="line">    ADD test /absoluteDir/    # 添加 &quot;test&quot; 到 /absoluteDir/</span><br></pre></td></tr></table></figure>
+
+<p><strong>COPY：功能类似ADD，但是是不会自动解压文件，也不能访问网络资源</strong></p>
+<p><strong>CMD：构建容器后调用，也就是在容器启动时才进行调用。</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">格式：</span><br><span class="line">    CMD [&quot;executable&quot;,&quot;param1&quot;,&quot;param2&quot;] (执行可执行文件，优先)</span><br><span class="line">    CMD [&quot;param1&quot;,&quot;param2&quot;] (设置了ENTRYPOINT，则直接调用ENTRYPOINT添加参数)</span><br><span class="line">    CMD command param1 param2 (执行shell内部命令)</span><br><span class="line">示例：</span><br><span class="line">    CMD echo &quot;This is a test.&quot; | wc -</span><br><span class="line">    CMD [&quot;/usr/bin/wc&quot;,&quot;--help&quot;]</span><br><span class="line">注：</span><br><span class="line"> 　　CMD不同于RUN，CMD用于指定在容器启动时所要执行的命令，而RUN用于指定镜像构建时所要执行的命令。</span><br></pre></td></tr></table></figure>
+
+<p><strong>ENTRYPOINT：配置容器，使其可执行化。配合CMD可省去”application”，只使用参数。</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">格式：</span><br><span class="line">    ENTRYPOINT [&quot;executable&quot;, &quot;param1&quot;, &quot;param2&quot;] (可执行文件, 优先)</span><br><span class="line">    ENTRYPOINT command param1 param2 (shell内部命令)</span><br><span class="line">示例：</span><br><span class="line">    FROM ubuntu</span><br><span class="line">    ENTRYPOINT [&quot;top&quot;, &quot;-b&quot;]</span><br><span class="line">    CMD [&quot;-c&quot;]</span><br><span class="line">注：</span><br><span class="line">　　　ENTRYPOINT与CMD非常类似，不同的是通过docker run执行的命令不会覆盖ENTRYPOINT，而docker run命令中指定的任何参数，都会被当做参数再次传递给ENTRYPOINT。Dockerfile中只允许有一个ENTRYPOINT命令，多指定时会覆盖前面的设置，而只执行最后的ENTRYPOINT指令。</span><br></pre></td></tr></table></figure>
+
+<p><strong>LABEL：用于为镜像添加元数据</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">格式：</span><br><span class="line">    LABEL &lt;key&gt;=&lt;value&gt; &lt;key&gt;=&lt;value&gt; &lt;key&gt;=&lt;value&gt; ...</span><br><span class="line">示例：</span><br><span class="line">　　LABEL version=&quot;1.0&quot; description=&quot;这是一个Web服务器&quot; by=&quot;IT笔录&quot;</span><br><span class="line">注：</span><br><span class="line">　　使用LABEL指定元数据时，一条LABEL指定可以指定一或多条元数据，指定多条元数据时不同元数据之间通过空格分隔。推荐将所有的元数据通过一条LABEL指令指定，以免生成过多的中间镜像。</span><br></pre></td></tr></table></figure>
+
+<p><strong>ENV：设置环境变量</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">格式：</span><br><span class="line">    ENV &lt;key&gt; &lt;value&gt;  #&lt;key&gt;之后的所有内容均会被视为其&lt;value&gt;的组成部分，因此，一次只能设置一个变量</span><br><span class="line">    ENV &lt;key&gt;=&lt;value&gt; ...  #可以设置多个变量，每个变量为一个&quot;&lt;key&gt;=&lt;value&gt;&quot;的键值对，如果&lt;key&gt;中包含空格，可以使用\来进行转义，也可以通过&quot;&quot;来进行标示；另外，反斜线也可以用于续行</span><br><span class="line">示例：</span><br><span class="line">    ENV myName John Doe</span><br><span class="line">    ENV myDog Rex The Dog</span><br><span class="line">    ENV myCat=fluffy</span><br></pre></td></tr></table></figure>
+
+<p><strong>EXPOSE：指定于外界交互的端口</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">格式：</span><br><span class="line">    EXPOSE &lt;port&gt; [&lt;port&gt;...]</span><br><span class="line">示例：</span><br><span class="line">    EXPOSE 80 443</span><br><span class="line">    EXPOSE 8080</span><br><span class="line">    EXPOSE 11211/tcp 11211/udp</span><br><span class="line">注：</span><br><span class="line">　　EXPOSE并不会让容器的端口访问到主机。要使其可访问，需要在docker run运行容器时通过-p来发布这些端口，或通过-P参数来发布EXPOSE导出的所有端口</span><br></pre></td></tr></table></figure>
+
+<p><strong>VOLUME：用于指定持久化目录</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">格式：</span><br><span class="line">    VOLUME [&quot;/path/to/dir&quot;]</span><br><span class="line">示例：</span><br><span class="line">    VOLUME [&quot;/data&quot;]</span><br><span class="line">    VOLUME [&quot;/var/www&quot;, &quot;/var/log/apache2&quot;, &quot;/etc/apache2&quot;]</span><br><span class="line">注：</span><br><span class="line">　　一个卷可以存在于一个或多个容器的指定目录，该目录可以绕过联合文件系统，并具有以下功能：</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">1 卷可以容器间共享和重用</span><br><span class="line">2 容器并不一定要和其它容器共享卷</span><br><span class="line">3 修改卷后会立即生效</span><br><span class="line">4 对卷的修改不会对镜像产生影响</span><br><span class="line">5 卷会一直存在，直到没有任何容器在使用它</span><br></pre></td></tr></table></figure>
+
+<p><strong>WORKDIR：工作目录，类似于cd命令</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">格式：</span><br><span class="line">    WORKDIR /path/to/workdir</span><br><span class="line">示例：</span><br><span class="line">    WORKDIR /a  (这时工作目录为/a)</span><br><span class="line">    WORKDIR b  (这时工作目录为/a/b)</span><br><span class="line">    WORKDIR c  (这时工作目录为/a/b/c)</span><br><span class="line">注：</span><br><span class="line">　　通过WORKDIR设置工作目录后，Dockerfile中其后的命令RUN、CMD、ENTRYPOINT、ADD、COPY等命令都会在该目录下执行。在使用docker run运行容器时，可以通过-w参数覆盖构建时所设置的工作目录。</span><br></pre></td></tr></table></figure>
+
+<p><strong>USER:</strong>指定运行容器时的用户名或 UID，后续的 RUN 也会使用指定用户。使用USER指定用户时，可以使用用户名、UID或GID，或是两者的组合。当服务不需要管理员权限时，可以通过该命令指定运行用户。并且可以在之前创建所需要的用户</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">格式:</span><br><span class="line">　　USER user</span><br><span class="line">　　USER user:group</span><br><span class="line">　　USER uid</span><br><span class="line">　　USER uid:gid</span><br><span class="line">　　USER user:gid</span><br><span class="line">　　USER uid:group</span><br><span class="line"> 示例：</span><br><span class="line">    　　USER www</span><br><span class="line"> 注：</span><br><span class="line">　　使用USER指定用户后，Dockerfile中其后的命令RUN、CMD、ENTRYPOINT都将使用该用户。镜像构建完成后，通过docker run运行容器时，可以通过-u参数来覆盖所指定的用户。</span><br></pre></td></tr></table></figure>
+
+<p><strong>ARG：用于指定传递给构建运行时的变量</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">格式：</span><br><span class="line">    ARG &lt;name&gt;[=&lt;default value&gt;]</span><br><span class="line">示例：</span><br><span class="line">    ARG site</span><br><span class="line">    ARG build_user=www</span><br></pre></td></tr></table></figure>
+
+<p><strong>ONBUILD：用于设置镜像触发器</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">格式：</span><br><span class="line">　　ONBUILD [INSTRUCTION]</span><br><span class="line">示例：</span><br><span class="line">　　ONBUILD ADD . /app/src</span><br><span class="line">　　ONBUILD RUN /usr/local/bin/python-build --dir /app/src</span><br><span class="line">注：</span><br><span class="line">　　当所构建的镜像被用做其它镜像的基础镜像，该镜像中的触发器将会被钥触发</span><br></pre></td></tr></table></figure>
+
+<p><strong>以下是一个小例子：</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"># This my first nginx Dockerfile</span><br><span class="line"># Version 1.0</span><br><span class="line"></span><br><span class="line"># Base images 基础镜像</span><br><span class="line">FROM centos</span><br><span class="line"></span><br><span class="line">#MAINTAINER 维护者信息</span><br><span class="line">MAINTAINER tianfeiyu </span><br><span class="line"></span><br><span class="line">#ENV 设置环境变量</span><br><span class="line">ENV PATH /usr/local/nginx/sbin:$PATH</span><br><span class="line"></span><br><span class="line">#ADD  文件放在当前目录下，拷过去会自动解压</span><br><span class="line">ADD nginx-1.8.0.tar.gz /usr/local/  </span><br><span class="line">ADD epel-release-latest-7.noarch.rpm /usr/local/  </span><br><span class="line"></span><br><span class="line">#RUN 执行以下命令 </span><br><span class="line">RUN rpm -ivh /usr/local/epel-release-latest-7.noarch.rpm</span><br><span class="line">RUN yum install -y wget lftp gcc gcc-c++ make openssl-devel pcre-devel pcre &amp;&amp; yum clean all</span><br><span class="line">RUN useradd -s /sbin/nologin -M www</span><br><span class="line"></span><br><span class="line">#WORKDIR 相当于cd</span><br><span class="line">WORKDIR /usr/local/nginx-1.8.0 </span><br><span class="line"></span><br><span class="line">RUN ./configure --prefix=/usr/local/nginx --user=www --group=www --with-http_ssl_module --with-pcre &amp;&amp; make &amp;&amp; make install</span><br><span class="line"></span><br><span class="line">RUN echo &quot;daemon off;&quot; &gt;&gt; /etc/nginx.conf</span><br><span class="line"></span><br><span class="line">#EXPOSE 映射端口</span><br><span class="line">EXPOSE 80</span><br><span class="line"></span><br><span class="line">#CMD 运行以下命令</span><br><span class="line">CMD [&quot;nginx&quot;]</span><br></pre></td></tr></table></figure>
+
+<p><strong>最后用一张图解释常用指令的意义</strong></p>
+<p><img src="https://gongzhao-1256784911.cos.ap-shanghai.myqcloud.com/hexo/images/docker/docker01.png" alt="image"></p>
+<h1 id="常见问题"><a href="#常见问题" class="headerlink" title="常见问题"></a>常见问题</h1><h2 id="ADD-VS-COPY"><a href="#ADD-VS-COPY" class="headerlink" title="ADD VS COPY"></a>ADD VS COPY</h2><p>从Dockerfile构建Docker镜像时，您可以选择两个指令将目录/文件添加到镜像：ADD和COPY。两条指令都遵循相同的基本形式，并完成了几乎相同的事情：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">ADD &lt;src&gt;... &lt;dest&gt;</span><br><span class="line">COPY &lt;src&gt;... &lt;dest&gt;</span><br></pre></td></tr></table></figure>
+
+<p><strong>ADD</strong></p>
+<p>与COPY指令不同的是，ADD从一开始就是Docker的一部分，除了从构建上下文中复制文件之外，还支持一些其他技巧。</p>
+<p>ADD指令允许您使用URL作为参数。提供URL时，将从URL下载文件并将其复制到。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">ADD http://foo.com/bar.go /tmp/main.go</span><br><span class="line">复制代码</span><br></pre></td></tr></table></figure>
+
+<p>上面的文件将从指定的URL下载并添加到容器的文件系统/tmp/main.go中。另一种形式可以让你简单地为下载的文件指定目标目录：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">ADD http://foo.com/bar.go /tmp/</span><br><span class="line">复制代码</span><br></pre></td></tr></table></figure>
+
+<p>由于参数以尾部”/“结尾，因此Docker会从URL中推断出文件名并将其添加到指定的目录中。在这种情况下，一个名为/tmp/bar.go的文件将被添加到容器的文件系统中。</p>
+<p>ADD的另一个功能是能够自动解压缩压缩文件。如果参数是一个识别压缩格式（tar，gzip，bzip2等）的本地文件，那么它将被解压到容器文件系统中的指定处。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">ADD /foo.tar.gz /tmp/</span><br><span class="line">复制代码</span><br></pre></td></tr></table></figure>
+
+<p>上面的命令会导致foo.tar.gz归档文件的内容被解压到容器的/ tmp目录中。 有趣的是，URL下载和解压功能不能一起使用。任何通过URL复制的压缩文件都不会自动解压缩。</p>
+<p><strong>COPY</strong></p>
+<p>当版本1.0的Docker发布时，包含了新的COPY指令。与ADD不同的是，COPY直接将文件和文件夹从构建上下文复制到容器中。</p>
+<p>COPY不支持URL作为参数，因此它不能用于从远程位置下载文件。任何想要复制到容器中的东西都必须存在于本地构建上下文中。</p>
+<p>另外，COPY对压缩文件没有特别的处理。如果您复制归档文件，它将完全按照出现在构建上下文中的方式落入容器中，而不会尝试解压缩它。</p>
+<p>COPY实际上只是ADD的精简版本，旨在满足大部分“复制文件到容器”的使用案例而没有任何副作用。</p>
+<p><strong>使用哪个？</strong></p>
+<p>如果现在还不明显，Docker团队的建议是在几乎所有情况下都使用COPY。</p>
+<p>真的，使用ADD的唯一原因是当你有一个压缩文件，你一定想自动解压到镜像中。理想情况下，ADD将被重新命名为EXTRACT之类的内容，以真正将这一点引入Docker生态（同样，出于向后兼容的原因，这不太可能发生）。 好的，但是从远程URL获取软件包的方法不是仍然有用吗？技术上，是的，但在大多数情况下，您可能会更好地运行curl或wget。考虑下面的例子：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">ADD http://foo.com/package.tar.bz2 /tmp/</span><br><span class="line">RUN tar -xjf /tmp/package.tar.bz2 \</span><br><span class="line">  &amp;&amp; make -C /tmp/package \</span><br><span class="line">  &amp;&amp; rm /tmp/package.tar.bz2</span><br><span class="line">复制代码</span><br></pre></td></tr></table></figure>
+
+<p>这里我们有一条ADD指令，它从一个URL中检索一个包，然后是一条RUN指令，它将它解包，构建它，然后尝试清理下载的存档。</p>
+<p>不幸的是，由于软件包检索和rm命令在单独的镜像层中，我们实际上并没有在最终镜像中节省任何空间（有关此现象的更详细的解释，请参阅我的<a href="https://link.juejin.im/?target=https%3A%2F%2Fwww.ctl.io%2Fdevelopers%2Fblog%2Fpost%2Foptimizing-docker-images%2F" target="_blank" rel="noopener">优化docker镜像</a>文章）。</p>
+<p>在这种情况下,你最好像下面这样做：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">RUN curl http://foo.com/package.tar.bz2 \</span><br><span class="line">  | tar -xjC /tmp/package \</span><br><span class="line">  &amp;&amp; make -C /tmp/package</span><br><span class="line"></span><br><span class="line">复制代码</span><br></pre></td></tr></table></figure>
+
+<p>这里我们使用curl命令下载压缩包，然后通过管道传递给tar命令解压。这样我们就不会在我们需要清理的文件系统上留下压缩文件。</p>
+<p>将远程文件添加到镜像中可能仍有正当理由，但这应该是明确的决定，而不是您的默认选择。</p>
+<p>最终，规则是这样的：使用COPY（除非你确定你需要ADD）。</p>
+<h1 id="CMD-VS-ENTRYPOINT"><a href="#CMD-VS-ENTRYPOINT" class="headerlink" title="CMD VS ENTRYPOINT"></a>CMD VS ENTRYPOINT</h1><blockquote>
+<p>参考：<a href="https://www.cnblogs.com/rainwang/p/7274254.html" target="_blank" rel="noopener">https://www.cnblogs.com/rainwang/p/7274254.html</a></p>
+</blockquote>
+<p>CMD指令和ENTRYPOINT指令的作用都是为镜像指定容器启动后的命令，那么它们两者之间有什么各自的优点呢？</p>
+<p>为了更好地对比CMD指令和ENTRYPOINT指令的差异，我们这里再列一下这两个指令的说明，</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">CMD</span><br><span class="line">支持三种格式</span><br><span class="line">    CMD [&quot;executable&quot;,&quot;param1&quot;,&quot;param2&quot;] 使用 exec 执行，推荐方式；</span><br><span class="line">    CMD command param1 param2 在 /bin/sh 中执行，提供给需要交互的应用；</span><br><span class="line">    CMD [&quot;param1&quot;,&quot;param2&quot;] 提供给 ENTRYPOINT 的默认参数；</span><br><span class="line">指定启动容器时执行的命令，每个 Dockerfile 只能有一条 CMD 命令。如果指定了多条命令，只有最后一条会被执行。</span><br><span class="line">如果用户启动容器时候指定了运行的命令，则会覆盖掉 CMD 指定的命令。</span><br><span class="line"></span><br><span class="line">ENTRYPOINT</span><br><span class="line">两种格式：</span><br><span class="line">    ENTRYPOINT [&quot;executable&quot;, &quot;param1&quot;, &quot;param2&quot;]</span><br><span class="line">    ENTRYPOINT command param1 param2（shell中执行）。</span><br><span class="line">配置容器启动后执行的命令，并且不可被 docker run 提供的参数覆盖。</span><br><span class="line">每个 Dockerfile 中只能有一个 ENTRYPOINT，当指定多个时，只有最后一个起效。</span><br></pre></td></tr></table></figure>
+
+<p>从上面的说明，我们可以看到有两个共同点：</p>
+<ul>
+<li>都可以指定shell或exec函数调用的方式执行命令</li>
+<li>当存在多个CMD指令或ENTRYPOINT指令时，只有最后一个生效</li>
+</ul>
+<p>而它们有如下差异：</p>
+<ul>
+<li>差异1：CMD指令指定的容器启动时命令可以被docker run指定的命令覆盖，而ENTRYPOINT指令指定的命令不能被覆盖，而是将docker run指定的参数当做ENTRYPOINT指定命令的参数</li>
+<li>差异2：CMD指令可以为ENTRYPOINT指令设置默认参数，而且可以被docker run指定的参数覆盖</li>
+</ul>
+<h1 id="编写高效的Dockerfile"><a href="#编写高效的Dockerfile" class="headerlink" title="编写高效的Dockerfile"></a>编写高效的Dockerfile</h1><p>下面是一个常见企业门户网站架构，由一个Web Server和一个数据库组成，Web Server提供web服务，数据库保存用户数据。通常情况下，这样一个门户网站安装在一台服务器上。</p>
+<p><img src="https://gongzhao-1256784911.cos.ap-shanghai.myqcloud.com/hexo/images/docker/docker02.png" alt="image"></p>
+<p>如果把应用运行在一个Docker容器中，那么很可能写出下面这样的Dockerfile来。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">FROM ubuntu</span><br><span class="line"></span><br><span class="line">ADD . /app</span><br><span class="line"></span><br><span class="line">RUN apt-get update  </span><br><span class="line">RUN apt-get upgrade -y  </span><br><span class="line">RUN apt-get install -y nodejs ssh mysql  </span><br><span class="line">RUN cd /app &amp;&amp; npm install</span><br><span class="line"></span><br><span class="line"># this should start three processes, mysql and ssh</span><br><span class="line"># in the background and node app in foreground</span><br><span class="line"># isn&apos;t it beautifully terrible? &lt;3</span><br><span class="line">CMD mysql &amp; sshd &amp; npm start</span><br></pre></td></tr></table></figure>
+
+<p>当然这样Dockerfile有很多问题，这里CMD命令是错误的，只是为了说明问题而写。</p>
+<p>下面的内容中将展示对这个Dockerfile进行改造，说明如何写出更好的Dockerfile，共有如下几种处理方法。</p>
+<h2 id="一个容器只运行一个进程"><a href="#一个容器只运行一个进程" class="headerlink" title="一个容器只运行一个进程"></a>一个容器只运行一个进程</h2><p>从技术角度讲，Docker容器中可以运行多个进程，您可以将数据库，前端，后端，ssh等都运行在同一个Docker容器中。但是，这样跟未使用容器前没有太大区别，且这样容器的构建时间非常长（一处修改就要构建全部）、镜像体积大、横向扩展时非常浪费资源（不同的应用需要运行的容器数并不相同）。</p>
+<p>通常所说的容器化改造是对应用整体微服务架构改造，再容器化，这样做可以带来如下好处。</p>
+<ul>
+<li>单独扩展：拆分为微服务后，可单独增加或缩减每个微服务的实例数量。</li>
+<li>提升开发速度：各微服务之间解耦，某个微服务的代码开发不影响其他微服务。</li>
+<li>通过隔离确保安全：整体应用中，若存在安全漏洞，会获得所有功能的权限。微服务架构中，若攻击了某个服务，只可获得该服务的访问权限，无法入侵其他服务。</li>
+<li>隔离崩溃：如果其中一个微服务崩溃，其它微服务还可以持续正常运行。</li>
+</ul>
+<p>如前面的示例可以改造成下面架构，Web应用和MySQL运行在不同容器中。</p>
+<p><img src="https://gongzhao-1256784911.cos.ap-shanghai.myqcloud.com/hexo/images/docker/docker03.png" alt="image"></p>
+<p>MySQL运行在单独的镜像中，下面的示例中删掉了MySQL，只安装node.js。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">FROM ubuntu</span><br><span class="line"></span><br><span class="line">ADD . /app</span><br><span class="line"></span><br><span class="line">RUN apt-get update  </span><br><span class="line">RUN apt-get upgrade -y</span><br><span class="line"></span><br><span class="line">RUN apt-get install -y nodejs </span><br><span class="line">RUN cd /app &amp;&amp; npm install</span><br><span class="line"></span><br><span class="line">CMD npm start</span><br></pre></td></tr></table></figure>
+
+<h2 id="不要在构建中升级版本"><a href="#不要在构建中升级版本" class="headerlink" title="不要在构建中升级版本"></a>不要在构建中升级版本</h2><p>为了降低复杂性、减少依赖、减小文件大小、节约构建时间，你应该避免安装任何不必要的包。例如，不要在数据库镜像中包含一个文本编辑器。</p>
+<p>apt-get upgrade会使得镜像构建非常不确定，在构建时不确定哪些包会被安装，此时可能会产生不一致的镜像。</p>
+<p>如果基础镜像中的某个包过时了，你应该联系它的维护者。如果你确定某个特定的包，比如 foo，需要升级，使用 apt-get install -y foo 就行，该指令会自动升级foo包。</p>
+<p>删掉apt-get upgrade后，Dockerfile如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">FROM ubuntu</span><br><span class="line"></span><br><span class="line">ADD . /app</span><br><span class="line"></span><br><span class="line">RUN apt-get update</span><br><span class="line"></span><br><span class="line">RUN apt-get install -y nodejs</span><br><span class="line">RUN cd /app &amp;&amp; npm install</span><br><span class="line"></span><br><span class="line">CMD npm start</span><br></pre></td></tr></table></figure>
+
+<h2 id="将变化频率一样的RUN指令合一"><a href="#将变化频率一样的RUN指令合一" class="headerlink" title="将变化频率一样的RUN指令合一"></a>将变化频率一样的RUN指令合一</h2><p>Docker镜像是分层的，类似于洋葱，它们都有很多层，为了修改内层，则需要将外面的层都删掉。Docker镜像有如下特性：</p>
+<ul>
+<li>Dockerfile中的每个指令都会创建一个新的镜像层。</li>
+<li>镜像层将被缓存和复用。</li>
+<li>Dockerfile修改后，复制的文件变化了或者构建镜像时指定的变量不同了，对应的镜像层缓存就会失效。</li>
+<li>某一层的镜像缓存失效之后，它之后的镜像层缓存都会失效。</li>
+<li>镜像层是不可变的，如果我们再某一层中添加一个文件，然后在下一层中删除它，则镜像中依然会包含该文件，只是这个文件在Docker容器中不可见。</li>
+</ul>
+<p>将变化频率一样的指令合并在一起，目的是为了更好的将镜像分层，避免带来不必要的成本。如本例中将node.js安装与npm模块安装放在一起的话，则每次修改源代码，都需要重新安装node.js，这显然不合适。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">FROM ubuntu</span><br><span class="line"></span><br><span class="line">ADD . /app</span><br><span class="line"></span><br><span class="line">RUN apt-get update \  </span><br><span class="line">    &amp;&amp; apt-get install -y nodejs \</span><br><span class="line">    &amp;&amp; cd /app \</span><br><span class="line">    &amp;&amp; npm install</span><br><span class="line"></span><br><span class="line">CMD npm start</span><br></pre></td></tr></table></figure>
+
+<p>因此，正确的写法是这样的:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">FROM ubuntu</span><br><span class="line"></span><br><span class="line">RUN apt-get update &amp;&amp; apt-get install -y nodejs  </span><br><span class="line">ADD . /app</span><br><span class="line">RUN cd /app &amp;&amp; npm install</span><br><span class="line"></span><br><span class="line">CMD npm start</span><br></pre></td></tr></table></figure>
+
+<h2 id="使用特定的标签"><a href="#使用特定的标签" class="headerlink" title="使用特定的标签"></a>使用特定的标签</h2><p>当镜像没有指定标签时，将默认使用latest 标签。因此， FROM ubuntu 指令等同于FROM ubuntu:latest。当镜像更新时，latest标签会指向不同的镜像，这时构建镜像有可能失败。</p>
+<p>如下示例中使用16.04作为标签。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">FROM ubuntu:16.04</span><br><span class="line"></span><br><span class="line">RUN apt-get update &amp;&amp; apt-get install -y nodejs  </span><br><span class="line">ADD . /app  </span><br><span class="line">RUN cd /app &amp;&amp; npm install</span><br><span class="line"></span><br><span class="line">CMD npm start</span><br></pre></td></tr></table></figure>
+
+<h2 id="删除多余文件"><a href="#删除多余文件" class="headerlink" title="删除多余文件"></a>删除多余文件</h2><p>假设我们更新了apt-get源，下载解压并安装了一些软件包，它们都保存在/var/lib/apt/lists/目录中。</p>
+<p>但是，运行应用时Docker镜像中并不需要这些文件。因此最好将它们删除，因为它会使Docker镜像变大。</p>
+<p>示例Dockerfile中，删除/var/lib/apt/lists/目录中的文件。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">FROM ubuntu:16.04</span><br><span class="line"></span><br><span class="line">RUN apt-get update \  </span><br><span class="line">    &amp;&amp; apt-get install -y nodejs \</span><br><span class="line">    &amp;&amp; rm -rf /var/lib/apt/lists/*</span><br><span class="line"></span><br><span class="line">ADD . /app  </span><br><span class="line">RUN cd /app &amp;&amp; npm install</span><br><span class="line"></span><br><span class="line">CMD npm start</span><br></pre></td></tr></table></figure>
+
+<h2 id="选择合适的基础镜像"><a href="#选择合适的基础镜像" class="headerlink" title="选择合适的基础镜像"></a>选择合适的基础镜像</h2><p>在示例中，我们选择了ubuntu作为基础镜像。但是我们只需要运行node程序，没有必要使用一个通用的基础镜像，node镜像应该是更好的选择。</p>
+<p>更好的选择是alpine版本的node镜像。alpine是一个极小化的Linux发行版，只有4MB，这让它非常适合作为基础镜像。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">FROM node:7-alpine</span><br><span class="line"></span><br><span class="line">ADD . /app  </span><br><span class="line">RUN cd /app &amp;&amp; npm install</span><br><span class="line"></span><br><span class="line">CMD npm start</span><br></pre></td></tr></table></figure>
+
+<h2 id="设置WORKDIR和-CMD"><a href="#设置WORKDIR和-CMD" class="headerlink" title="设置WORKDIR和 CMD"></a>设置WORKDIR和 CMD</h2><p>WORKDIR指令可以设置默认目录，也就是运行RUN / CMD / ENTRYPOINT指令的地方。</p>
+<p>CMD指令可以设置容器创建时执行的默认命令。另外，您应该将命令写在一个数组中，数组中每个元素为命令的每个单词。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">FROM node:7-alpine</span><br><span class="line"></span><br><span class="line">WORKDIR /app  </span><br><span class="line">ADD . /app  </span><br><span class="line">RUN npm install</span><br><span class="line"></span><br><span class="line">CMD [&quot;npm&quot;, &quot;start&quot;]</span><br></pre></td></tr></table></figure>
+
+<h2 id="使用ENTRYPOINT-可选"><a href="#使用ENTRYPOINT-可选" class="headerlink" title="使用ENTRYPOINT (可选)"></a>使用ENTRYPOINT (可选)</h2><p>ENTRYPOINT指令并不是必须的，因为它会增加复杂度。ENTRYPOINT是一个脚本，它会默认执行，并且将指定的命令作为其参数。它通常用于构建可执行的Docker镜像。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">FROM node:7-alpine</span><br><span class="line"></span><br><span class="line">WORKDIR /app  </span><br><span class="line">ADD . /app  </span><br><span class="line">RUN npm install</span><br><span class="line"></span><br><span class="line">ENTRYPOINT [&quot;./entrypoint.sh&quot;]  </span><br><span class="line">CMD [&quot;start&quot;]</span><br></pre></td></tr></table></figure>
+
+<h2 id="在entrypoint脚本中使用exec"><a href="#在entrypoint脚本中使用exec" class="headerlink" title="在entrypoint脚本中使用exec"></a>在entrypoint脚本中使用exec</h2><p>在前文的entrypoint脚本中，我使用了exec命令运行node应用。不使用exec的话，我们则不能顺利地关闭容器，因为SIGTERM信号会被bash脚本进程吞没。exec命令启动的进程可以取代脚本进程，因此所有的信号都会正常工作。</p>
+<h2 id="优先使用COPY"><a href="#优先使用COPY" class="headerlink" title="优先使用COPY"></a>优先使用COPY</h2><p>COPY指令非常简单，仅用于将文件拷贝到镜像中。ADD相对来讲复杂一些，可以用于下载远程文件以及解压压缩包。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">FROM node:7-alpine</span><br><span class="line"></span><br><span class="line">WORKDIR /app</span><br><span class="line"></span><br><span class="line">COPY . /app</span><br><span class="line">RUN npm install</span><br><span class="line"></span><br><span class="line">ENTRYPOINT [&quot;./entrypoint.sh&quot;]  </span><br><span class="line">CMD [&quot;start&quot;]</span><br></pre></td></tr></table></figure>
+
+<h2 id="合理调整COPY与RUN的顺序"><a href="#合理调整COPY与RUN的顺序" class="headerlink" title="合理调整COPY与RUN的顺序"></a>合理调整COPY与RUN的顺序</h2><p>将变化最少的部分放在Dockerfile的前面，这样可以充分利用镜像缓存。</p>
+<p>示例中，源代码会经常变化，则每次构建镜像时都需要重新安装NPM模块，这显然不是我们希望看到的。因此我们可以先拷贝package.json，然后安装NPM模块，最后才拷贝其余的源代码。这样的话，即使源代码变化，也不需要重新安装NPM模块。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">FROM node:7-alpine</span><br><span class="line"></span><br><span class="line">WORKDIR /app</span><br><span class="line"></span><br><span class="line">COPY package.json /app  </span><br><span class="line">RUN npm install  </span><br><span class="line">COPY . /app</span><br><span class="line"></span><br><span class="line">ENTRYPOINT [&quot;./entrypoint.sh&quot;]  </span><br><span class="line">CMD [&quot;start&quot;]</span><br></pre></td></tr></table></figure>
+
+<h2 id="设置默认的环境变量，映射端口和数据卷"><a href="#设置默认的环境变量，映射端口和数据卷" class="headerlink" title="设置默认的环境变量，映射端口和数据卷"></a>设置默认的环境变量，映射端口和数据卷</h2><p>运行Docker容器时很可能需要一些环境变量。在Dockerfile设置默认的环境变量是一种很好的方式。另外，我们应该在Dockerfile中设置映射端口和数据卷。示例如下:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">FROM node:7-alpine</span><br><span class="line"></span><br><span class="line">ENV PROJECT_DIR=/app</span><br><span class="line"></span><br><span class="line">WORKDIR $PROJECT_DIR</span><br><span class="line"></span><br><span class="line">COPY package.json $PROJECT_DIR  </span><br><span class="line">RUN npm install  </span><br><span class="line">COPY . $PROJECT_DIR</span><br><span class="line"></span><br><span class="line">ENTRYPOINT [&quot;./entrypoint.sh&quot;]  </span><br><span class="line">CMD [&quot;start&quot;]</span><br></pre></td></tr></table></figure>
+
+<p>ENV指令指定的环境变量在容器中可以使用。如果你只是需要指定构建镜像时的变量，你可以使用ARG指令。</p>
+<h2 id="使用EXPOSE暴露端口"><a href="#使用EXPOSE暴露端口" class="headerlink" title="使用EXPOSE暴露端口"></a>使用EXPOSE暴露端口</h2><p>EXPOSE指令用于指定容器将要监听的端口。因此，你应该为你的应用程序使用常见的端口。例如，提供Apache web服务的镜像应该使用EXPOSE 80，而提供MongoDB服务的镜像使用EXPOSE 27017。</p>
+<p>对于外部访问，用户可以在执行 docker run 时使用一个标志来指示如何将指定的端口映射到所选择的端口。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">FROM node:7-alpine</span><br><span class="line"></span><br><span class="line">ENV PROJECT_DIR=/app</span><br><span class="line"></span><br><span class="line">WORKDIR $PROJECT_DIR</span><br><span class="line"></span><br><span class="line">COPY package.json $PROJECT_DIR  </span><br><span class="line">RUN npm install  </span><br><span class="line">COPY . $PROJECT_DIR</span><br><span class="line"></span><br><span class="line">ENV APP_PORT=3000</span><br><span class="line">EXPOSE $APP_PORT</span><br><span class="line"></span><br><span class="line">ENTRYPOINT [&quot;./entrypoint.sh&quot;]  </span><br><span class="line">CMD [&quot;start&quot;]</span><br></pre></td></tr></table></figure>
+
+<h2 id="使用VOLUME管理数据卷"><a href="#使用VOLUME管理数据卷" class="headerlink" title="使用VOLUME管理数据卷"></a>使用VOLUME管理数据卷</h2><p>VOLUME 指令用于暴露任何数据库存储文件，配置文件，或容器创建的文件和目录。强烈建议使用 VOLUME来管理镜像中的可变部分和用户可以改变的部分。</p>
+<p>下面示例中填写一个媒体目录。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">FROM node:7-alpine</span><br><span class="line"></span><br><span class="line">ENV PROJECT_DIR=/app</span><br><span class="line"></span><br><span class="line">WORKDIR $PROJECT_DIR</span><br><span class="line"></span><br><span class="line">COPY package.json $PROJECT_DIR  </span><br><span class="line">RUN npm install  </span><br><span class="line">COPY . $PROJECT_DIR</span><br><span class="line"></span><br><span class="line">ENV MEDIA_DIR=/media \  </span><br><span class="line">    APP_PORT=3000</span><br><span class="line"></span><br><span class="line">VOLUME $MEDIA_DIR  </span><br><span class="line">EXPOSE $APP_PORT</span><br><span class="line"></span><br><span class="line">ENTRYPOINT [&quot;./entrypoint.sh&quot;]  </span><br><span class="line">CMD [&quot;start&quot;]</span><br></pre></td></tr></table></figure>
+
+<h2 id="使用LABEL设置镜像元数据"><a href="#使用LABEL设置镜像元数据" class="headerlink" title="使用LABEL设置镜像元数据"></a>使用LABEL设置镜像元数据</h2><p>你可以给镜像添加标签来帮助组织镜像、记录许可信息、辅助自动化构建等。每个标签一行，由 LABEL 开头加上一个或多个标签对。</p>
+<p>如果你的字符串中包含空格，必须将字符串放入引号中或者对空格使用转义。如果字符串内容本身就包含引号，必须对引号使用转义。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">FROM node:7-alpine  </span><br><span class="line">LABEL com.example.version=&quot;0.0.1-beta&quot;</span><br></pre></td></tr></table></figure>
+
+<h2 id="添加HEALTHCHECK"><a href="#添加HEALTHCHECK" class="headerlink" title="添加HEALTHCHECK"></a>添加HEALTHCHECK</h2><p>运行容器时，可以指定–restart always选项。这样的话，容器崩溃时，docker daemon会重启容器。对于需要长时间运行的容器，这个选项非常有用。但是，如果容器的确在运行，但是不可用怎么办？使用HEALTHCHECK指令可以让Docker周期性的检查容器的健康状况。我们只需要指定一个命令，如果一切正常的话返回0，否则返回1。当请求失败时，curl –fail 命令返回非0状态。示例如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">FROM node:7-alpine  </span><br><span class="line">LABEL com.example.version=&quot;0.0.1-beta&quot;</span><br><span class="line"></span><br><span class="line">ENV PROJECT_DIR=/app  </span><br><span class="line">WORKDIR $PROJECT_DIR</span><br><span class="line"></span><br><span class="line">COPY package.json $PROJECT_DIR  </span><br><span class="line">RUN npm install  </span><br><span class="line">COPY . $PROJECT_DIR</span><br><span class="line"></span><br><span class="line">ENV MEDIA_DIR=/media \  </span><br><span class="line">    APP_PORT=3000</span><br><span class="line"></span><br><span class="line">VOLUME $MEDIA_DIR  </span><br><span class="line">EXPOSE $APP_PORT  </span><br><span class="line">HEALTHCHECK CMD curl --fail http://localhost:$APP_PORT || exit 1</span><br><span class="line"></span><br><span class="line">ENTRYPOINT [&quot;./entrypoint.sh&quot;]  </span><br><span class="line">CMD [&quot;start&quot;]</span><br></pre></td></tr></table></figure>
+
+<h2 id="编写-dockerignore文件"><a href="#编写-dockerignore文件" class="headerlink" title="编写.dockerignore文件"></a>编写.dockerignore文件</h2><p>.dockerignore的作用和语法类似于.gitignore，可以忽略一些不需要的文件，这样可以有效加快镜像构建时间，同时减少Docker镜像的大小。</p>
+<p>构建镜像时，Docker需要先准备context ，将所有需要的文件收集到进程中。默认的context包含Dockerfile目录中的所有文件，但是实际上，我们并不需要.git目录等内容。</p>
+<p>示例如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">.git/</span><br></pre></td></tr></table></figure>
+      
+    </div>
+    
+    
+    
+	
+	<div>
+	  
+		<div>
+    
+        <div style="text-align:center;color: #ccc;font-size:14px;">--------------------本文结束，感谢您的阅读--------------------</div>
+    
+</div>
+	  
+	</div>
+	
+	<div>
+      
+        
+<div class="my_post_copyright">
+  <script src="//cdn.bootcss.com/clipboard.js/1.5.10/clipboard.min.js"></script>
+  
+  <!-- JS库 sweetalert 可修改路径 -->
+  <script src="https://cdn.bootcss.com/jquery/2.0.0/jquery.min.js"></script>
+  <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+  <p><span>本文标题:</span><a href="/Dockerfile详解/">Dockerfile详解</a></p>
+  <p><span>文章作者:</span><a href="/" title="访问 弓昭 的个人博客">弓昭</a></p>
+  <p><span>发布时间:</span>2019年08月05日 - 22:24</p>
+  <p><span>最后更新:</span>2020年04月08日 - 22:20</p>
+  <p><span>原始链接:</span><a href="/Dockerfile详解/" title="Dockerfile详解">https://gongzhao1.coding.me/Dockerfile详解/</a>
+    <span class="copy-path" title="点击复制文章链接"><i class="fa fa-clipboard" data-clipboard-text="https://gongzhao1.coding.me/Dockerfile详解/" aria-label="复制成功！"></i></span>
+  </p>
+  <p><span>联系邮箱:</span>gongzhao1@foxmail.com</p>  
+</div>
+<script> 
+    var clipboard = new Clipboard('.fa-clipboard');
+    $(".fa-clipboard").click(function(){
+      clipboard.on('success', function(){
+        swal({   
+          title: "",   
+          text: '复制成功',
+          icon: "success", 
+          showConfirmButton: true
+          });
+	});
+    });  
+</script>
+
+      
+	</div>
+	
+
+
+    
+
+    
+      <div>
+        <div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center;">
+  <div></div>
+  <button id="rewardButton" disable="enable" onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}">
+    <span>Donate</span>
+  </button>
+  <div id="QR" style="display: none;">
+
+    
+      <div id="wechat" style="display: inline-block">
+        <img id="wechat_qr" src="/images/wechat.jpg" alt="弓昭 WeChat Pay">
+        <p>WeChat Pay</p>
+      </div>
+    
+
+    
+      <div id="alipay" style="display: inline-block">
+        <img id="alipay_qr" src="/images/ali.jpg" alt="弓昭 Alipay">
+        <p>Alipay</p>
+      </div>
+    
+
+    
+
+  </div>
+</div>
+
+      </div>
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/docker/" rel="tag"><i class="fa fa-tag"></i>docker</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/Kubernetes部署nginx服务器/" rel="next" title="Kubernetes部署nginx服务器">
+                <i class="fa fa-chevron-left"></i> Kubernetes部署nginx服务器
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/常用Git命令清单/" rel="prev" title="常用Git命令清单">
+                常用Git命令清单 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div id="lv-container" data-id="city" data-uid="MTAyMC80MTcyNy8xODI3Mw=="></div>
+    
+  </div>
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image" src="/uploads/panda.jpg" alt="弓昭">
+          <p class="site-author-name" itemprop="name">弓昭</p>
+           
+              <p class="site-description motion-element" itemprop="description">弓昭的个人主页，主要涉及网络、运维、前端、Python等等知识</p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives/">
+                <span class="site-state-item-count">83</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">25</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">72</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+          <div class="feed-link motion-element">
+            <a href="/atom.xml" rel="alternate">
+              <i class="fa fa-rss"></i>
+              RSS
+            </a>
+          </div>
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/gongzhao1" target="_blank" title="GitHub">
+                  
+                    <i class="fa fa-fw fa-github"></i>
+                  
+                    
+                      GitHub
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://blog.csdn.net/zhao12795969" target="_blank" title="csdn">
+                  
+                    <i class="fa fa-fw fa-crosshairs"></i>
+                  
+                    
+                      csdn
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://www.jianshu.com/u/1dbca13c6043" target="_blank" title="简书">
+                  
+                    <i class="fa fa-fw fa-heartbeat"></i>
+                  
+                    
+                      简书
+                    
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+          <div class="links-of-blogroll motion-element links-of-blogroll-inline">
+            <div class="links-of-blogroll-title">
+              <i class="fa  fa-fw fa-globe"></i>
+              Links
+            </div>
+            <ul class="links-of-blogroll-list">
+              
+                <li class="links-of-blogroll-item">
+                  <a href="http://ccieh3c.com/" title="网络之路" target="_blank">网络之路</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="http://jm.taobao.org/" title="阿里云中间件" target="_blank">阿里云中间件</a>
+                </li>
+              
+            </ul>
+          </div>
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#什么是Dockerfile"><span class="nav-number">1.</span> <span class="nav-text">什么是Dockerfile</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Dockerfile的基本结构"><span class="nav-number">2.</span> <span class="nav-text">Dockerfile的基本结构</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Dockerfile文件说明"><span class="nav-number">3.</span> <span class="nav-text">Dockerfile文件说明</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#常见问题"><span class="nav-number">4.</span> <span class="nav-text">常见问题</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#ADD-VS-COPY"><span class="nav-number">4.1.</span> <span class="nav-text">ADD VS COPY</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#CMD-VS-ENTRYPOINT"><span class="nav-number">5.</span> <span class="nav-text">CMD VS ENTRYPOINT</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#编写高效的Dockerfile"><span class="nav-number">6.</span> <span class="nav-text">编写高效的Dockerfile</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#一个容器只运行一个进程"><span class="nav-number">6.1.</span> <span class="nav-text">一个容器只运行一个进程</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#不要在构建中升级版本"><span class="nav-number">6.2.</span> <span class="nav-text">不要在构建中升级版本</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#将变化频率一样的RUN指令合一"><span class="nav-number">6.3.</span> <span class="nav-text">将变化频率一样的RUN指令合一</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#使用特定的标签"><span class="nav-number">6.4.</span> <span class="nav-text">使用特定的标签</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#删除多余文件"><span class="nav-number">6.5.</span> <span class="nav-text">删除多余文件</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#选择合适的基础镜像"><span class="nav-number">6.6.</span> <span class="nav-text">选择合适的基础镜像</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#设置WORKDIR和-CMD"><span class="nav-number">6.7.</span> <span class="nav-text">设置WORKDIR和 CMD</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#使用ENTRYPOINT-可选"><span class="nav-number">6.8.</span> <span class="nav-text">使用ENTRYPOINT (可选)</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#在entrypoint脚本中使用exec"><span class="nav-number">6.9.</span> <span class="nav-text">在entrypoint脚本中使用exec</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#优先使用COPY"><span class="nav-number">6.10.</span> <span class="nav-text">优先使用COPY</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#合理调整COPY与RUN的顺序"><span class="nav-number">6.11.</span> <span class="nav-text">合理调整COPY与RUN的顺序</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#设置默认的环境变量，映射端口和数据卷"><span class="nav-number">6.12.</span> <span class="nav-text">设置默认的环境变量，映射端口和数据卷</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#使用EXPOSE暴露端口"><span class="nav-number">6.13.</span> <span class="nav-text">使用EXPOSE暴露端口</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#使用VOLUME管理数据卷"><span class="nav-number">6.14.</span> <span class="nav-text">使用VOLUME管理数据卷</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#使用LABEL设置镜像元数据"><span class="nav-number">6.15.</span> <span class="nav-text">使用LABEL设置镜像元数据</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#添加HEALTHCHECK"><span class="nav-number">6.16.</span> <span class="nav-text">添加HEALTHCHECK</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#编写-dockerignore文件"><span class="nav-number">6.17.</span> <span class="nav-text">编写.dockerignore文件</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+<div class="copyright">
+  
+  &copy;  2018 - 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">弓昭</span>
+</div>
+
+
+<div class="powered-by">
+	<i class="fa fa-user-md"></i><span id="busuanzi_container_site_uv">
+	  本站访客数:<span id="busuanzi_value_site_uv"></span>
+	</span>
+</div>
+
+
+<div class="theme-info">
+
+  <span class="post-count">博客全站共253.1k字</span>
+</div>
+
+
+
+        
+<div class="busuanzi-count">
+  <script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+
+  
+</div>
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.2"></script>
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.2"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+    <script type="text/javascript">
+      (function(d, s) {
+        var j, e = d.getElementsByTagName(s)[0];
+        if (typeof LivereTower === 'function') { return; }
+        j = d.createElement(s);
+        j.src = 'https://cdn-city.livere.com/js/embed.dist.js';
+        j.async = true;
+        e.parentNode.insertBefore(j, e);
+      })(document, 'script');
+    </script>
+  
+
+
+
+
+
+
+  
+
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url);
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

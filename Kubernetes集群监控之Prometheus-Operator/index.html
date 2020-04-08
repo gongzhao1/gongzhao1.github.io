@@ -1,0 +1,1464 @@
+<!DOCTYPE html>
+
+
+
+
+<html class="theme-next muse" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.2" rel="stylesheet" type="text/css">
+
+
+  <meta name="keywords" content="prometheus,">
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="GZ" type="application/atom+xml">
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.2">
+
+
+
+
+
+
+<meta name="description" content="[TOC] 参考 https://github.com/helm/charts/tree/master/stable/prometheus-operator https://github.com/coreos/prometheus-operator https://www.servicemesher.com/blog/prometheus-operator-manual/ https://blog">
+<meta name="keywords" content="prometheus">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Kubernetes集群监控之Prometheus Operator">
+<meta property="og:url" content="https://gongzhao1.coding.me/Kubernetes集群监控之Prometheus-Operator/index.html">
+<meta property="og:site_name" content="GZ">
+<meta property="og:description" content="[TOC] 参考 https://github.com/helm/charts/tree/master/stable/prometheus-operator https://github.com/coreos/prometheus-operator https://www.servicemesher.com/blog/prometheus-operator-manual/ https://blog">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="https://gongzhao-1256784911.cos.ap-shanghai.myqcloud.com/hexo/images/prometheus/24.png">
+<meta property="og:updated_time" content="2020-04-08T14:20:25.841Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Kubernetes集群监控之Prometheus Operator">
+<meta name="twitter:description" content="[TOC] 参考 https://github.com/helm/charts/tree/master/stable/prometheus-operator https://github.com/coreos/prometheus-operator https://www.servicemesher.com/blog/prometheus-operator-manual/ https://blog">
+<meta name="twitter:image" content="https://gongzhao-1256784911.cos.ap-shanghai.myqcloud.com/hexo/images/prometheus/24.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: false,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://gongzhao1.coding.me/Kubernetes集群监控之Prometheus-Operator/">
+
+
+
+
+
+  <title>Kubernetes集群监控之Prometheus Operator | GZ</title>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">GZ</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">痛苦是财富，这话是扯淡。少年，痛苦就是痛苦，对痛苦的思考才是财富</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br>
+            
+            关于
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br>
+            
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off" placeholder="搜索..." spellcheck="false" type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://gongzhao1.coding.me/Kubernetes集群监控之Prometheus-Operator/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="弓昭">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/uploads/panda.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="GZ">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Kubernetes集群监控之Prometheus Operator</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-02-18T14:27:32+08:00">
+                2020-02-18
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/监控/" itemprop="url" rel="index">
+                    <span itemprop="name">监控</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+            <span class="post-meta-divider">|</span>
+            <span class="page-pv"><i class="fa fa-file-o"></i>
+            <span class="busuanzi-value" id="busuanzi_value_page_pv"></span>次阅读
+            </span>
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>[TOC]</p>
+<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><ul>
+<li><a href="https://github.com/helm/charts/tree/master/stable/prometheus-operator" target="_blank" rel="noopener">https://github.com/helm/charts/tree/master/stable/prometheus-operator</a></li>
+<li><a href="https://github.com/coreos/prometheus-operator" target="_blank" rel="noopener">https://github.com/coreos/prometheus-operator</a></li>
+<li><a href="https://www.servicemesher.com/blog/prometheus-operator-manual/" target="_blank" rel="noopener">https://www.servicemesher.com/blog/prometheus-operator-manual/</a></li>
+<li><a href="https://blog.csdn.net/travellersY/article/details/84632679" target="_blank" rel="noopener">https://blog.csdn.net/travellersY/article/details/84632679</a></li>
+</ul>
+<h1 id="Kubernetes-Operator-介绍"><a href="#Kubernetes-Operator-介绍" class="headerlink" title="Kubernetes Operator 介绍"></a>Kubernetes Operator 介绍</h1><p><code>Operator</code>是由<a href="https://coreos.com/" target="_blank" rel="noopener">CoreOS</a>公司开发的，用来扩展 Kubernetes API，特定的应用程序控制器，它用来创建、配置和管理复杂的有状态应用，如数据库、缓存和监控系统。<code>Operator</code>基于 Kubernetes 的资源和控制器概念之上构建，但同时又包含了应用程序特定的一些专业知识，比如创建一个数据库的<code>Operator</code>，则必须对创建的数据库的各种运维方式非常了解，创建<code>Operator</code>的关键是<code>CRD</code>（自定义资源）的设计。</p>
+<blockquote>
+<p><code>CRD</code>是对 Kubernetes API 的扩展，Kubernetes 中的每个资源都是一个 API 对象的集合，例如我们在YAML文件里定义的那些<code>spec</code>都是对 Kubernetes 中的资源对象的定义，所有的自定义资源可以跟 Kubernetes 中内建的资源一样使用 kubectl 操作。</p>
+</blockquote>
+<p><code>Operator</code>是将运维人员对软件操作的知识给代码化，同时利用 Kubernetes 强大的抽象来管理大规模的软件应用。目前<code>CoreOS</code>官方提供了几种<code>Operator</code>的实现，其中就包括我们今天的主角：<code>Prometheus Operator</code>，<code>Operator</code>的核心实现就是基于 Kubernetes 的以下两个概念：</p>
+<ul>
+<li>资源：对象的状态定义</li>
+<li>控制器：观测、分析和行动，以调节资源的分布</li>
+</ul>
+<p>当然我们如果有对应的需求也完全可以自己去实现一个<code>Operator</code>，接下来我们就来给大家详细介绍下<code>Prometheus-Operator</code>的使用方法。</p>
+<h1 id="Prometheus-Operator介绍"><a href="#Prometheus-Operator介绍" class="headerlink" title="Prometheus Operator介绍"></a>Prometheus Operator介绍</h1><p>Kubernetes的Prometheus Operator为Kubernetes服务和Prometheus实例的部署和管理提供了简单的监控定义。</p>
+<p>安装完毕后，Prometheus Operator提供了以下功能：</p>
+<ul>
+<li>创建/毁坏: 在Kubernetes namespace中更容易启动一个Prometheus实例，一个特定的应用程序或团队更容易使用Operator。</li>
+<li>简单配置: 配置Prometheus的基础东西，比如在Kubernetes的本地资源versions, persistence, retention policies, 和replicas。</li>
+<li>Target Services通过标签: 基于常见的Kubernetes label查询，自动生成监控target 配置；不需要学习普罗米修斯特定的配置语言。</li>
+</ul>
+<p>Prometheus Operator 架构图如下：</p>
+<p><img src="https://gongzhao-1256784911.cos.ap-shanghai.myqcloud.com/hexo/images/prometheus/24.png" alt="image"></p>
+<p>以上架构中的各组成部分以不同的资源方式运行在 Kubernetes 集群中，它们各自有不同的作用：</p>
+<ul>
+<li>Operator： Operator 资源会根据自定义资源（Custom Resource Definition / CRDs）来部署和管理 Prometheus Server，同时监控这些自定义资源事件的变化来做相应的处理，是整个系统的控制中心。</li>
+<li>Prometheus： Prometheus 资源是声明性地描述 Prometheus 部署的期望状态。</li>
+<li>Prometheus Server： Operator 根据自定义资源 Prometheus 类型中定义的内容而部署的 Prometheus Server 集群，这些自定义资源可以看作是用来管理 Prometheus Server 集群的 StatefulSets 资源。</li>
+<li>ServiceMonitor： ServiceMonitor 也是一个自定义资源，它描述了一组被 Prometheus 监控的 targets 列表。该资源通过 Labels 来选取对应的 Service Endpoint，让 Prometheus Server 通过选取的 Service 来获取 Metrics 信息。</li>
+<li>Service： Service 资源主要用来对应 Kubernetes 集群中的 Metrics Server Pod，来提供给 ServiceMonitor 选取让 Prometheus Server 来获取信息。简单的说就是 Prometheus 监控的对象，例如 Node Exporter Service、Mysql Exporter Service 等等。</li>
+<li>Alertmanager： Alertmanager 也是一个自定义资源类型，由 Operator 根据资源描述内容来部署 Alertmanager 集群。</li>
+</ul>
+<a id="more"></a>
+
+<h1 id="为什么需要prometheus-operator"><a href="#为什么需要prometheus-operator" class="headerlink" title="为什么需要prometheus-operator"></a>为什么需要prometheus-operator</h1><p>因为是prometheus主动去拉取的，所以在k8s里pod因为调度的原因导致pod的ip会发生变化，人工不可能去维持，自动发现有基于DNS的，但是新增还是有点麻烦。</p>
+<p>Prometheus-operator的本职就是一组用户自定义的CRD资源以及Controller的实现，Prometheus Operator这个controller有BRAC权限下去负责监听这些自定义资源的变化，并且根据这些资源的定义自动化的完成如Prometheus Server自身以及配置的自动化管理工作。</p>
+<p>在Kubernetes中我们使用Deployment、DamenSet、StatefulSet来管理应用Workload，使用Service、Ingress来管理应用的访问方式，使用ConfigMap和Secret来管理应用配置。我们在集群中对这些资源的创建，更新，删除的动作都会被转换为事件(Event)，Kubernetes的Controller Manager负责监听这些事件并触发相应的任务来满足用户的期望。这种方式我们成为声明式，用户只需要关心应用程序的最终状态，其它的都通过Kubernetes来帮助我们完成，通过这种方式可以大大简化应用的配置管理复杂度。</p>
+<p>而除了这些原生的Resource资源以外，Kubernetes还允许用户添加自己的自定义资源(Custom Resource)。并且通过实现自定义Controller来实现对Kubernetes的扩展，不需要用户去二开k8s也能达到给k8s添加功能和对象。</p>
+<p>因为svc的负载均衡，所以在K8S里监控metrics基本最小单位都是一个svc背后的pod为target，所以prometheus-operator创建了对应的CRD: <code>kind: ServiceMonitor</code> ，创建的<code>ServiceMonitor</code>里声明需要监控选中的svc的label以及metrics的url路径的和namespaces即可。</p>
+<h1 id="什么是metrics"><a href="#什么是metrics" class="headerlink" title="什么是metrics"></a>什么是metrics</h1><p>例如我们要查看etcd的metrics，先查看etcd的运行参数找到相关的值，这里我是所有参数写在一个yml文件里，非yml自行查看systemd文件或者运行参数找到相关参数和值即可。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">[root@k8s-m1 ~]<span class="comment"># ps aux | grep -P '/etc[d] '</span></span><br><span class="line">root      13531  2.8  0.8 10631072 140788 ?     Ssl   2018 472:58 /usr/<span class="built_in">local</span>/bin/etcd --config-file=/etc/etcd/etcd.config.yml</span><br><span class="line">[root@k8s-m1 ~]<span class="comment"># cat /etc/etcd/etcd.config.yml</span></span><br><span class="line">...</span><br><span class="line">listen-client-urls: <span class="string">'https://172.16.0.2:2379'</span></span><br><span class="line">...</span><br><span class="line">client-transport-security:</span><br><span class="line">  ca-file: <span class="string">'/etc/etcd/ssl/etcd-ca.pem'</span></span><br><span class="line">  cert-file: <span class="string">'/etc/etcd/ssl/etcd.pem'</span></span><br><span class="line">  key-file: <span class="string">'/etc/etcd/ssl/etcd-key.pem'</span></span><br><span class="line">...</span><br></pre></td></tr></table></figure>
+
+<p>我们需要两部分信息：</p>
+<ul>
+<li>listen-client-urls的httpsurl，我这里是<code>https://172.16.0.2:2379</code></li>
+<li>允许客户端证书信息</li>
+</ul>
+<p>然后使用下面的curl，带上各自证书路径访问https的url执行</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">curl --cacert /etc/etcd/ssl/etcd-ca.pem --cert /etc/etcd/ssl/etcd.pem --key /etc/etcd/ssl/etcd-key.pem https://172.16.0.2:2379/metrics</span><br></pre></td></tr></table></figure>
+
+<p>也可以etcd用选项和值<code>--listen-metrics-urls http://interface_IP:port</code>设置成非https的metrics端口可以不用证书即可访问，我们会看到etcd的metrics输出信息如下：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line">....</span><br><span class="line">grpc_server_started_total&#123;grpc_method=<span class="string">"RoleList"</span>，grpc_service=<span class="string">"etcdserverpb.Auth"</span>，grpc_type=<span class="string">"unary"</span>&#125; 0</span><br><span class="line">grpc_server_started_total&#123;grpc_method=<span class="string">"RoleRevokePermission"</span>，grpc_service=<span class="string">"etcdserverpb.Auth"</span>，grpc_type=<span class="string">"unary"</span>&#125; 0</span><br><span class="line">grpc_server_started_total&#123;grpc_method=<span class="string">"Snapshot"</span>，grpc_service=<span class="string">"etcdserverpb.Maintenance"</span>，grpc_type=<span class="string">"server_stream"</span>&#125; 0</span><br><span class="line">grpc_server_started_total&#123;grpc_method=<span class="string">"Status"</span>，grpc_service=<span class="string">"etcdserverpb.Maintenance"</span>，grpc_type=<span class="string">"unary"</span>&#125; 0</span><br><span class="line">grpc_server_started_total&#123;grpc_method=<span class="string">"Txn"</span>，grpc_service=<span class="string">"etcdserverpb.KV"</span>，grpc_type=<span class="string">"unary"</span>&#125; 259160</span><br><span class="line">grpc_server_started_total&#123;grpc_method=<span class="string">"UserAdd"</span>，grpc_service=<span class="string">"etcdserverpb.Auth"</span>，grpc_type=<span class="string">"unary"</span>&#125; 0</span><br><span class="line">grpc_server_started_total&#123;grpc_method=<span class="string">"UserChangePassword"</span>，grpc_service=<span class="string">"etcdserverpb.Auth"</span>，grpc_type=<span class="string">"unary"</span>&#125; 0</span><br><span class="line">grpc_server_started_total&#123;grpc_method=<span class="string">"UserDelete"</span>，grpc_service=<span class="string">"etcdserverpb.Auth"</span>，grpc_type=<span class="string">"unary"</span>&#125; 0</span><br><span class="line">grpc_server_started_total&#123;grpc_method=<span class="string">"UserGet"</span>，grpc_service=<span class="string">"etcdserverpb.Auth"</span>，grpc_type=<span class="string">"unary"</span>&#125; 0</span><br><span class="line">grpc_server_started_total&#123;grpc_method=<span class="string">"UserGrantRole"</span>，grpc_service=<span class="string">"etcdserverpb.Auth"</span>，grpc_type=<span class="string">"unary"</span>&#125; 0</span><br><span class="line">grpc_server_started_total&#123;grpc_method=<span class="string">"UserList"</span>，grpc_service=<span class="string">"etcdserverpb.Auth"</span>，grpc_type=<span class="string">"unary"</span>&#125; 0</span><br><span class="line">grpc_server_started_total&#123;grpc_method=<span class="string">"UserRevokeRole"</span>，grpc_service=<span class="string">"etcdserverpb.Auth"</span>，grpc_type=<span class="string">"unary"</span>&#125; 0</span><br><span class="line">grpc_server_started_total&#123;grpc_method=<span class="string">"Watch"</span>，grpc_service=<span class="string">"etcdserverpb.Watch"</span>，grpc_type=<span class="string">"bidi_stream"</span>&#125; 86</span><br><span class="line"><span class="comment"># HELP process_cpu_seconds_total Total user and system CPU time spent in seconds.</span></span><br><span class="line"><span class="comment"># TYPE process_cpu_seconds_total counter</span></span><br><span class="line">process_cpu_seconds_total 28145.45</span><br><span class="line"><span class="comment"># HELP process_max_fds Maximum number of open file descriptors.</span></span><br><span class="line"><span class="comment"># TYPE process_max_fds gauge</span></span><br><span class="line">process_max_fds 65536</span><br><span class="line"><span class="comment"># HELP process_open_fds Number of open file descriptors.</span></span><br><span class="line"><span class="comment"># TYPE process_open_fds gauge</span></span><br><span class="line">process_open_fds 121</span><br><span class="line"><span class="comment"># HELP process_resident_memory_bytes Resident memory size in bytes.</span></span><br><span class="line"><span class="comment"># TYPE process_resident_memory_bytes gauge</span></span><br><span class="line">process_resident_memory_bytes 1.46509824e+08</span><br><span class="line"><span class="comment"># HELP process_start_time_seconds Start time of the process since unix epoch in seconds.</span></span><br><span class="line"><span class="comment"># TYPE process_start_time_seconds gauge</span></span><br><span class="line">process_start_time_seconds 1.54557786888e+09</span><br><span class="line"><span class="comment"># HELP process_virtual_memory_bytes Virtual memory size in bytes.</span></span><br><span class="line"><span class="comment"># TYPE process_virtual_memory_bytes gauge</span></span><br><span class="line">process_virtual_memory_bytes 1.0886217728e+10</span><br></pre></td></tr></table></figure>
+
+<p>同理kube-apiserver也有metrics信息</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> kubectl get --raw /metrics</span></span><br><span class="line">...</span><br><span class="line">rest_client_request_latency_seconds_bucket&#123;url="https://[::1]:6443/apis?timeout=32s"，verb="GET"，le="0.512"&#125; 39423</span><br><span class="line">rest_client_request_latency_seconds_bucket&#123;url="https://[::1]:6443/apis?timeout=32s"，verb="GET"，le="+Inf"&#125; 39423</span><br><span class="line">rest_client_request_latency_seconds_sum&#123;url="https://[::1]:6443/apis?timeout=32s"，verb="GET"&#125; 24.781942557999795</span><br><span class="line">rest_client_request_latency_seconds_count&#123;url="https://[::1]:6443/apis?timeout=32s"，verb="GET"&#125; 39423</span><br><span class="line"><span class="meta">#</span><span class="bash"> HELP rest_client_requests_total Number of HTTP requests， partitioned by status code， method， and host.</span></span><br><span class="line"><span class="meta">#</span><span class="bash"> TYPE rest_client_requests_total counter</span></span><br><span class="line">rest_client_requests_total&#123;code="200"，host="[::1]:6443"，method="GET"&#125; 2.032031e+06</span><br><span class="line">rest_client_requests_total&#123;code="200"，host="[::1]:6443"，method="PUT"&#125; 1.106921e+06</span><br><span class="line">rest_client_requests_total&#123;code="201"，host="[::1]:6443"，method="POST"&#125; 38</span><br><span class="line">rest_client_requests_total&#123;code="401"，host="[::1]:6443"，method="GET"&#125; 17378</span><br><span class="line">rest_client_requests_total&#123;code="404"，host="[::1]:6443"，method="GET"&#125; 3.546509e+06</span><br><span class="line">rest_client_requests_total&#123;code="409"，host="[::1]:6443"，method="POST"&#125; 29</span><br><span class="line">rest_client_requests_total&#123;code="409"，host="[::1]:6443"，method="PUT"&#125; 20</span><br><span class="line">rest_client_requests_total&#123;code="422"，host="[::1]:6443"，method="POST"&#125; 1</span><br><span class="line">rest_client_requests_total&#123;code="503"，host="[::1]:6443"，method="GET"&#125; 5</span><br><span class="line"><span class="meta">#</span><span class="bash"> HELP ssh_tunnel_open_count Counter of ssh tunnel total open attempts</span></span><br><span class="line"><span class="meta">#</span><span class="bash"> TYPE ssh_tunnel_open_count counter</span></span><br><span class="line">ssh_tunnel_open_count 0</span><br><span class="line"><span class="meta">#</span><span class="bash"> HELP ssh_tunnel_open_fail_count Counter of ssh tunnel failed open attempts</span></span><br><span class="line"><span class="meta">#</span><span class="bash"> TYPE ssh_tunnel_open_fail_count counter</span></span><br><span class="line">ssh_tunnel_open_fail_count 0</span><br></pre></td></tr></table></figure>
+
+<p>这种就是prometheus的定义的metrics格式规范，缺省是在http(s)的url的/metrics输出。 而metrics要么程序定义输出(模块或者自定义开发)，要么用官方的各种exporter(node-exporter，mysqld-exporter，memcached_exporter…)采集要监控的信息占用一个web端口然后输出成metrics格式的信息，prometheus server去收集各个target的metrics存储起来(tsdb)。 用户可以在prometheus的http页面上用promQL(prometheus的查询语言)或者(grafana数据来源就是用)api去查询一些信息，也可以利用pushgateway去统一采集然后prometheus从pushgateway采集(所以pushgateway类似于zabbix的proxy)</p>
+<h1 id="部署"><a href="#部署" class="headerlink" title="部署"></a>部署</h1><h2 id="使用helm安装部署"><a href="#使用helm安装部署" class="headerlink" title="使用helm安装部署"></a>使用helm安装部署</h2><p>拉取安装包</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">helm search prometheus-operator</span><br><span class="line">helm fetch stable/prometheus-operator</span><br></pre></td></tr></table></figure>
+
+<p>解压之后修改values文件(请参考官方github)</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">helm install --name prometheus-operator --namespace monitoring -f values.yaml ./</span><br></pre></td></tr></table></figure>
+
+<h2 id="源码部署"><a href="#源码部署" class="headerlink" title="源码部署"></a>源码部署</h2><p>先获取相关文件后面跟着文件来讲，直接用git客户端拉取即可，不过文件大概30多M，没梯子基本拉不下来。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git <span class="built_in">clone</span> https://github.com/coreos/prometheus-operator.git</span><br></pre></td></tr></table></figure>
+
+<p>拉取不下来可以在<a href="https://www.katacoda.com/courses/kubernetes" target="_blank" rel="noopener">katacoda的网页</a>上随便一个课程的机器都有docker客户端，可以git clone下来后把文件构建进一个alpine镜像然后推到dockerhub上，再在自己的机器docker run这个镜像的时候docker cp到宿主机上。</p>
+<p>Prometheus Operator引入的自定义资源包括：</p>
+<ul>
+<li>Prometheus</li>
+<li>ServiceMonitor</li>
+<li>Alertmanager</li>
+</ul>
+<p>用户创建了prometheus-operator(也就是上面监听三个CRD的各种事件的controller)后，用户可以利用<code>kind: Prometheus</code>这种声明式创建对应的资源。 下面我们部署简单的例子学习prometheus-operator</p>
+<h3 id="创建prometheus-operator的pod"><a href="#创建prometheus-operator的pod" class="headerlink" title="创建prometheus-operator的pod"></a>创建prometheus-operator的pod</h3><p>拉取到文件后我们先创建prometheus-operator：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">$ <span class="built_in">cd</span> prometheus-operator</span><br><span class="line">$ kubectl apply -f bundle.yaml</span><br><span class="line">clusterrolebinding.rbac.authorization.k8s.io/prometheus-operator created</span><br><span class="line">clusterrole.rbac.authorization.k8s.io/prometheus-operator created</span><br><span class="line">deployment.apps/prometheus-operator created</span><br><span class="line">serviceaccount/prometheus-operator created</span><br></pre></td></tr></table></figure>
+
+<p>确认pod运行，以及我们可以发现operator的pod在有RBAC下创建了一个APIService：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">$ kubectl get pod</span><br><span class="line">NAME                                   READY     STATUS    RESTARTS   AGE</span><br><span class="line">prometheus-operator-6db8dbb7dd-djj6s   1/1       Running   0          1m</span><br><span class="line">$ kubectl get APIService | grep monitor</span><br><span class="line">v1.monitoring.coreos.com               2018-10-09T10:49:47Z</span><br></pre></td></tr></table></figure>
+
+<p>查看这个APISerivce</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br></pre></td><td class="code"><pre><span class="line">$ kubectl get --raw /apis/monitoring.coreos.com/v1</span><br><span class="line">&#123;</span><br><span class="line">  <span class="string">"kind"</span>: <span class="string">"APIResourceList"</span>，</span><br><span class="line">  <span class="string">"apiVersion"</span>: <span class="string">"v1"</span>，</span><br><span class="line">  <span class="string">"groupVersion"</span>: <span class="string">"monitoring.coreos.com/v1"</span>，</span><br><span class="line">  <span class="string">"resources"</span>: [</span><br><span class="line">    &#123;</span><br><span class="line">      <span class="string">"name"</span>: <span class="string">"alertmanagers"</span>，</span><br><span class="line">      <span class="string">"singularName"</span>: <span class="string">"alertmanager"</span>，</span><br><span class="line">      <span class="string">"namespaced"</span>: <span class="literal">true</span>，</span><br><span class="line">      <span class="string">"kind"</span>: <span class="string">"Alertmanager"</span>，</span><br><span class="line">      <span class="string">"verbs"</span>: [</span><br><span class="line">        <span class="string">"delete"</span>，</span><br><span class="line">        <span class="string">"deletecollection"</span>，</span><br><span class="line">        <span class="string">"get"</span>，</span><br><span class="line">        <span class="string">"list"</span>，</span><br><span class="line">        <span class="string">"patch"</span>，</span><br><span class="line">        <span class="string">"create"</span>，</span><br><span class="line">        <span class="string">"update"</span>，</span><br><span class="line">        <span class="string">"watch"</span></span><br><span class="line">      ]</span><br><span class="line">    &#125;，</span><br><span class="line">    &#123;</span><br><span class="line">      <span class="string">"name"</span>: <span class="string">"prometheuses"</span>，</span><br><span class="line">      <span class="string">"singularName"</span>: <span class="string">"prometheus"</span>，</span><br><span class="line">      <span class="string">"namespaced"</span>: <span class="literal">true</span>，</span><br><span class="line">      <span class="string">"kind"</span>: <span class="string">"Prometheus"</span>，</span><br><span class="line">      <span class="string">"verbs"</span>: [</span><br><span class="line">        <span class="string">"delete"</span>，</span><br><span class="line">        <span class="string">"deletecollection"</span>，</span><br><span class="line">        <span class="string">"get"</span>，</span><br><span class="line">        <span class="string">"list"</span>，</span><br><span class="line">        <span class="string">"patch"</span>，</span><br><span class="line">        <span class="string">"create"</span>，</span><br><span class="line">        <span class="string">"update"</span>，</span><br><span class="line">        <span class="string">"watch"</span></span><br><span class="line">      ]</span><br><span class="line">    &#125;，</span><br><span class="line">    &#123;</span><br><span class="line">      <span class="string">"name"</span>: <span class="string">"servicemonitors"</span>，</span><br><span class="line">      <span class="string">"singularName"</span>: <span class="string">"servicemonitor"</span>，</span><br><span class="line">      <span class="string">"namespaced"</span>: <span class="literal">true</span>，</span><br><span class="line">      <span class="string">"kind"</span>: <span class="string">"ServiceMonitor"</span>，</span><br><span class="line">      <span class="string">"verbs"</span>: [</span><br><span class="line">        <span class="string">"delete"</span>，</span><br><span class="line">        <span class="string">"deletecollection"</span>，</span><br><span class="line">        <span class="string">"get"</span>，</span><br><span class="line">        <span class="string">"list"</span>，</span><br><span class="line">        <span class="string">"patch"</span>，</span><br><span class="line">        <span class="string">"create"</span>，</span><br><span class="line">        <span class="string">"update"</span>，</span><br><span class="line">        <span class="string">"watch"</span></span><br><span class="line">      ]</span><br><span class="line">    &#125;，</span><br><span class="line">    &#123;</span><br><span class="line">      <span class="string">"name"</span>: <span class="string">"prometheusrules"</span>，</span><br><span class="line">      <span class="string">"singularName"</span>: <span class="string">"prometheusrule"</span>，</span><br><span class="line">      <span class="string">"namespaced"</span>: <span class="literal">true</span>，</span><br><span class="line">      <span class="string">"kind"</span>: <span class="string">"PrometheusRule"</span>，</span><br><span class="line">      <span class="string">"verbs"</span>: [</span><br><span class="line">        <span class="string">"delete"</span>，</span><br><span class="line">        <span class="string">"deletecollection"</span>，</span><br><span class="line">        <span class="string">"get"</span>，</span><br><span class="line">        <span class="string">"list"</span>，</span><br><span class="line">        <span class="string">"patch"</span>，</span><br><span class="line">        <span class="string">"create"</span>，</span><br><span class="line">        <span class="string">"update"</span>，</span><br><span class="line">        <span class="string">"watch"</span></span><br><span class="line">      ]</span><br><span class="line">    &#125;</span><br><span class="line">  ]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>这个是因为bundle.yml里有如下的<code>CLusterRole</code>和对应的<code>ClusterRoleBinding</code>来让prometheus-operator有权限对<code>monitoring.coreos.com</code>这个apiGroup里的这些CRD进行所有操作</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">apiVersion:</span> <span class="string">rbac.authorization.k8s.io/v1</span></span><br><span class="line"><span class="attr">kind:</span> <span class="string">ClusterRole</span></span><br><span class="line"><span class="attr">metadata:</span></span><br><span class="line"><span class="attr">  name:</span> <span class="string">prometheus-operator</span></span><br><span class="line"><span class="attr">rules:</span></span><br><span class="line"><span class="attr">- apiGroups:</span></span><br><span class="line"><span class="bullet">  -</span> <span class="string">apiextensions.k8s.io</span></span><br><span class="line"><span class="attr">  resources:</span></span><br><span class="line"><span class="bullet">  -</span> <span class="string">customresourcedefinitions</span></span><br><span class="line"><span class="attr">  verbs:</span></span><br><span class="line"><span class="bullet">  -</span> <span class="string">'*'</span></span><br><span class="line"><span class="attr">- apiGroups:</span></span><br><span class="line"><span class="bullet">  -</span> <span class="string">monitoring.coreos.com</span></span><br><span class="line"><span class="attr">  resources:</span></span><br><span class="line"><span class="bullet">  -</span> <span class="string">alertmanagers</span></span><br><span class="line"><span class="bullet">  -</span> <span class="string">prometheuses</span></span><br><span class="line"><span class="bullet">  -</span> <span class="string">prometheuses/finalizers</span></span><br><span class="line"><span class="bullet">  -</span> <span class="string">alertmanagers/finalizers</span></span><br><span class="line"><span class="bullet">  -</span> <span class="string">servicemonitors</span></span><br><span class="line"><span class="bullet">  -</span> <span class="string">prometheusrules</span></span><br><span class="line"><span class="attr">  verbs:</span></span><br><span class="line"><span class="bullet">  -</span> <span class="string">'*'</span></span><br></pre></td></tr></table></figure>
+
+<p>同时我们查看到pod里的log发现operator也在集群里创建了对应的CRD</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">$ kubectl logs prometheus-operator-6db8dbb7dd-dkhxc</span><br><span class="line">ts=2018-10-09T11:21:09.389340424Z <span class="built_in">caller</span>=main.go:165 msg=<span class="string">"Starting Prometheus Operator version '0.26.0'."</span></span><br><span class="line">level=info ts=2018-10-09T11:21:09.491464524Z <span class="built_in">caller</span>=operator.go:377 component=prometheusoperator msg=<span class="string">"connection established"</span> cluster-version=v1.11.3</span><br><span class="line">level=info ts=2018-10-09T11:21:09.492679498Z <span class="built_in">caller</span>=operator.go:209 component=alertmanageroperator msg=<span class="string">"connection established"</span> cluster-version=v1.11.3</span><br><span class="line">level=info ts=2018-10-09T11:21:12.085147219Z <span class="built_in">caller</span>=operator.go:624 component=alertmanageroperator msg=<span class="string">"CRD created"</span> crd=Alertmanager</span><br><span class="line">level=info ts=2018-10-09T11:21:12.085265548Z <span class="built_in">caller</span>=operator.go:1420 component=prometheusoperator msg=<span class="string">"CRD created"</span> crd=Prometheus</span><br><span class="line">level=info ts=2018-10-09T11:21:12.099210714Z <span class="built_in">caller</span>=operator.go:1420 component=prometheusoperator msg=<span class="string">"CRD created"</span> crd=ServiceMonitor</span><br><span class="line">level=info ts=2018-10-09T11:21:12.118721976Z <span class="built_in">caller</span>=operator.go:1420 component=prometheusoperator msg=<span class="string">"CRD created"</span> crd=PrometheusRule</span><br><span class="line">level=info ts=2018-10-09T11:21:15.182780757Z <span class="built_in">caller</span>=operator.go:225 component=alertmanageroperator msg=<span class="string">"CRD API endpoints ready"</span></span><br><span class="line">level=info ts=2018-10-09T11:21:15.383456425Z <span class="built_in">caller</span>=operator.go:180 component=alertmanageroperator msg=<span class="string">"successfully synced all caches"</span></span><br><span class="line">$ kubectl get crd</span><br><span class="line">NAME                                    CREATED AT</span><br><span class="line">alertmanagers.monitoring.coreos.com     2018-10-09T11:21:11Z</span><br><span class="line">prometheuses.monitoring.coreos.com      2018-10-09T11:21:11Z</span><br><span class="line">prometheusrules.monitoring.coreos.com   2018-10-09T11:21:12Z</span><br><span class="line">servicemonitors.monitoring.coreos.com   2018-10-09T11:21:12Z</span><br></pre></td></tr></table></figure>
+
+<h3 id="相关CRD介绍"><a href="#相关CRD介绍" class="headerlink" title="相关CRD介绍"></a>相关CRD介绍</h3><p>这四个CRD作用如下</p>
+<ul>
+<li><strong>Prometheus</strong>: 由 Operator 依据一个自定义资源<code>kind: Prometheus</code>类型中，所描述的内容而部署的 Prometheus Server 集群，可以将这个自定义资源看作是一种特别用来管理Prometheus Server的StatefulSets资源。</li>
+<li><strong>ServiceMonitor</strong>: 一个Kubernetes自定义资源(和<code>kind: Prometheus</code>一样是CRD)，该资源描述了Prometheus Server的Target列表，Operator 会监听这个资源的变化来动态的更新Prometheus Server的Scrape targets并让prometheus server去reload配置(prometheus有对应reload的http接口<code>/-/reload</code>)。而该资源主要通过Selector来依据 Labels 选取对应的Service的endpoints，并让 Prometheus Server 通过 Service 进行拉取（拉）指标资料(也就是metrics信息)，metrics信息要在http的url输出符合metrics格式的信息，ServiceMonitor也可以定义目标的metrics的url。</li>
+<li><strong>Alertmanager</strong>：Prometheus Operator 不只是提供 Prometheus Server 管理与部署，也包含了 AlertManager，并且一样通过一个 <code>kind: Alertmanager</code> 自定义资源来描述信息，再由 Operator 依据描述内容部署 Alertmanager 集群。</li>
+<li><strong>PrometheusRule</strong>:对于Prometheus而言，在原生的管理方式上，我们需要手动创建Prometheus的告警文件，并且通过在Prometheus配置中声明式的加载。而在Prometheus Operator模式中，告警规则也编程一个通过Kubernetes API 声明式创建的一个资源.告警规则创建成功后，通过在Prometheus中使用想servicemonitor那样用<code>ruleSelector</code>通过label匹配选择需要关联的PrometheusRule即可。</li>
+</ul>
+<h3 id="部署kind-Prometheus"><a href="#部署kind-Prometheus" class="headerlink" title="部署kind: Prometheus"></a>部署kind: Prometheus</h3><p>现在我们有了prometheus这个CRD，我们部署一个prometheus server只需要如下声明即可。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">$ cat&lt;&lt;EOF | kubectl apply -f -</span><br><span class="line">apiVersion: v1</span><br><span class="line">kind: ServiceAccount</span><br><span class="line">metadata:</span><br><span class="line">  name: prometheus</span><br><span class="line">---</span><br><span class="line">apiVersion: monitoring.coreos.com/v1</span><br><span class="line">kind: Prometheus</span><br><span class="line">metadata:</span><br><span class="line">  name: prometheus</span><br><span class="line">spec:</span><br><span class="line">  serviceMonitorSelector:</span><br><span class="line">    matchLabels:</span><br><span class="line">      team: frontend</span><br><span class="line">  serviceAccountName: prometheus</span><br><span class="line">  resources:</span><br><span class="line">    requests:</span><br><span class="line">      memory: 400Mi</span><br><span class="line">EOF</span><br></pre></td></tr></table></figure>
+
+<p>因为负载均衡，一个svc下的一组pod是监控的最小单位，要监控一个svc的metrics就声明创建一个<code>servicemonitors</code>即可。</p>
+<h3 id="部署一组pod及其svc"><a href="#部署一组pod及其svc" class="headerlink" title="部署一组pod及其svc"></a>部署一组pod及其svc</h3><p>首先，我们部署一个带metrics输出的简单程序的deploy，该镜像里的主进程会在8080端口上输出metrics信息。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">$ cat&lt;&lt;EOF | kubectl apply -f -</span><br><span class="line">apiVersion: extensions/v1beta1</span><br><span class="line">kind: Deployment</span><br><span class="line">metadata:</span><br><span class="line">  name: example-app</span><br><span class="line">spec:</span><br><span class="line">  replicas: 3</span><br><span class="line">  template:</span><br><span class="line">    metadata:</span><br><span class="line">      labels:</span><br><span class="line">        app: example-app</span><br><span class="line">    spec:</span><br><span class="line">      containers:</span><br><span class="line">      - name: example-app</span><br><span class="line">        image: zhangguanzhang/instrumented_app</span><br><span class="line">        ports:</span><br><span class="line">        - name: web</span><br><span class="line">          containerPort: 8080</span><br><span class="line">EOF</span><br></pre></td></tr></table></figure>
+
+<p>创建对应的svc。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">$ cat&lt;&lt;EOF | kubectl apply -f -</span><br><span class="line">kind: Service</span><br><span class="line">apiVersion: v1</span><br><span class="line">metadata:</span><br><span class="line">  name: example-app</span><br><span class="line">  labels:</span><br><span class="line">    app: example-app</span><br><span class="line">spec:</span><br><span class="line">  selector:</span><br><span class="line">    app: example-app</span><br><span class="line">  ports:</span><br><span class="line">  - name: web</span><br><span class="line">    port: 8080</span><br><span class="line">EOF</span><br></pre></td></tr></table></figure>
+
+<h3 id="部署kind-ServiceMonitor"><a href="#部署kind-ServiceMonitor" class="headerlink" title="部署kind: ServiceMonitor"></a>部署kind: ServiceMonitor</h3><p>现在创建一个<code>ServiceMonitor</code>来告诉prometheus server需要监控带有label <code>app: example-app</code>的svc背后的一组pod的metrics。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">$ cat&lt;&lt;EOF | kubectl apply -f -</span><br><span class="line">apiVersion: monitoring.coreos.com/v1</span><br><span class="line">kind: ServiceMonitor</span><br><span class="line">metadata:</span><br><span class="line">  name: example-app</span><br><span class="line">  labels:</span><br><span class="line">    team: frontend</span><br><span class="line">spec:</span><br><span class="line">  selector:</span><br><span class="line">    matchLabels:</span><br><span class="line">      app: example-app</span><br><span class="line">  endpoints:</span><br><span class="line">  - port: web</span><br><span class="line">EOF</span><br></pre></td></tr></table></figure>
+
+<p>默认情况下<code>ServiceMonitor</code>和监控对象必须是在相同Namespace下的，如果要关联非同ns下需要下面这样设置值。</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">spec:</span></span><br><span class="line"><span class="attr">  namespaceSelector:</span></span><br><span class="line"><span class="attr">    matchNames:</span></span><br><span class="line"><span class="bullet">    -</span> <span class="string">target_ns_name</span></span><br></pre></td></tr></table></figure>
+
+<p>如果希望ServiceMonitor可以关联任意命名空间下的标签，则通过以下方式定义：</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">spec:</span></span><br><span class="line"><span class="attr">  namespaceSelector:</span></span><br><span class="line"><span class="attr">    any:</span> <span class="literal">true</span></span><br></pre></td></tr></table></figure>
+
+<p>如果需要监控的Target对象启用了BasicAuth认证，那在定义ServiceMonitor对象时，可以使用endpoints配置中定义basicAuth如下所示basicAuth中的<code>password</code>和<code>username</code>值来源于同ns下的一个名为<code>basic-auth</code>的Secret。</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">spec</span></span><br><span class="line"><span class="attr">  endpoints:</span></span><br><span class="line"><span class="attr">  - basicAuth:</span></span><br><span class="line"><span class="attr">      password:</span></span><br><span class="line"><span class="attr">        name:</span> <span class="string">basic-auth</span></span><br><span class="line"><span class="attr">        key:</span> <span class="string">password</span></span><br><span class="line"><span class="attr">      username:</span></span><br><span class="line"><span class="attr">        name:</span> <span class="string">basic-auth</span></span><br><span class="line"><span class="attr">        key:</span> <span class="string">user</span></span><br><span class="line"><span class="attr">    port:</span> <span class="string">web</span></span><br><span class="line"><span class="meta">---</span></span><br><span class="line"><span class="attr">apiVersion:</span> <span class="string">v1</span></span><br><span class="line"><span class="attr">kind:</span> <span class="string">Secret</span></span><br><span class="line"><span class="attr">metadata:</span></span><br><span class="line"><span class="attr">  name:</span> <span class="string">basic-auth</span></span><br><span class="line"><span class="attr">type:</span> <span class="string">Opaque</span></span><br><span class="line"><span class="attr">data:</span></span><br><span class="line"><span class="attr">  user:</span> <span class="string">dXNlcgo=</span> <span class="comment"># base64编码后的用户名</span></span><br><span class="line"><span class="attr">  password:</span> <span class="string">cGFzc3dkCg==</span> <span class="comment"># base64编码后的密码</span></span><br></pre></td></tr></table></figure>
+
+<p>上面要注意的是我创建prometheus server的时候有如下值。</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">serviceMonitorSelector:</span></span><br><span class="line"><span class="attr">  matchLabels:</span></span><br><span class="line"><span class="attr">    team:</span> <span class="string">frontend</span></span><br></pre></td></tr></table></figure>
+
+<p>该值字面意思可以知道就是指定prometheus server去选择哪些<code>ServiceMonitor</code>，这个概念和svc去选择pod一样，可能一个集群跑很多prometheus server来监控各自选中的<code>ServiceMonitor</code>，如果想一个prometheus server监控所有的则<code>spec.serviceMonitorSelector: {}</code>为空即可，而namespaces的范围同样的设置<code>spec.serviceMonitorSelector: {}</code>，后面官方的prometheus实例里我们可以看到设置了这两个值。</p>
+<p>给prometheus server设置相关的RBAC权限。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line">$ cat&lt;&lt;EOF | kubectl apply -f -</span><br><span class="line">apiVersion: rbac.authorization.k8s.io/v1beta1</span><br><span class="line">kind: ClusterRole</span><br><span class="line">metadata:</span><br><span class="line">  name: prometheus</span><br><span class="line">rules:</span><br><span class="line">- apiGroups: [<span class="string">""</span>]</span><br><span class="line">  resources:</span><br><span class="line">  - nodes</span><br><span class="line">  - services</span><br><span class="line">  - endpoints</span><br><span class="line">  - pods</span><br><span class="line">  verbs: [<span class="string">"get"</span>， <span class="string">"list"</span>， <span class="string">"watch"</span>]</span><br><span class="line">- apiGroups: [<span class="string">""</span>]</span><br><span class="line">  resources:</span><br><span class="line">  - configmaps</span><br><span class="line">  verbs: [<span class="string">"get"</span>]</span><br><span class="line">- nonResourceURLs: [<span class="string">"/metrics"</span>]</span><br><span class="line">  verbs: [<span class="string">"get"</span>]</span><br><span class="line">---</span><br><span class="line">apiVersion: rbac.authorization.k8s.io/v1beta1</span><br><span class="line">kind: ClusterRoleBinding</span><br><span class="line">metadata:</span><br><span class="line">  name: prometheus</span><br><span class="line">roleRef:</span><br><span class="line">  apiGroup: rbac.authorization.k8s.io</span><br><span class="line">  kind: ClusterRole</span><br><span class="line">  name: prometheus</span><br><span class="line">subjects:</span><br><span class="line">- kind: ServiceAccount</span><br><span class="line">  name: prometheus</span><br><span class="line">  namespace: default</span><br><span class="line">EOF</span><br></pre></td></tr></table></figure>
+
+<p>创建svc使用<code>NodePort</code>方便我们访问prometheus的web页面，生产环境不建议使用<code>NodePort</code>。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">$ cat&lt;&lt;EOF | kubectl apply -f -</span><br><span class="line">apiVersion: v1</span><br><span class="line">kind: Service</span><br><span class="line">metadata:</span><br><span class="line">  name: prometheus</span><br><span class="line">spec:</span><br><span class="line">  <span class="built_in">type</span>: NodePort</span><br><span class="line">  ports:</span><br><span class="line">  - name: web</span><br><span class="line">    nodePort: 30900</span><br><span class="line">    port: 9090</span><br><span class="line">    protocol: TCP</span><br><span class="line">    targetPort: web</span><br><span class="line">  selector:</span><br><span class="line">    prometheus: prometheus</span><br><span class="line">EOF</span><br></pre></td></tr></table></figure>
+
+<p>打开浏览器访问<code>ip:30900</code>进入target发现已经监听起来了，对应的config里也有配置生成和导入。</p>
+<p>先清理掉上面的，然后我们使用官方提供的全套yaml正式部署<code>prometheus-operator</code>。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">kubectl delete svc prometheus example-app</span><br><span class="line">kubectl delete ClusterRoleBinding prometheus </span><br><span class="line">kubectl delete ClusterRole prometheus</span><br><span class="line">kubectl delete ServiceMonitor example-app</span><br><span class="line">kubectl delete deploy example-app</span><br><span class="line">kubectl delete  sa prometheus</span><br><span class="line">kubectl delete prometheus prometheus</span><br><span class="line">kubectl delete -f bundle.yaml</span><br></pre></td></tr></table></figure>
+
+<h3 id="部署官方的prometheus-operator"><a href="#部署官方的prometheus-operator" class="headerlink" title="部署官方的prometheus-operator"></a>部署官方的prometheus-operator</h3><p>官方把所有文件都放在一起，这里我分类下。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">cd</span> contrib/kube-prometheus/manifests/</span><br><span class="line">mkdir -p operator node-exporter alertmanager grafana kube-state-metrics prometheus serviceMonitor adapter</span><br><span class="line">mv *-serviceMonitor* serviceMonitor/</span><br><span class="line">mv 0prometheus-operator* operator/</span><br><span class="line">mv grafana-* grafana/</span><br><span class="line">mv kube-state-metrics-* kube-state-metrics/</span><br><span class="line">mv alertmanager-* alertmanager/</span><br><span class="line">mv node-exporter-* node-exporter/</span><br><span class="line">mv prometheus-adapter* adapter/</span><br><span class="line">mv prometheus-* prometheus/</span><br><span class="line">$ ll</span><br><span class="line">total 40</span><br><span class="line">drwxr-xr-x 9 root root 4096 Jan  6 14:19 ./</span><br><span class="line">drwxr-xr-x 9 root root 4096 Jan  6 14:15 ../</span><br><span class="line">-rw-r--r-- 1 root root   60 Jan  6 14:15 00namespace-namespace.yaml</span><br><span class="line">drwxr-xr-x 3 root root 4096 Jan  6 14:19 adapter/</span><br><span class="line">drwxr-xr-x 3 root root 4096 Jan  6 14:19 alertmanager/</span><br><span class="line">drwxr-xr-x 2 root root 4096 Jan  6 14:17 grafana/</span><br><span class="line">drwxr-xr-x 2 root root 4096 Jan  6 14:17 kube-state-metrics/</span><br><span class="line">drwxr-xr-x 2 root root 4096 Jan  6 14:18 node-exporter/</span><br><span class="line">drwxr-xr-x 2 root root 4096 Jan  6 14:17 operator/</span><br><span class="line">drwxr-xr-x 2 root root 4096 Jan  6 14:19 prometheus/</span><br><span class="line">drwxr-xr-x 2 root root 4096 Jan  6 14:17 serviceMonitor/</span><br></pre></td></tr></table></figure>
+
+<p><strong>部署operator</strong></p>
+<p>先创建ns和operator，quay.io仓库拉取慢，可以使用我脚本拉取，其他镜像也可以这样去拉，不过在apply之前才能拉，一旦被docker接手拉取就只能漫长等。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">kubectl apply -f .</span><br><span class="line">curl -s https://zhangguanzhang.github.io/bash/pull.sh | bash -s -- quay.io/coreos/prometheus-operator:v0.26.0</span><br><span class="line">kubectl apply -f operator/</span><br></pre></td></tr></table></figure>
+
+<p>确认状态运行正常再往后执行，这里镜像是quay.io仓库的可能会很慢耐心等待或者自行修改成能拉取到的。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$ kubectl -n monitoring get pod</span><br><span class="line">NAME                                   READY     STATUS    RESTARTS   AGE</span><br><span class="line">prometheus-operator-56954c76b5-qm9ww   1/1       Running   0          24s</span><br></pre></td></tr></table></figure>
+
+<p><strong>部署整套CRD</strong></p>
+<p>创建相关的CRD，这里镜像可能也要很久。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">kubectl apply -f adapter/</span><br><span class="line">kubectl apply -f alertmanager/</span><br><span class="line">kubectl apply -f node-exporter/</span><br><span class="line">kubectl apply -f kube-state-metrics/</span><br><span class="line">kubectl apply -f grafana/</span><br><span class="line">kubectl apply -f prometheus/</span><br><span class="line">kubectl apply -f serviceMonitor/</span><br></pre></td></tr></table></figure>
+
+<p>可以通过get查看整体状态，这里镜像原因会等待很久，我们可以先往后看几个坑的地方。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">kubectl -n monitoring get all</span><br></pre></td></tr></table></figure>
+
+<h1 id="踩坑"><a href="#踩坑" class="headerlink" title="踩坑"></a>踩坑</h1><h2 id="坑一"><a href="#坑一" class="headerlink" title="坑一"></a>坑一</h2><p>这里要注意有一个坑，二进制部署k8s管理组件和新版本kubeadm部署的都会发现在prometheus server的页面上发现<code>kube-controller</code>和<code>kube-schedule</code>的target为0/0也就是上图所示。这是因为serviceMonitor是根据label去选取svc的，我们可以看到对应的<code>serviceMonitor</code>是选取的ns范围是<code>kube-system</code>。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">$ grep -2 selector serviceMonitor/prometheus-serviceMonitorKube*</span><br><span class="line">serviceMonitor/prometheus-serviceMonitorKubeControllerManager.yaml-    matchNames:</span><br><span class="line">serviceMonitor/prometheus-serviceMonitorKubeControllerManager.yaml-    - kube-system</span><br><span class="line">serviceMonitor/prometheus-serviceMonitorKubeControllerManager.yaml:  selector:</span><br><span class="line">serviceMonitor/prometheus-serviceMonitorKubeControllerManager.yaml-    matchLabels:</span><br><span class="line">serviceMonitor/prometheus-serviceMonitorKubeControllerManager.yaml-      k8s-app: kube-controller-manager</span><br><span class="line">--</span><br><span class="line">serviceMonitor/prometheus-serviceMonitorKubelet.yaml-    matchNames:</span><br><span class="line">serviceMonitor/prometheus-serviceMonitorKubelet.yaml-    - kube-system</span><br><span class="line">serviceMonitor/prometheus-serviceMonitorKubelet.yaml:  selector:</span><br><span class="line">serviceMonitor/prometheus-serviceMonitorKubelet.yaml-    matchLabels:</span><br><span class="line">serviceMonitor/prometheus-serviceMonitorKubelet.yaml-      k8s-app: kubelet</span><br><span class="line">--</span><br><span class="line">serviceMonitor/prometheus-serviceMonitorKubeScheduler.yaml-    matchNames:</span><br><span class="line">serviceMonitor/prometheus-serviceMonitorKubeScheduler.yaml-    - kube-system</span><br><span class="line">serviceMonitor/prometheus-serviceMonitorKubeScheduler.yaml:  selector:</span><br><span class="line">serviceMonitor/prometheus-serviceMonitorKubeScheduler.yaml-    matchLabels:</span><br><span class="line">serviceMonitor/prometheus-serviceMonitorKubeScheduler.yaml-      k8s-app: kube-scheduler</span><br></pre></td></tr></table></figure>
+
+<p>而kube-system里默认只有这俩svc，且没有符合上面的label。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">$ kubectl -n kube-system get svc</span><br><span class="line">NAME                      TYPE        CLUSTER-IP   EXTERNAL-IP   PORT(S)         AGE</span><br><span class="line">kube-dns                  ClusterIP   10.96.0.10   &lt;none&gt;        53/UDP，53/TCP   139m</span><br><span class="line">kubelet                   ClusterIP   None         &lt;none&gt;        10250/TCP       103m</span><br></pre></td></tr></table></figure>
+
+<p>但是却有对应的ep(没有带任何label)被创建，这点想不通官方什么鬼操作，另外这里没有kubelet的ep，我博客部署的二进制的话会有。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">$ kubectl get ep -n kube-system</span><br><span class="line">NAME                      ENDPOINTS                                                AGE</span><br><span class="line">kube-controller-manager   &lt;none&gt;                                                   139m</span><br><span class="line">kube-dns                  10.244.1.2:53，10.244.8.10:53，10.244.1.2:53 + 1 more...   139m</span><br><span class="line">kube-scheduler            &lt;none&gt;                                                   139m</span><br></pre></td></tr></table></figure>
+
+<p><strong>解决办法</strong></p>
+<p>所以这里我们创建两个管理组建的svc，名字无所谓，关键是svc的label要能被servicemonitor选中，svc的选择器的label是因为kubeadm的staticPod的label是这样，如果是二进制部署的这俩svc的selector部分不能要。</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">apiVersion:</span> <span class="string">v1</span></span><br><span class="line"><span class="attr">kind:</span> <span class="string">Service</span></span><br><span class="line"><span class="attr">metadata:</span></span><br><span class="line"><span class="attr">  namespace:</span> <span class="string">kube-system</span></span><br><span class="line"><span class="attr">  name:</span> <span class="string">kube-controller-manager</span></span><br><span class="line"><span class="attr">  labels:</span></span><br><span class="line"><span class="attr">    k8s-app:</span> <span class="string">kube-controller-manager</span></span><br><span class="line"><span class="attr">spec:</span></span><br><span class="line"><span class="attr">  selector:</span></span><br><span class="line"><span class="attr">    component:</span> <span class="string">kube-controller-manager</span></span><br><span class="line"><span class="attr">  type:</span> <span class="string">ClusterIP</span></span><br><span class="line"><span class="attr">  clusterIP:</span> <span class="string">None</span></span><br><span class="line"><span class="attr">  ports:</span></span><br><span class="line"><span class="attr">  - name:</span> <span class="string">http-metrics</span></span><br><span class="line"><span class="attr">    port:</span> <span class="number">10252</span></span><br><span class="line"><span class="attr">    targetPort:</span> <span class="number">10252</span></span><br><span class="line"><span class="attr">    protocol:</span> <span class="string">TCP</span></span><br><span class="line"><span class="meta">---</span></span><br><span class="line"><span class="attr">apiVersion:</span> <span class="string">v1</span></span><br><span class="line"><span class="attr">kind:</span> <span class="string">Service</span></span><br><span class="line"><span class="attr">metadata:</span></span><br><span class="line"><span class="attr">  namespace:</span> <span class="string">kube-system</span></span><br><span class="line"><span class="attr">  name:</span> <span class="string">kube-scheduler</span></span><br><span class="line"><span class="attr">  labels:</span></span><br><span class="line"><span class="attr">    k8s-app:</span> <span class="string">kube-scheduler</span></span><br><span class="line"><span class="attr">spec:</span></span><br><span class="line"><span class="attr">  selector:</span></span><br><span class="line"><span class="attr">    component:</span> <span class="string">kube-scheduler</span></span><br><span class="line"><span class="attr">  type:</span> <span class="string">ClusterIP</span></span><br><span class="line"><span class="attr">  clusterIP:</span> <span class="string">None</span></span><br><span class="line"><span class="attr">  ports:</span></span><br><span class="line"><span class="attr">  - name:</span> <span class="string">http-metrics</span></span><br><span class="line"><span class="attr">    port:</span> <span class="number">10251</span></span><br><span class="line"><span class="attr">    targetPort:</span> <span class="number">10251</span></span><br><span class="line"><span class="attr">    protocol:</span> <span class="string">TCP</span></span><br></pre></td></tr></table></figure>
+
+<p>二进制的话需要我们手动填入svc对应的ep的属性，我集群是HA的，所有有三个，仅供参考，别傻傻得照抄，另外这个ep的名字得和上面的svc的名字和属性对应上：</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">apiVersion:</span> <span class="string">v1</span></span><br><span class="line"><span class="attr">kind:</span> <span class="string">Endpoints</span></span><br><span class="line"><span class="attr">metadata:</span></span><br><span class="line"><span class="attr">  labels:</span></span><br><span class="line"><span class="attr">    k8s-app:</span> <span class="string">kube-controller-manager</span></span><br><span class="line"><span class="attr">  name:</span> <span class="string">kube-controller-manager</span></span><br><span class="line"><span class="attr">  namespace:</span> <span class="string">kube-system</span></span><br><span class="line"><span class="attr">subsets:</span></span><br><span class="line"><span class="attr">- addresses:</span></span><br><span class="line"><span class="attr">  - ip:</span> <span class="number">172.16</span><span class="number">.0</span><span class="number">.2</span></span><br><span class="line"><span class="attr">  - ip:</span> <span class="number">172.16</span><span class="number">.0</span><span class="number">.7</span></span><br><span class="line"><span class="attr">  - ip:</span> <span class="number">172.16</span><span class="number">.0</span><span class="number">.8</span></span><br><span class="line"><span class="attr">  ports:</span></span><br><span class="line"><span class="attr">  - name:</span> <span class="string">http-metrics</span></span><br><span class="line"><span class="attr">    port:</span> <span class="number">10252</span></span><br><span class="line"><span class="attr">    protocol:</span> <span class="string">TCP</span></span><br><span class="line"><span class="meta">---</span></span><br><span class="line"><span class="attr">apiVersion:</span> <span class="string">v1</span></span><br><span class="line"><span class="attr">kind:</span> <span class="string">Endpoints</span></span><br><span class="line"><span class="attr">metadata:</span></span><br><span class="line"><span class="attr">  labels:</span></span><br><span class="line"><span class="attr">    k8s-app:</span> <span class="string">kube-scheduler</span></span><br><span class="line"><span class="attr">  name:</span> <span class="string">kube-scheduler</span></span><br><span class="line"><span class="attr">  namespace:</span> <span class="string">kube-system</span></span><br><span class="line"><span class="attr">subsets:</span></span><br><span class="line"><span class="attr">- addresses:</span></span><br><span class="line"><span class="attr">  - ip:</span> <span class="number">172.16</span><span class="number">.0</span><span class="number">.2</span></span><br><span class="line"><span class="attr">  - ip:</span> <span class="number">172.16</span><span class="number">.0</span><span class="number">.7</span></span><br><span class="line"><span class="attr">  - ip:</span> <span class="number">172.16</span><span class="number">.0</span><span class="number">.8</span></span><br><span class="line"><span class="attr">  ports:</span></span><br><span class="line"><span class="attr">  - name:</span> <span class="string">http-metrics</span></span><br><span class="line"><span class="attr">    port:</span> <span class="number">10251</span></span><br><span class="line"><span class="attr">    protocol:</span> <span class="string">TCP</span></span><br></pre></td></tr></table></figure>
+
+<p>这里不知道为啥kubeadm部署的没有kubelet这个ep，我博客二进制部署后是会有kubelet这个ep的(好像metrics server创建的)，下面仅供参考，IP根据实际写。另外kubeadm部署下kubelet的readonly的metrics端口(默认是10255)不会开放可以删掉ep的那部分port：</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">apiVersion:</span> <span class="string">v1</span></span><br><span class="line"><span class="attr">kind:</span> <span class="string">Endpoints</span></span><br><span class="line"><span class="attr">metadata:</span></span><br><span class="line"><span class="attr">  labels:</span></span><br><span class="line"><span class="attr">    k8s-app:</span> <span class="string">kubelet</span></span><br><span class="line"><span class="attr">  name:</span> <span class="string">kubelet</span></span><br><span class="line"><span class="attr">  namespace:</span> <span class="string">kube-system</span></span><br><span class="line"><span class="attr">subsets:</span></span><br><span class="line"><span class="attr">- addresses:</span></span><br><span class="line"><span class="attr">  - ip:</span> <span class="number">172.16</span><span class="number">.0</span><span class="number">.14</span></span><br><span class="line"><span class="attr">    targetRef:</span></span><br><span class="line"><span class="attr">      kind:</span> <span class="string">Node</span></span><br><span class="line"><span class="attr">      name:</span> <span class="string">k8s-n2</span></span><br><span class="line"><span class="attr">  - ip:</span> <span class="number">172.16</span><span class="number">.0</span><span class="number">.18</span></span><br><span class="line"><span class="attr">    targetRef:</span></span><br><span class="line"><span class="attr">      kind:</span> <span class="string">Node</span></span><br><span class="line"><span class="attr">      name:</span> <span class="string">k8s-n3</span></span><br><span class="line"><span class="attr">  - ip:</span> <span class="number">172.16</span><span class="number">.0</span><span class="number">.2</span></span><br><span class="line"><span class="attr">    targetRef:</span></span><br><span class="line"><span class="attr">      kind:</span> <span class="string">Node</span></span><br><span class="line"><span class="attr">      name:</span> <span class="string">k8s-m1</span></span><br><span class="line"><span class="attr">  - ip:</span> <span class="number">172.16</span><span class="number">.0</span><span class="number">.20</span></span><br><span class="line"><span class="attr">    targetRef:</span></span><br><span class="line"><span class="attr">      kind:</span> <span class="string">Node</span></span><br><span class="line"><span class="attr">      name:</span> <span class="string">k8s-n4</span></span><br><span class="line"><span class="attr">  - ip:</span> <span class="number">172.16</span><span class="number">.0</span><span class="number">.21</span></span><br><span class="line"><span class="attr">    targetRef:</span></span><br><span class="line"><span class="attr">      kind:</span> <span class="string">Node</span></span><br><span class="line"><span class="attr">      name:</span> <span class="string">k8s-n5</span></span><br><span class="line"><span class="attr">  ports:</span></span><br><span class="line"><span class="attr">  - name:</span> <span class="string">http-metrics</span></span><br><span class="line"><span class="attr">    port:</span> <span class="number">10255</span></span><br><span class="line"><span class="attr">    protocol:</span> <span class="string">TCP</span></span><br><span class="line"><span class="attr">  - name:</span> <span class="string">cadvisor</span></span><br><span class="line"><span class="attr">    port:</span> <span class="number">4194</span></span><br><span class="line"><span class="attr">    protocol:</span> <span class="string">TCP</span></span><br><span class="line"><span class="attr">  - name:</span> <span class="string">https-metrics</span></span><br><span class="line"><span class="attr">    port:</span> <span class="number">10250</span></span><br><span class="line"><span class="attr">    protocol:</span> <span class="string">TCP</span></span><br></pre></td></tr></table></figure>
+
+<p>至于prometheus server的服务访问，别再用效率不行的<code>NodePort</code>了，上ingress controller吧，怎么部署参照我博客<a href="https://zhangguanzhang.github.io/2018/10/06/IngressController/" target="_blank" rel="noopener">IngressController</a>。</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">apiVersion:</span> <span class="string">extensions/v1beta1</span></span><br><span class="line"><span class="attr">kind:</span> <span class="string">Ingress</span></span><br><span class="line"><span class="attr">metadata:</span></span><br><span class="line"><span class="attr">  name:</span> <span class="string">prometheus-ing</span></span><br><span class="line"><span class="attr">  namespace:</span> <span class="string">monitoring</span></span><br><span class="line"><span class="attr">spec:</span></span><br><span class="line"><span class="attr">  rules:</span></span><br><span class="line"><span class="attr">  - host:</span> <span class="string">prometheus.monitoring.k8s.local</span></span><br><span class="line"><span class="attr">    http:</span></span><br><span class="line"><span class="attr">      paths:</span></span><br><span class="line"><span class="attr">      - backend:</span></span><br><span class="line"><span class="attr">          serviceName:</span> <span class="string">prometheus-k8s</span></span><br><span class="line"><span class="attr">          servicePort:</span> <span class="number">9090</span></span><br><span class="line"><span class="meta">---</span></span><br><span class="line"><span class="attr">apiVersion:</span> <span class="string">extensions/v1beta1</span></span><br><span class="line"><span class="attr">kind:</span> <span class="string">Ingress</span></span><br><span class="line"><span class="attr">metadata:</span></span><br><span class="line"><span class="attr">  name:</span> <span class="string">grafana-ing</span></span><br><span class="line"><span class="attr">  namespace:</span> <span class="string">monitoring</span></span><br><span class="line"><span class="attr">spec:</span></span><br><span class="line"><span class="attr">  rules:</span></span><br><span class="line"><span class="attr">  - host:</span> <span class="string">grafana.monitoring.k8s.local</span></span><br><span class="line"><span class="attr">    http:</span></span><br><span class="line"><span class="attr">      paths:</span></span><br><span class="line"><span class="attr">      - backend:</span></span><br><span class="line"><span class="attr">          serviceName:</span> <span class="string">grafana</span></span><br><span class="line"><span class="attr">          servicePort:</span> <span class="number">3000</span></span><br><span class="line"><span class="meta">---</span></span><br><span class="line"><span class="attr">apiVersion:</span> <span class="string">extensions/v1beta1</span></span><br><span class="line"><span class="attr">kind:</span> <span class="string">Ingress</span></span><br><span class="line"><span class="attr">metadata:</span></span><br><span class="line"><span class="attr">  name:</span> <span class="string">alertmanager-ing</span></span><br><span class="line"><span class="attr">  namespace:</span> <span class="string">monitoring</span></span><br><span class="line"><span class="attr">spec:</span></span><br><span class="line"><span class="attr">  rules:</span></span><br><span class="line"><span class="attr">  - host:</span> <span class="string">alertmanager.monitoring.k8s.local</span></span><br><span class="line"><span class="attr">    http:</span></span><br><span class="line"><span class="attr">      paths:</span></span><br><span class="line"><span class="attr">      - backend:</span></span><br><span class="line"><span class="attr">          serviceName:</span> <span class="string">alertmanager-main</span></span><br><span class="line"><span class="attr">          servicePort:</span> <span class="number">9093</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="坑二"><a href="#坑二" class="headerlink" title="坑二"></a>坑二</h2><p>访问prometheus server的web页面我们发现即使创建了svc和注入对应ep的信息在target页面发现prometheus server请求被拒绝。</p>
+<p>在宿主机上我们发现127.0.0.1才能访问，网卡ip不能访问(这里是另一个环境找的，所以ip是192不是前面的172)</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">$ hostname -i</span><br><span class="line">192.168.15.223</span><br><span class="line">$ curl -I http://192.168.15.223:10251/metrics</span><br><span class="line">curl: (7) Failed connect to 192.168.15.223:10251; Connection refused</span><br><span class="line">$ curl -I http://127.0.0.1:10251/metrics</span><br><span class="line">HTTP/1.1 200 OK</span><br><span class="line">Content-Length: 30349</span><br><span class="line">Content-Type: text/plain; version=0.0.4</span><br><span class="line">Date: Mon， 07 Jan 2019 13:33:50 GMT</span><br></pre></td></tr></table></figure>
+
+<p><strong>解决办法</strong></p>
+<p>修改管理组件bind的ip。</p>
+<p>如果使用kubeadm启动的集群，初始化时的config.yml里可以加入如下参数</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">controllerManagerExtraArgs:</span></span><br><span class="line"><span class="attr">  address:</span> <span class="number">0.0</span><span class="number">.0</span><span class="number">.0</span></span><br><span class="line"><span class="attr">schedulerExtraArgs:</span></span><br><span class="line"><span class="attr">  address:</span> <span class="number">0.0</span><span class="number">.0</span><span class="number">.0</span></span><br></pre></td></tr></table></figure>
+
+<p>已经启动后的使用下面命令更改就会滚动更新</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sed -ri <span class="string">'/--address/s#=.+#=0.0.0.0#'</span> /etc/kubernetes/manifests/kube-*</span><br></pre></td></tr></table></figure>
+
+<p>二进制的话查看是不是bind的0.0.0.0如果不是就修改成0.0.0.0，多块网卡如果只想bind一个网卡就写对应的主机上的网卡ip，写0.0.0.0就会监听所有网卡的对应端口。</p>
+<h1 id="监控mysql"><a href="#监控mysql" class="headerlink" title="监控mysql"></a>监控mysql</h1><p><strong>曾经</strong></p>
+<p>想象一下，我们以传统的方式去监控一个mysql服务，首先需要安装mysql-exporter，获取mysql metrics，并且暴露一个端口，等待prometheus服务来拉取监控信息，然后去Prometheus Server的prometheus.yaml文件中在scarpe_config中添加mysql-exporter的job，配置mysql-exporter的地址和端口等信息，再然后，需要重启Prometheus服务，就完成添加一个mysql监控的任务</p>
+<p><strong>现在</strong></p>
+<p>现在我们以Prometheus-Operator的方式来部署Prometheus，当我们需要添加一个mysql监控我们会怎么做，首先第一步和传统方式一样，部署一个mysql-exporter来获取mysql监控项，然后编写一个ServiceMonitor通过labelSelector选择刚才部署的mysql-exporter，由于Operator在部署Prometheus的时候默认指定了Prometheus选择label为：<code>prometheus: kube-prometheus</code>的ServiceMonitor，所以只需要在ServiceMonitor上打上<code>prometheus: kube-prometheus</code>标签就可以被Prometheus选择了，完成以上两步就完成了对mysql的监控，不需要改Prometheus配置文件，也不需要重启Prometheus服务，是不是很方便，Operator观察到ServiceMonitor发生变化，会动态生成Prometheus配置文件，并保证配置文件实时生效</p>
+<h2 id="安装mysql-exporter"><a href="#安装mysql-exporter" class="headerlink" title="安装mysql_exporter"></a>安装mysql_exporter</h2><p>获取安装包</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">helm fetch stable/prometheus-mysql-exporter</span><br></pre></td></tr></table></figure>
+
+<p>解压</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">tar xf prometheus-mysql-exporter-0.5.2.tgz</span><br></pre></td></tr></table></figure>
+
+<p>进入解压出来的文件夹修改values文件</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Default values for prometheus-mysql-exporter.</span></span><br><span class="line"><span class="comment"># This is a YAML-formatted file.</span></span><br><span class="line"><span class="comment"># Declare variables to be passed into your templates.</span></span><br><span class="line"></span><br><span class="line"><span class="attr">replicaCount:</span> <span class="number">1</span></span><br><span class="line"></span><br><span class="line"><span class="attr">image:</span></span><br><span class="line"><span class="attr">  repository:</span> <span class="string">"prom/mysqld-exporter"</span></span><br><span class="line"><span class="attr">  tag:</span> <span class="string">"v0.11.0"</span></span><br><span class="line"><span class="attr">  pullPolicy:</span> <span class="string">"IfNotPresent"</span></span><br><span class="line"></span><br><span class="line"><span class="attr">service:</span></span><br><span class="line"><span class="attr">  name:</span> <span class="string">mysql-exporter</span></span><br><span class="line"><span class="attr">  type:</span> <span class="string">ClusterIP</span></span><br><span class="line"><span class="attr">  externalPort:</span> <span class="number">9104</span></span><br><span class="line"><span class="attr">  internalPort:</span> <span class="number">9104</span></span><br><span class="line"></span><br><span class="line"><span class="attr">serviceMonitor:</span></span><br><span class="line">  <span class="comment"># enabled should be set to true to enable prometheus-operator discovery of this service</span></span><br><span class="line"><span class="attr">  enabled:</span> <span class="literal">true</span></span><br><span class="line">  <span class="comment"># interval is the interval at which metrics should be scraped</span></span><br><span class="line">  <span class="comment"># interval: 30s</span></span><br><span class="line">  <span class="comment"># scrapeTimeout is the timeout after which the scrape is ended</span></span><br><span class="line">  <span class="comment"># scrapeTimeout: 10s</span></span><br><span class="line">  <span class="comment"># additionalLabels is the set of additional labels to add to the ServiceMonitor</span></span><br><span class="line"><span class="attr">  additionalLabels:</span> <span class="string">&#123;&#125;</span></span><br><span class="line"><span class="comment">#    release: prometheus</span></span><br><span class="line"><span class="attr">  jobLabel:</span> <span class="string">""</span></span><br><span class="line"><span class="attr">  targetLabels:</span> <span class="string">[]</span></span><br><span class="line"><span class="attr">  podTargetLabels:</span> <span class="string">[]</span></span><br><span class="line"></span><br><span class="line"><span class="attr">resources:</span></span><br><span class="line">  <span class="comment"># We usually recommend not to specify default resources and to leave this as a conscious</span></span><br><span class="line">  <span class="comment"># choice for the user. This also increases chances charts run on environments with little</span></span><br><span class="line">  <span class="comment"># resources, such as Minikube. If you do want to specify resources, uncomment the following</span></span><br><span class="line">  <span class="comment"># lines, adjust them as necessary, and remove the curly braces after 'resources:'.</span></span><br><span class="line"><span class="attr">  limits:</span></span><br><span class="line"><span class="attr">   cpu:</span> <span class="number">400</span><span class="string">m</span></span><br><span class="line"><span class="attr">   memory:</span> <span class="number">500</span><span class="string">Mi</span></span><br><span class="line"><span class="attr">  requests:</span></span><br><span class="line"><span class="attr">   cpu:</span> <span class="number">300</span><span class="string">m</span></span><br><span class="line"><span class="attr">   memory:</span> <span class="number">200</span><span class="string">Mi</span></span><br><span class="line"></span><br><span class="line"><span class="attr">nodeSelector:</span> <span class="string">&#123;&#125;</span></span><br><span class="line"></span><br><span class="line"><span class="attr">tolerations:</span> <span class="string">[]</span></span><br><span class="line"></span><br><span class="line"><span class="attr">affinity:</span> <span class="string">&#123;&#125;</span></span><br><span class="line"></span><br><span class="line"><span class="attr">podLabels:</span> <span class="string">&#123;&#125;</span></span><br><span class="line"></span><br><span class="line"><span class="attr">annotations:</span></span><br><span class="line">  <span class="string">prometheus.io/scrape:</span> <span class="string">"true"</span></span><br><span class="line">  <span class="string">prometheus.io/path:</span> <span class="string">"/metrics"</span></span><br><span class="line">  <span class="string">prometheus.io/port:</span> <span class="string">"9104"</span></span><br><span class="line"></span><br><span class="line"><span class="attr">collectors:</span> <span class="string">&#123;&#125;</span></span><br><span class="line">  <span class="comment"># auto_increment.columns: false</span></span><br><span class="line">  <span class="comment"># binlog_size: false</span></span><br><span class="line">  <span class="comment"># engine_innodb_status: false</span></span><br><span class="line">  <span class="comment"># engine_tokudb_status: false</span></span><br><span class="line">  <span class="comment"># global_status: true</span></span><br><span class="line">  <span class="comment"># global_variables: true</span></span><br><span class="line">  <span class="comment"># info_schema.clientstats: false</span></span><br><span class="line">  <span class="comment"># info_schema.innodb_metrics: false</span></span><br><span class="line">  <span class="comment"># info_schema.innodb_tablespaces: false</span></span><br><span class="line">  <span class="comment"># info_schema.innodb_cmp: false</span></span><br><span class="line">  <span class="comment"># info_schema.innodb_cmpmem: false</span></span><br><span class="line">  <span class="comment"># info_schema.processlist: false</span></span><br><span class="line">  <span class="comment"># info_schema.processlist.min_time: 0</span></span><br><span class="line">  <span class="comment"># info_schema.query_response_time: false</span></span><br><span class="line">  <span class="comment"># info_schema.tables: true</span></span><br><span class="line">  <span class="comment"># info_schema.tables.databases: '*'</span></span><br><span class="line">  <span class="comment"># info_schema.tablestats: false</span></span><br><span class="line">  <span class="comment"># info_schema.schemastats: false</span></span><br><span class="line">  <span class="comment"># info_schema.userstats: false</span></span><br><span class="line">  <span class="comment"># perf_schema.eventsstatements: false</span></span><br><span class="line">  <span class="comment"># perf_schema.eventsstatements.digest_text_limit: 120</span></span><br><span class="line">  <span class="comment"># perf_schema.eventsstatements.limit: false</span></span><br><span class="line">  <span class="comment"># perf_schema.eventsstatements.timelimit: 86400</span></span><br><span class="line">  <span class="comment"># perf_schema.eventswaits: false</span></span><br><span class="line">  <span class="comment"># perf_schema.file_events: false</span></span><br><span class="line">  <span class="comment"># perf_schema.file_instances: false</span></span><br><span class="line">  <span class="comment"># perf_schema.indexiowaits: false</span></span><br><span class="line">  <span class="comment"># perf_schema.tableiowaits: false</span></span><br><span class="line">  <span class="comment"># perf_schema.tablelocks: false</span></span><br><span class="line">  <span class="comment"># perf_schema.replication_group_member_stats: false</span></span><br><span class="line">  <span class="comment"># slave_status: true</span></span><br><span class="line">  <span class="comment"># slave_hosts: false</span></span><br><span class="line">  <span class="comment"># heartbeat: false</span></span><br><span class="line">  <span class="comment"># heartbeat.database: heartbeat</span></span><br><span class="line">  <span class="comment"># heartbeat.table: heartbeat</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># mysql connection params which build the DATA_SOURCE_NAME env var of the docker container</span></span><br><span class="line"><span class="attr">mysql:</span></span><br><span class="line"><span class="attr">  db:</span> <span class="string">""</span></span><br><span class="line"><span class="attr">  host:</span> <span class="string">"192.168.0.1"</span></span><br><span class="line"><span class="attr">  param:</span> <span class="string">""</span></span><br><span class="line"><span class="attr">  pass:</span> <span class="string">"*****"</span></span><br><span class="line"><span class="attr">  port:</span> <span class="number">3306</span></span><br><span class="line"><span class="attr">  protocol:</span> <span class="string">""</span></span><br><span class="line"><span class="attr">  user:</span> <span class="string">"exporter"</span></span><br><span class="line"><span class="attr">  existingSecret:</span> <span class="literal">false</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># cloudsqlproxy https://cloud.google.com/sql/docs/mysql/sql-proxy</span></span><br><span class="line"><span class="attr">cloudsqlproxy:</span></span><br><span class="line"><span class="attr">  enabled:</span> <span class="literal">false</span></span><br><span class="line"><span class="attr">  image:</span></span><br><span class="line"><span class="attr">    repo:</span> <span class="string">"gcr.io/cloudsql-docker/gce-proxy"</span></span><br><span class="line"><span class="attr">    tag:</span> <span class="string">"1.14"</span></span><br><span class="line"><span class="attr">    pullPolicy:</span> <span class="string">"IfNotPresent"</span></span><br><span class="line"><span class="attr">  instanceConnectionName:</span> <span class="string">"project:us-central1:dbname"</span></span><br><span class="line"><span class="attr">  port:</span> <span class="string">"3306"</span></span><br><span class="line"><span class="attr">  credentials:</span></span><br><span class="line">    <span class="string">'&#123;</span></span><br><span class="line"><span class="string">      "type": "service_account",</span></span><br><span class="line"><span class="string">      "project_id": "project",</span></span><br><span class="line"><span class="string">      "private_key_id": "KEYID1",</span></span><br><span class="line"><span class="string">      "private_key": "-----BEGIN PRIVATE KEY-----\sdajsdnasd\n-----END PRIVATE KEY-----\n",</span></span><br><span class="line"><span class="string">      "client_email": "user@project.iam.gserviceaccount.com",</span></span><br><span class="line"><span class="string">      "client_id": "111111111",</span></span><br><span class="line"><span class="string">      "auth_uri": "https://accounts.google.com/o/oauth2/auth",</span></span><br><span class="line"><span class="string">      "token_uri": "https://accounts.google.com/o/oauth2/token",</span></span><br><span class="line"><span class="string">      "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",</span></span><br><span class="line"><span class="string">      "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/user%40project.iam.gserviceaccount.com"</span></span><br><span class="line"><span class="string">    &#125;'</span></span><br></pre></td></tr></table></figure>
+
+<p>安装</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">helm install --name me-release -f values.yaml .</span><br></pre></td></tr></table></figure>
+
+<p>如果values文件中的<strong>serviceMonitor.enabled</strong>为<strong>false</strong>，则需要我们自己创建serviceMonitor</p>
+<h2 id="创建监控"><a href="#创建监控" class="headerlink" title="创建监控"></a>创建监控</h2><p>接下来让我看看自己如何编写servicemonitor.yaml</p>
+<p>接下来编写ServiceMonitor文件,执行命令<code>vim servicemonitor.yaml</code></p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">apiVersion:</span> <span class="string">monitoring.coreos.com/v1</span></span><br><span class="line"><span class="attr">kind:</span> <span class="string">ServiceMonitor</span>  <span class="comment">#资源类型为ServiceMonitor</span></span><br><span class="line"><span class="attr">metadata:</span></span><br><span class="line"><span class="attr">  labels:</span></span><br><span class="line"><span class="attr">    prometheus:</span> <span class="string">kube-prometheus</span> <span class="comment">#prometheus默认通过 prometheus: kube-prometheus发现ServiceMonitor，只要写上这个标签prometheus服务就能发现这个ServiceMonitor</span></span><br><span class="line"><span class="attr">  name:</span> <span class="string">prometheus-exporter-mysql</span></span><br><span class="line"><span class="attr">spec:</span></span><br><span class="line"><span class="attr">  jobLabel:</span> <span class="string">app</span> <span class="comment">#jobLabel指定的标签的值将会作为prometheus配置文件中scrape_config下job_name的值，也就是Target，如果不写，默认为service的name</span></span><br><span class="line"><span class="attr">  selector:</span></span><br><span class="line"><span class="attr">    matchLabels:</span> <span class="comment">#该ServiceMonitor匹配的Service的labels，如果使用mathLabels，则下面的所有标签都匹配时才会匹配该service，如果使用matchExpressions，则至少匹配一个标签的service都会被选择</span></span><br><span class="line"><span class="attr">      app:</span> <span class="string">prometheus-mysql-exporter</span> <span class="comment"># 由于前面查看mysql-exporter的service信息中标签包含了app: prometheus-mysql-exporter这个标签，写上就能匹配到</span></span><br><span class="line"><span class="attr">  namespaceSelector:</span></span><br><span class="line"><span class="attr">    any:</span> <span class="literal">true</span> <span class="comment">#表示从所有namespace中去匹配，如果只想选择某一命名空间中的service，可以使用matchNames: []的方式</span></span><br><span class="line">    <span class="comment"># mathNames： []</span></span><br><span class="line"><span class="attr">  endpoints:</span></span><br><span class="line"><span class="attr">  - port:</span> <span class="string">mysql-exporter</span> <span class="comment">#前面查看mysql-exporter的service信息中，提供mysql监控信息的端口是Port: mysql-exporter  9104/TCP，所以这里填mysql-exporter</span></span><br><span class="line"><span class="attr">    interval:</span> <span class="number">30</span><span class="string">s</span> <span class="comment">#每30s获取一次信息</span></span><br><span class="line">  <span class="comment"># path: /metrics HTTP path to scrape for metrics，默认值为/metrics</span></span><br><span class="line"><span class="attr">    honorLabels:</span> <span class="literal">true</span></span><br></pre></td></tr></table></figure>
+
+<p>保存并退出文件，然后执行命令：<code>kubectl create -f servicemonitor.yaml</code>，创建成功之后执行命令<code>kubectl get serviceMonitor</code>查看是否有刚才创建的serviceMonitor：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">root@k8s1:~/mysql-exporter<span class="comment"># kubectl create -f servicemonitor.yaml</span></span><br><span class="line">servicemonitor.monitoring.coreos.com/prometheus-exporter-mysql created</span><br><span class="line">root@k8s1:~/mysql-exporter<span class="comment"># kubectl get serviceMonitor</span></span><br><span class="line">NAME                                               AGE</span><br><span class="line">grafana                                            4d</span><br><span class="line">kafka-release                                      5h</span><br><span class="line">kafka-release-exporter                             5h</span><br><span class="line">kube-prometheus                                    23h</span><br><span class="line">kube-prometheus-alertmanager                       23h</span><br><span class="line">kube-prometheus-exporter-coredns                   23h</span><br><span class="line">kube-prometheus-exporter-kube-controller-manager   23h</span><br><span class="line">kube-prometheus-exporter-kube-etcd                 23h</span><br><span class="line">kube-prometheus-exporter-kube-scheduler            23h</span><br><span class="line">kube-prometheus-exporter-kube-state                23h</span><br><span class="line">kube-prometheus-exporter-kubelets                  23h</span><br><span class="line">kube-prometheus-exporter-kubernetes                23h</span><br><span class="line">kube-prometheus-exporter-node                      23h</span><br><span class="line">prometheus-exporter-mysql                          13s</span><br><span class="line">prometheus-operator                                4d</span><br><span class="line">root@k8s1:~/mysql-exporter<span class="comment">#</span></span><br></pre></td></tr></table></figure>
+
+<p>可以看到Prometheus-exporter-mysql已经存在了，表示创建成功了，过1分钟左右，在prometheus的界面中查看Targets，可以看到已经成功添加了mysql监控。</p>
+<p>上面提到prometheus通过标签prometheus: kube-prometheus选择ServiceMonitor，该配置写在这里, 当然，你可以通过在values.yaml中配置serviceMonitorsSelector来指定按照自己的规则选择serviceMonitor，关于如何配置serviceMonitorsSelector将放在后文统一讲解</p>
+<h2 id="动态添加告警规则"><a href="#动态添加告警规则" class="headerlink" title="动态添加告警规则"></a>动态添加告警规则</h2><p>当我们动态添加了监控对象，一般会对该对象配置告警规则，采用prometheus-operator的架构模式下，当我们需要动态配置告警规则的时候，可以使用另一种自定义资源（CRD）PrometheusRule，PrometheusRule和ServiceMonitor都是一种自定义资源，ServiceMonitor用于动态添加监控实例，而PrometheusRule则用于动态添加告警规则，下面依然通过动态添加mysql的告警规则为例来演示如何使用PrometheusRule资源。</p>
+<p>执行命令<code>vim mysql-rule.yaml</code>，输入以下内容</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">apiVersion:</span> <span class="string">monitoring.coreos.com/v1</span> <span class="comment">#这和ServiceMonitor一样</span></span><br><span class="line"><span class="attr">kind:</span> <span class="string">PrometheusRule</span>  <span class="comment">#该资源类型是Prometheus，这也是一种自定义资源（CRD）</span></span><br><span class="line"><span class="attr">metadata:</span></span><br><span class="line"><span class="attr">  labels:</span></span><br><span class="line"><span class="attr">    app:</span> <span class="string">"prometheus-rule-mysql"</span></span><br><span class="line"><span class="attr">    prometheus:</span> <span class="string">kube-prometheus</span>  <span class="comment">#同ServiceMonitor，ruleSelector也会默认选择标签为prometheus: kube-prometheus的PrometheusRule资源</span></span><br><span class="line"><span class="attr">  name:</span> <span class="string">prometheus-rule-mysql</span></span><br><span class="line"><span class="attr">spec:</span></span><br><span class="line"><span class="attr">  groups:</span> <span class="comment">#编写告警规则，和prometheus的告警规则语法相同</span></span><br><span class="line"><span class="attr">  - name:</span> <span class="string">mysql.rules</span></span><br><span class="line"><span class="attr">    rules:</span></span><br><span class="line"><span class="attr">    - alert:</span> <span class="string">TooManyErrorFromMysql</span></span><br><span class="line"><span class="attr">      expr:</span> <span class="string">sum(irate(mysql_global_status_connection_errors_total[1m]))</span> <span class="string">&gt; 10</span></span><br><span class="line"><span class="string"></span><span class="attr">      labels:</span></span><br><span class="line"><span class="attr">        severity:</span> <span class="string">critical</span></span><br><span class="line"><span class="attr">      annotations:</span></span><br><span class="line"><span class="attr">        description:</span> <span class="string">mysql产生了太多的错误.</span></span><br><span class="line"><span class="attr">        summary:</span> <span class="string">TooManyErrorFromMysql</span></span><br><span class="line"><span class="attr">    - alert:</span> <span class="string">TooManySlowQueriesFromMysql</span></span><br><span class="line"><span class="attr">      expr:</span> <span class="string">increase(mysql_global_status_slow_queries[1m])</span> <span class="string">&gt; 10</span></span><br><span class="line"><span class="string"></span><span class="attr">      labels:</span></span><br><span class="line"><span class="attr">        severity:</span> <span class="string">critical</span></span><br><span class="line"><span class="attr">      annotations:</span></span><br><span class="line"><span class="attr">        description:</span> <span class="string">mysql一分钟内产生了&#123;&#123;</span> <span class="string">$value</span> <span class="string">&#125;&#125;条慢查询日志.</span></span><br><span class="line"><span class="attr">        summary:</span> <span class="string">TooManySlowQueriesFromMysql</span></span><br></pre></td></tr></table></figure>
+
+<p>Prometheus选择PrometheusRule资源是通过ruleSelector来选择，默认也是通过标签：prometheus: kube-prometheus来选择，在这里可以看到，ruleSelector和ServiceMonitorsSelector都是可以配置的，如何配置将放在后文的配置统一讲解</p>
+<p>保存以上文件之后执行<code>kubectl create -f mysql-rule.yaml</code>，创建成功之后执行命令<code>kubectl get prometheusRule</code>可以看到刚才创建的PrometheusRule资源prometheus-rule-mysql：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">root@k8s1:~/mysql-exporter# kubectl create -f mysql-rule.yaml</span><br><span class="line">prometheusrule.monitoring.coreos.com/prometheus-rule-mysql created</span><br><span class="line">root@k8s1:~/mysql-exporter# kubectl get prometheusRule</span><br><span class="line">NAME                                               AGE</span><br><span class="line">kube-prometheus                                    1h</span><br><span class="line">kube-prometheus-alertmanager                       1h</span><br><span class="line">kube-prometheus-exporter-kube-controller-manager   1h</span><br><span class="line">kube-prometheus-exporter-kube-etcd                 1h</span><br><span class="line">kube-prometheus-exporter-kube-scheduler            1h</span><br><span class="line">kube-prometheus-exporter-kube-state                1h</span><br><span class="line">kube-prometheus-exporter-kubelets                  1h</span><br><span class="line">kube-prometheus-exporter-kubernetes                1h</span><br><span class="line">kube-prometheus-exporter-node                      1h</span><br><span class="line">kube-prometheus-rules                              1h</span><br><span class="line">prometheus-rule-mysql                              8s</span><br></pre></td></tr></table></figure>
+
+<p>等待1分钟左右，在prometheus图形界面中可以找到刚才添加的mysql.rule的内容了</p>
+<h2 id="如何动态更新Alertmanager配置"><a href="#如何动态更新Alertmanager配置" class="headerlink" title="如何动态更新Alertmanager配置"></a>如何动态更新Alertmanager配置</h2><p><strong>原理</strong></p>
+<p>Operator部署Alertmanager的时候会生成一个statefulset类型对象，通过命令kubectl get statefulset –all-namespaces可以找到这个statefulset，可以看到name是alertmanager-kube-prometheus</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">root@k8s1:~/prometheus-operator/helm/alertmanager/templates<span class="comment"># kubectl get statefulset --all-namespaces</span></span><br><span class="line">NAMESPACE     NAME                                   DESIRED   CURRENT   AGE</span><br><span class="line">elk           elastic-release-elasticsearch-data     2         2         8d</span><br><span class="line">elk           elastic-release-elasticsearch-master   3         3         8d</span><br><span class="line">elk           logstash-release                       1         1         9d</span><br><span class="line">kafka         kafka-release                          3         3         1d</span><br><span class="line">kafka         zookeeper-release                      3         3         12d</span><br><span class="line">kube-system   mongodb-release-arbiter                1         1         16d</span><br><span class="line">kube-system   mongodb-release-primary                1         1         16d</span><br><span class="line">kube-system   mongodb-release-secondary              1         1         16d</span><br><span class="line">kube-system   my-release-mysqlha                     3         3         15d</span><br><span class="line">monitoring    alertmanager-kube-prometheus           1         1         9h</span><br><span class="line">monitoring    prometheus-kube-prometheus             1         1         9h</span><br></pre></td></tr></table></figure>
+
+<p>然后执行命令<code>kubectl describe statefulset alertmanager-kube-prometheus -n monitoring</code>可以看到该statefulset的详细信息：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br></pre></td><td class="code"><pre><span class="line">root@k8s1:~/prometheus-operator/helm/alertmanager/templates<span class="comment"># kubectl describe statefulset alertmanager-kube-prometheus -n monitoring</span></span><br><span class="line">Name:               alertmanager-kube-prometheus</span><br><span class="line">Namespace:          monitoring</span><br><span class="line">CreationTimestamp:  Wed, 05 Sep 2018 09:46:08 +0800</span><br><span class="line">Selector:           alertmanager=kube-prometheus,app=alertmanager</span><br><span class="line">Labels:             alertmanager=kube-prometheus</span><br><span class="line">                    app=alertmanager</span><br><span class="line">                    chart=alertmanager-0.1.6</span><br><span class="line">                    heritage=Tiller</span><br><span class="line">                    release=kube-prometheus</span><br><span class="line">Annotations:        &lt;none&gt;</span><br><span class="line">Replicas:           1 desired | 1 total</span><br><span class="line">Update Strategy:    RollingUpdate</span><br><span class="line">Pods Status:        1 Running / 0 Waiting / 0 Succeeded / 0 Failed</span><br><span class="line">Pod Template:</span><br><span class="line">  Labels:  alertmanager=kube-prometheus</span><br><span class="line">           app=alertmanager</span><br><span class="line">  Containers:</span><br><span class="line">   alertmanager:</span><br><span class="line">    Image:       intellif.io/prometheus-operator/alertmanager:v0.15.1</span><br><span class="line">    Ports:       9093/TCP, 6783/TCP</span><br><span class="line">    Host Ports:  0/TCP, 0/TCP</span><br><span class="line">    Args:</span><br><span class="line">      --config.file=/etc/alertmanager/config/alertmanager.yaml</span><br><span class="line">      --cluster.listen-address=$(POD_IP):6783</span><br><span class="line">      --storage.path=/alertmanager</span><br><span class="line">      --web.listen-address=:9093</span><br><span class="line">      --web.external-url=http://192.168.11.178:30903</span><br><span class="line">      --web.route-prefix=/</span><br><span class="line">      --cluster.peer=alertmanager-kube-prometheus-0.alertmanager-operated.monitoring.svc:6783</span><br><span class="line">    Requests:</span><br><span class="line">      memory:   200Mi</span><br><span class="line">    Liveness:   http-get http://:web/api/v1/status delay=0s timeout=3s period=10s <span class="comment">#success=1 #failure=10</span></span><br><span class="line">    Readiness:  http-get http://:web/api/v1/status delay=3s timeout=3s period=5s <span class="comment">#success=1 #failure=10</span></span><br><span class="line">    Environment:</span><br><span class="line">      POD_IP:   (v1:status.podIP)</span><br><span class="line">    Mounts:</span><br><span class="line">      /alertmanager from alertmanager-kube-prometheus-db (rw)</span><br><span class="line">      /etc/alertmanager/config from config-volume (rw) <span class="comment">#挂载的secert目录</span></span><br><span class="line">   config-reloader:</span><br><span class="line">    Image:      intellif.io/prometheus-operator/configmap-reload:v0.0.1</span><br><span class="line">    Port:       &lt;none&gt;</span><br><span class="line">    Host Port:  &lt;none&gt;</span><br><span class="line">    Args:</span><br><span class="line">      -webhook-url=http://localhost:9093/-/reload</span><br><span class="line">      -volume-dir=/etc/alertmanager/config</span><br><span class="line">    Limits:</span><br><span class="line">      cpu:        5m</span><br><span class="line">      memory:     10Mi</span><br><span class="line">    Environment:  &lt;none&gt;</span><br><span class="line">    Mounts:</span><br><span class="line">      /etc/alertmanager/config from config-volume (ro)</span><br><span class="line">  Volumes:</span><br><span class="line">   config-volume:</span><br><span class="line">    Type:        Secret (a volume populated by a Secret)</span><br><span class="line">    SecretName:  alertmanager-kube-prometheus</span><br><span class="line">    Optional:    <span class="literal">false</span></span><br><span class="line">   alertmanager-kube-prometheus-db:</span><br><span class="line">    Type:       EmptyDir (a temporary directory that shares a pod<span class="string">'s lifetime)</span></span><br><span class="line"><span class="string">    Medium:</span></span><br><span class="line"><span class="string">Volume Claims:  &lt;none&gt;</span></span><br><span class="line"><span class="string">Events:         &lt;none&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>该statefulset挂载了一个名为alertmanager-kube-prometheus的secret资源到alertmanager容器内部的<code>/etc/alertmanager/config/alertmanager.yaml</code>，上面的<code>Volumes:</code>下面的<code>config-volume：</code>标签下可以看到，Type:字段的值为Secret表示挂载一个secret资源，secrect的name是<code>alertmanager-kube-prometheus</code>，通过一下命令查看该secret： <code>kubectl describe secrets alertmanager-kube-prometheus -n monitoring</code></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">root@k8s1:~<span class="comment"># kubectl describe secrets alertmanager-kube-prometheus -n monitoring</span></span><br><span class="line">Name:         alertmanager-kube-prometheus</span><br><span class="line">Namespace:    monitoring</span><br><span class="line">Labels:       alertmanager=kube-prometheus</span><br><span class="line">              app=alertmanager</span><br><span class="line">              chart=alertmanager-0.1.6</span><br><span class="line">              heritage=Tiller</span><br><span class="line">              release=kube-prometheus</span><br><span class="line">Annotations:  &lt;none&gt;</span><br><span class="line"></span><br><span class="line">Type:  Opaque</span><br><span class="line"></span><br><span class="line">Data</span><br><span class="line">====</span><br><span class="line">alertmanager.yaml:  567 bytes</span><br></pre></td></tr></table></figure>
+
+<p>可以看到该secert的Data项里面有一个key为<code>alertmanager.yaml</code>的属性，其value包含567bytes，而这个alertmanager.yaml的值其实就是alertmanager容器的<code>/etc/alertmanager/config/alertmanager.yaml</code>中的内容，statefulset通过挂载的方式将<code>/etc/alertmanager/config</code>挂载成一个secret，执行<code>kubectl edit secrets -n monitoring alertmanager-kube-prometheus</code>可以看到该secret的内容：</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">apiVersion:</span> <span class="string">v1</span></span><br><span class="line"><span class="attr">data:</span></span><br><span class="line">  <span class="string">alertmanager.yaml:</span> <span class="string">Z2xvYmFsOgogIHJlc29sdmVfdGltZW91dDogNW0KICBzbXRwX2F1dGhfcGFzc3dvcmQ6ICoqKioKICBzbXRwX2F1dGhfdXNlcm5hbWU6IGlub3JpX3lpbmprQDE2My5jb20KICBzbXRwX2Zyb206IGlub3JpX3lpbmprMUAxNjMuY29tCiAgc210cF9yZXF1aXJlX3RsczogZmFsc2UKICBzbXRwX3NtYXJ0aG9zdDogc210cC4xNjMuY29tOjI1CnJlY2VpdmVyczoKLSBlbWFpbF9jb25maWdzOgogIC0gaGVhZGVyczoKICAgICAgU3ViamVjdDogJ1tFUlJPUl0gcHJvbWV0aGV1cy4uLi4uLi4uLi4uLicKICAgIHRvOiB4eHh4QHFxLmNvbQogIG5hbWU6IHRlYW0tWC1tYWlscwotIG5hbWU6ICJudWxsIgpyb3V0ZToKICBncm91cF9ieToKICAtIGFsZXJ0bmFtZQogIC0gY2x1c3RlcgogIC0gc2VydmljZQogIGdyb3VwX2ludGVydmFsOiA1bQogIGdyb3VwX3dhaXQ6IDYwcwogIHJlY2VpdmVyOiB0ZWFtLVgtbWFpbHMKICByZXBlYXRfaW50ZXJ2YWw6IDI0aAogIHJvdXRlczoKICAtIG1hdGNoOgogICAgICBhbGVydG5hbWU6IERlYWRNYW5zU3dpdGNoCiAgICByZWNlaXZlcjogIm51bGwi</span></span><br><span class="line"><span class="attr">kind:</span> <span class="string">Secret</span></span><br><span class="line"><span class="attr">metadata:</span></span><br><span class="line"><span class="attr">  creationTimestamp:</span> <span class="number">2018</span><span class="bullet">-09</span><span class="bullet">-05</span><span class="attr">T01:46:08Z</span></span><br><span class="line"><span class="attr">  labels:</span></span><br><span class="line"><span class="attr">    alertmanager:</span> <span class="string">kube-prometheus</span></span><br><span class="line"><span class="attr">    app:</span> <span class="string">alertmanager</span></span><br><span class="line"><span class="attr">    chart:</span> <span class="string">alertmanager-0.1.6</span></span><br><span class="line"><span class="attr">    heritage:</span> <span class="string">Tiller</span></span><br><span class="line"><span class="attr">    release:</span> <span class="string">kube-prometheus</span></span><br><span class="line"><span class="attr">  name:</span> <span class="string">alertmanager-kube-prometheus</span></span><br><span class="line"><span class="attr">  namespace:</span> <span class="string">monitoring</span></span><br><span class="line"><span class="attr">  resourceVersion:</span> <span class="string">"5820063"</span></span><br><span class="line"><span class="attr">  selfLink:</span> <span class="string">/api/v1/namespaces/monitoring/secrets/alertmanager-kube-prometheus</span></span><br><span class="line"><span class="attr">  uid:</span> <span class="number">75</span><span class="string">a589e8-b0ad-11e8-8746-005056bf1d6e</span></span><br><span class="line"><span class="attr">type:</span> <span class="string">Opaque</span></span><br></pre></td></tr></table></figure>
+
+<p>其中<code>data:</code>下面的<code>alertmanager.yaml</code>这个key对应的值是一串base64编码过后的字符串，将这段字符串复制出来通过base64反编码之后内容如下：</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">global:</span></span><br><span class="line"><span class="attr">  resolve_timeout:</span> <span class="number">5</span><span class="string">m</span></span><br><span class="line"><span class="attr">  smtp_auth_password:</span> <span class="string">xxxxxx</span></span><br><span class="line"><span class="attr">  smtp_auth_username:</span> <span class="string">inori_yinjk@163.com</span></span><br><span class="line"><span class="attr">  smtp_from:</span> <span class="string">inori_yinjk@163.com</span></span><br><span class="line"><span class="attr">  smtp_require_tls:</span> <span class="literal">false</span></span><br><span class="line"><span class="attr">  smtp_smarthost:</span> <span class="string">smtp.163.com:25</span></span><br><span class="line"><span class="attr">receivers:</span></span><br><span class="line"><span class="attr">- email_configs:</span></span><br><span class="line"><span class="attr">  - headers:</span></span><br><span class="line"><span class="attr">      Subject:</span> <span class="string">'[ERROR] prometheus............'</span></span><br><span class="line"><span class="attr">    to:</span> <span class="number">1121562648</span><span class="string">@qq.com</span></span><br><span class="line"><span class="attr">  name:</span> <span class="string">team-X-mails</span></span><br><span class="line"><span class="attr">- name:</span> <span class="string">"null"</span></span><br><span class="line"><span class="attr">route:</span></span><br><span class="line"><span class="attr">  group_by:</span></span><br><span class="line"><span class="bullet">  -</span> <span class="string">alertname</span></span><br><span class="line"><span class="bullet">  -</span> <span class="string">cluster</span></span><br><span class="line"><span class="bullet">  -</span> <span class="string">service</span></span><br><span class="line"><span class="attr">  group_interval:</span> <span class="number">5</span><span class="string">m</span></span><br><span class="line"><span class="attr">  group_wait:</span> <span class="number">60</span><span class="string">s</span></span><br><span class="line"><span class="attr">  receiver:</span> <span class="string">team-X-mails</span></span><br><span class="line"><span class="attr">  repeat_interval:</span> <span class="number">24</span><span class="string">h</span></span><br><span class="line"><span class="attr">  routes:</span></span><br><span class="line"><span class="attr">  - match:</span></span><br><span class="line"><span class="attr">      alertname:</span> <span class="string">DeadMansSwitch</span></span><br><span class="line"><span class="attr">    receiver:</span> <span class="string">"null"</span></span><br></pre></td></tr></table></figure>
+
+<p>这其实就是alertmanager的config配置，上面说到，该内容会被挂载到alertmanager容器的<code>/etc/alertmanager/config/alertmanager.yaml</code>，我们进入alertmanager容器去看看该文件，执行命令<code>kubectl exec -it alertmanager-kube-prometheus-0 -n monitoring sh</code>进入到容器（可能你的容器名和我的不同，可以通过kubectl get pods –all-namespaces命令查看所有的容器），然后进入目录<code>/etc/alertmanager/config</code>,然后<code>ls</code>可以看到该目录下有一个叫<code>alertmanager.yaml</code>的文件，而该文件的内容就是上面base64反编译之后的内容，我们通过修改名为alertmanager-kube-prometheus的secret的data属性中的alertmanager.yaml字段对应的值就相当于修改了该文件中的内容，所以现在问题就变简单了，在alertmanager的pod中还有另一个container叫做config-reloader，它会监听<code>/etc/alertmanager/config</code>目录，当该目录下的文件发生变化的时候，config-reloader会向alertmanager发起<a href="http://localhost:9093/-/reloadPOST请求，alertmanager会重新加载该目录下的配置文件，从而实现了动态配置更新" target="_blank" rel="noopener">http://localhost:9093/-/reloadPOST请求，alertmanager会重新加载该目录下的配置文件，从而实现了动态配置更新</a></p>
+<p><strong>如何操作</strong></p>
+<p>在理解了alertmanager动态配置的原理之后，问题就很清晰了，我们需要动态配置alertmanager只需要更新名为alertmanager-kube-prometheus(你的secret名不一定为这个名字，但一定是alertmanager-{*}格式)的secret的data属性中的alertmanager.yaml字段的值就可以了，更新secret有两种方法，一是通过<code>kubectl edit secret</code>的方式，一种是通过<code>kubectl patch secret</code>的方式，但是两种方式更新secret都需要输入base64编码之后的字符串，这里通过linux下的base64命令进行编码：</p>
+<p>首先修改上面base64反编译后的文件，比如smtp_from改成另一个邮箱发送，修改完成之后保存文件，然后通过命令<code>base64 file &gt; test.txt</code>的方式将配置通过base64编码并将编码结果输出到test.txt文件中，然后进入test.txt文件中复制编码之后的字符串,如果通过第一种方式更新secret，执行命令</p>
+<p><code>kubectl edit secrets -n monitoring alertmanager-kube-prometheus</code></p>
+<p>然后data下面的alertmanager.yaml的值为刚才复制的字符串，保存并退出就可以了。如果通过第二种方式更新secert，执行命令</p>
+<p><code>kubectl patch secert alertmanager-kube-prometheus -n -n monitoring -p &#39;{&quot;data&quot;:{&quot;alertmanager.yaml&quot;:&quot;此处填写刚才复制的base64编码之后的配置字符串&quot;}&#39;</code></p>
+<p>即可完成更新，该命令中 -p参数后面跟的是一个JSON字符串，将刚才复制的base64编码后的字符串填入正确的位置可以了</p>
+<p>在完成更新之后可以访问alertmanager的界面<a href="http://192.168.11.178:30903/#/status，查看配置已经生效了" target="_blank" rel="noopener">http://192.168.11.178:30903/#/status，查看配置已经生效了</a></p>
+<p>通过上面的操作我们已经实现了监控对象的动态发现，监控告警规则的动态添加，告警配置（发送邮件）的动态配置，基本上已经实现了所有配置的动态配置</p>
+<h2 id="Prometheus-Operator配置"><a href="#Prometheus-Operator配置" class="headerlink" title="Prometheus-Operator配置"></a>Prometheus-Operator配置</h2><p>配置Prometheus一般情况下只需要配置kube-prometheus下的values.yaml就能实现对alertmanager、promethes的配置，该文件该如何配置在配置项上一般都有说明，这里主要讲解上文提到的几个配置以及其他比较常用的几个配置，避免占用太多篇幅，我已经将比较简单或不常用的配置以省略号代替：</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">...</span></span><br><span class="line"></span><br><span class="line"><span class="attr">alertmanager:</span> <span class="comment">#所有alertmanager的配置都在这个标签下面</span></span><br><span class="line"><span class="attr">  config:</span>  <span class="comment">#alermanager的config，和传统的alertmanager的config配置相同</span></span><br><span class="line"><span class="attr">    global:</span></span><br><span class="line"><span class="attr">      resolve_timeout:</span> <span class="number">5</span><span class="string">m</span></span><br><span class="line"><span class="attr">    route:</span></span><br><span class="line"><span class="attr">      group_by:</span> <span class="string">['job']</span></span><br><span class="line"><span class="attr">      group_wait:</span> <span class="number">30</span><span class="string">s</span></span><br><span class="line"><span class="attr">      group_interval:</span> <span class="number">5</span><span class="string">m</span></span><br><span class="line"><span class="attr">      repeat_interval:</span> <span class="number">12</span><span class="string">h</span></span><br><span class="line"><span class="attr">      receiver:</span> <span class="string">'null'</span></span><br><span class="line"><span class="attr">      routes:</span></span><br><span class="line"><span class="attr">      - match:</span></span><br><span class="line"><span class="attr">          alertname:</span> <span class="string">DeadMansSwitch</span></span><br><span class="line"><span class="attr">        receiver:</span> <span class="string">'null'</span></span><br><span class="line"><span class="attr">    receivers:</span></span><br><span class="line"><span class="attr">    - name:</span> <span class="string">'null'</span></span><br><span class="line"></span><br><span class="line">  <span class="comment">## 外部url，报警发送邮件后可以通过该Url访问Alertmanager的界面</span></span><br><span class="line"><span class="attr">  externalUrl:</span> <span class="string">"http://192.168.11.178:30903"</span></span><br><span class="line"></span><br><span class="line"><span class="string">...</span></span><br><span class="line">  <span class="comment">## Node labels for Alertmanager pod assignment 通过该选择器将会选择alertmanager在哪个node上面部署</span></span><br><span class="line">  <span class="comment">## Ref: https://kubernetes.io/docs/user-guide/node-selection/</span></span><br><span class="line">  <span class="comment">##</span></span><br><span class="line"><span class="attr">  nodeSelector:</span> <span class="string">&#123;&#125;</span></span><br><span class="line"></span><br><span class="line"><span class="string">...</span></span><br><span class="line"></span><br><span class="line">  <span class="comment">## List of Secrets in the same namespace as the AlertManager</span></span><br><span class="line">  <span class="comment">## object, which shall be mounted into the AlertManager Pods.</span></span><br><span class="line">  <span class="comment">## Ref: https://github.com/coreos/prometheus-operator/blob/master/Documentation/api.md#alertmanagerspec</span></span><br><span class="line">  <span class="comment">##</span></span><br><span class="line"><span class="attr">  secrets:</span> <span class="string">[]</span></span><br><span class="line"></span><br><span class="line"><span class="attr">  service:</span></span><br><span class="line"><span class="string">...</span></span><br><span class="line">    <span class="comment">## Port to expose on each node</span></span><br><span class="line">    <span class="comment">## Only used if service.type is 'NodePort'</span></span><br><span class="line">    <span class="comment">##</span></span><br><span class="line"><span class="attr">    nodePort:</span> <span class="number">30903</span> <span class="comment">#暴露的端口</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">## Service type</span></span><br><span class="line">    <span class="comment">##</span></span><br><span class="line"><span class="attr">    type:</span> <span class="string">NodePort</span> <span class="comment"># 以NodePort的方式部署alertmanager 的Service，这将可以使用node的ip访问服务</span></span><br><span class="line"></span><br><span class="line"><span class="attr">prometheus:</span> <span class="comment">#所有的prometheus的配置都在这里编写</span></span><br><span class="line">  <span class="comment">## Alertmanagers to which alerts will be sent</span></span><br><span class="line">  <span class="comment">## Ref: https://github.com/coreos/prometheus-operator/blob/master/Documentation/api.md#alertmanagerendpoints</span></span><br><span class="line">  <span class="comment">##</span></span><br><span class="line"><span class="attr">  alertingEndpoints:</span> <span class="string">[]</span></span><br><span class="line">  <span class="comment">#alertmanager地址，不填写默认会使用同时部署的alertmanager，在helm/prometheus/templates/prometheus.yaml文件第40行，</span></span><br><span class="line">  <span class="comment">#github中https://github.com/coreos/prometheus-operator/blob/master/helm/prometheus/templates/prometheus.yaml#L40</span></span><br><span class="line">  <span class="comment">#   - name: ""</span></span><br><span class="line">  <span class="comment">#     namespace: ""</span></span><br><span class="line">  <span class="comment">#     port: 9093</span></span><br><span class="line">  <span class="comment">#     scheme: http</span></span><br><span class="line"></span><br><span class="line"><span class="string">...</span></span><br><span class="line"></span><br><span class="line">  <span class="comment">## External URL at which Prometheus will be reachable</span></span><br><span class="line">  <span class="comment">##同上，外部访问地址</span></span><br><span class="line"><span class="attr">  externalUrl:</span> <span class="string">""</span></span><br><span class="line"></span><br><span class="line">  <span class="comment">## List of Secrets in the same namespace as the Prometheus</span></span><br><span class="line">  <span class="comment">## object, which shall be mounted into the Prometheus Pods.</span></span><br><span class="line">  <span class="comment">## Ref: https://github.com/coreos/prometheus-operator/blob/master/Documentation/api.md#prometheusspec</span></span><br><span class="line">  <span class="comment">##</span></span><br><span class="line"><span class="attr">  secrets:</span> <span class="string">[]</span></span><br><span class="line"></span><br><span class="line">  <span class="comment">## How long to retain metrics</span></span><br><span class="line">  <span class="comment">## prometheus时序数据库数据保存时间</span></span><br><span class="line"><span class="attr">  retention:</span> <span class="number">24</span><span class="string">h</span></span><br><span class="line"></span><br><span class="line">  <span class="comment">## Namespaces to be selected for PrometheusRules discovery.</span></span><br><span class="line">  <span class="comment">## If unspecified, only the same namespace as the Prometheus object is in is used.</span></span><br><span class="line">  <span class="comment">## 选择PrometheusRule的namespace，如何配置any:true则回去所有命名空间中去寻找PrometheusRule资源</span></span><br><span class="line"><span class="attr">  ruleNamespaceSelector:</span> <span class="string">&#123;&#125;</span></span><br><span class="line">  <span class="comment">## any: true</span></span><br><span class="line">  <span class="comment">## or</span></span><br><span class="line">  <span class="comment">##</span></span><br><span class="line"></span><br><span class="line">  <span class="comment">## Rules PrometheusRule CRD selector</span></span><br><span class="line">  <span class="comment">## Ref: https://github.com/coreos/prometheus-operator/blob/master/Documentation/design.md</span></span><br><span class="line">  <span class="comment">##</span></span><br><span class="line">  <span class="comment">## 1. If `matchLabels` is used, `rules.additionalLabels` must contain all the labels from</span></span><br><span class="line">  <span class="comment">##    `matchLabels` in order to be be matched by Prometheus</span></span><br><span class="line">  <span class="comment">## 2. If `matchExpressions` is used `rules.additionalLabels` must contain at least one label</span></span><br><span class="line">  <span class="comment">##    from `matchExpressions` in order to be matched by Prometheus</span></span><br><span class="line">  <span class="comment">## Ref: https://kubernetes.io/docs/concepts/overview/working-with-objects/labels</span></span><br><span class="line">  <span class="comment">## 上文提到的ruleNamespaceSelector，不填写默认会使用prometheus: &#123;&#123;.Values.prometheusLabelValue&#125;&#125;,</span></span><br><span class="line">  <span class="comment">## 而prometheusLabel定义在helm/prometheus/values.yaml中，默认为.Release.Name即releaseName(kube-prometheus)</span></span><br><span class="line">  <span class="comment">## 我们可以通过修改helm/prometheus/values.yaml中的prometheusLabel值来修改默认选择的标签，也可以在这里定义自己的标签，</span></span><br><span class="line">  <span class="comment">## 在这里定义了标签之后默认的会失效，比如在这里定义一个comment: prometheus标签，默认的prometheus: kube-prometheus就会失效，prometheus也将根据新定义的标签来选择PrometheusRule资源</span></span><br><span class="line"><span class="attr">  rulesSelector:</span> <span class="string">&#123;&#125;</span></span><br><span class="line">   <span class="comment"># rulesSelector: &#123;</span></span><br><span class="line">   <span class="comment">#   matchExpressions: [&#123;key: prometheus, operator: In, values: [example-rules, example-rules-2]&#125;]</span></span><br><span class="line">   <span class="comment"># &#125;</span></span><br><span class="line">   <span class="comment">### OR</span></span><br><span class="line">   <span class="comment"># rulesSelector: &#123;</span></span><br><span class="line">   <span class="comment">#   matchLabels: [&#123;role: example-rules&#125;]</span></span><br><span class="line">   <span class="comment"># &#125;</span></span><br><span class="line"></span><br><span class="line">  <span class="comment">## Prometheus alerting &amp; recording rules</span></span><br><span class="line">  <span class="comment">## Ref: https://prometheus.io/docs/querying/rules/</span></span><br><span class="line">  <span class="comment">## Ref: https://prometheus.io/docs/alerting/rules/</span></span><br><span class="line">  <span class="comment">##</span></span><br><span class="line"><span class="attr">  rules:</span> <span class="comment">#可以在这里配置PrometheusRule资源，一般不在这里配置，而是单独编写PrometheusRule这样可以实现动态配置</span></span><br><span class="line"><span class="attr">    specifiedInValues:</span> <span class="literal">true</span></span><br><span class="line">    <span class="comment">## What additional rules to be added to the PrometheusRule CRD</span></span><br><span class="line">    <span class="comment">## You can use this together with `rulesSelector`</span></span><br><span class="line"><span class="attr">    additionalLabels:</span> <span class="string">&#123;&#125;</span></span><br><span class="line">    <span class="comment">#  prometheus: example-rules</span></span><br><span class="line">    <span class="comment">#  application: etcd</span></span><br><span class="line"><span class="attr">    value:</span> <span class="string">&#123;&#125;</span></span><br><span class="line"></span><br><span class="line"><span class="attr">  service:</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">## Port to expose on each node</span></span><br><span class="line">    <span class="comment">## Only used if service.type is 'NodePort'</span></span><br><span class="line">    <span class="comment">##</span></span><br><span class="line"><span class="attr">    nodePort:</span> <span class="number">30900</span> <span class="comment">#同上，暴露的端口</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">## Service type</span></span><br><span class="line">    <span class="comment">##</span></span><br><span class="line"><span class="attr">    type:</span> <span class="string">NodePort</span> <span class="comment">#同上，将Prometheus Service映射到外网</span></span><br><span class="line"></span><br><span class="line">  <span class="comment">## Service monitors selector</span></span><br><span class="line">  <span class="comment">## Ref: https://github.com/coreos/prometheus-operator/blob/master/Documentation/design.md</span></span><br><span class="line">  <span class="comment">## 同上，prometheus默认会选择带有prometheus: kube-prometheus标签的ServiceMonitor资源，也可以在这里配置自定义的标签，一旦在这里配置了标签，默认的将会失效，prometheus会按照新的serviceMonitorSelector中定义的标签来选择对应的ServiceMonitor</span></span><br><span class="line"><span class="attr">  serviceMonitorsSelector:</span> <span class="string">&#123;&#125;</span></span><br><span class="line"><span class="comment">#   matchLabels:</span></span><br><span class="line"><span class="comment">#   - comment: prometheus</span></span><br><span class="line"><span class="comment">#   - release: kube-prometheus</span></span><br><span class="line"></span><br><span class="line">  <span class="comment">## ServiceMonitor CRDs to create &amp; be scraped by the Prometheus instance.</span></span><br><span class="line">  <span class="comment">## Ref: https://github.com/coreos/prometheus-operator/blob/master/Documentation/service-monitor.md</span></span><br><span class="line">  <span class="comment">##</span></span><br><span class="line"><span class="attr">  serviceMonitors:</span> <span class="string">[]</span> <span class="comment">#可以在这里配置serviceMonitor资源，一般不再这里配置,参见如何编写ServiceMonitor章节</span></span><br></pre></td></tr></table></figure>
+
+
+      
+    </div>
+    
+    
+    
+	
+	<div>
+	  
+		<div>
+    
+        <div style="text-align:center;color: #ccc;font-size:14px;">--------------------本文结束，感谢您的阅读--------------------</div>
+    
+</div>
+	  
+	</div>
+	
+	<div>
+      
+        
+      
+	</div>
+	
+
+
+    
+
+    
+      <div>
+        <div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center;">
+  <div></div>
+  <button id="rewardButton" disable="enable" onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}">
+    <span>Donate</span>
+  </button>
+  <div id="QR" style="display: none;">
+
+    
+      <div id="wechat" style="display: inline-block">
+        <img id="wechat_qr" src="/images/wechat.jpg" alt="弓昭 WeChat Pay">
+        <p>WeChat Pay</p>
+      </div>
+    
+
+    
+      <div id="alipay" style="display: inline-block">
+        <img id="alipay_qr" src="/images/ali.jpg" alt="弓昭 Alipay">
+        <p>Alipay</p>
+      </div>
+    
+
+    
+
+  </div>
+</div>
+
+      </div>
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/prometheus/" rel="tag"><i class="fa fa-tag"></i>prometheus</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/Kubernetes集群监控之Prometheus/" rel="next" title="Kubernetes集群监控之Prometheus">
+                <i class="fa fa-chevron-left"></i> Kubernetes集群监控之Prometheus
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/Kubernetes集群监控之全手动部署/" rel="prev" title="Kubernetes集群监控之全手动部署">
+                Kubernetes集群监控之全手动部署 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div id="lv-container" data-id="city" data-uid="MTAyMC80MTcyNy8xODI3Mw=="></div>
+    
+  </div>
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image" src="/uploads/panda.jpg" alt="弓昭">
+          <p class="site-author-name" itemprop="name">弓昭</p>
+           
+              <p class="site-description motion-element" itemprop="description">弓昭的个人主页，主要涉及网络、运维、前端、Python等等知识</p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives/">
+                <span class="site-state-item-count">83</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">25</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">72</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+          <div class="feed-link motion-element">
+            <a href="/atom.xml" rel="alternate">
+              <i class="fa fa-rss"></i>
+              RSS
+            </a>
+          </div>
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/gongzhao1" target="_blank" title="GitHub">
+                  
+                    <i class="fa fa-fw fa-github"></i>
+                  
+                    
+                      GitHub
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://blog.csdn.net/zhao12795969" target="_blank" title="csdn">
+                  
+                    <i class="fa fa-fw fa-crosshairs"></i>
+                  
+                    
+                      csdn
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://www.jianshu.com/u/1dbca13c6043" target="_blank" title="简书">
+                  
+                    <i class="fa fa-fw fa-heartbeat"></i>
+                  
+                    
+                      简书
+                    
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+          <div class="links-of-blogroll motion-element links-of-blogroll-inline">
+            <div class="links-of-blogroll-title">
+              <i class="fa  fa-fw fa-globe"></i>
+              Links
+            </div>
+            <ul class="links-of-blogroll-list">
+              
+                <li class="links-of-blogroll-item">
+                  <a href="http://ccieh3c.com/" title="网络之路" target="_blank">网络之路</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="http://jm.taobao.org/" title="阿里云中间件" target="_blank">阿里云中间件</a>
+                </li>
+              
+            </ul>
+          </div>
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#参考"><span class="nav-number">1.</span> <span class="nav-text">参考</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Kubernetes-Operator-介绍"><span class="nav-number">2.</span> <span class="nav-text">Kubernetes Operator 介绍</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Prometheus-Operator介绍"><span class="nav-number">3.</span> <span class="nav-text">Prometheus Operator介绍</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#为什么需要prometheus-operator"><span class="nav-number">4.</span> <span class="nav-text">为什么需要prometheus-operator</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#什么是metrics"><span class="nav-number">5.</span> <span class="nav-text">什么是metrics</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#部署"><span class="nav-number">6.</span> <span class="nav-text">部署</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#使用helm安装部署"><span class="nav-number">6.1.</span> <span class="nav-text">使用helm安装部署</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#源码部署"><span class="nav-number">6.2.</span> <span class="nav-text">源码部署</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#创建prometheus-operator的pod"><span class="nav-number">6.2.1.</span> <span class="nav-text">创建prometheus-operator的pod</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#相关CRD介绍"><span class="nav-number">6.2.2.</span> <span class="nav-text">相关CRD介绍</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#部署kind-Prometheus"><span class="nav-number">6.2.3.</span> <span class="nav-text">部署kind: Prometheus</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#部署一组pod及其svc"><span class="nav-number">6.2.4.</span> <span class="nav-text">部署一组pod及其svc</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#部署kind-ServiceMonitor"><span class="nav-number">6.2.5.</span> <span class="nav-text">部署kind: ServiceMonitor</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#部署官方的prometheus-operator"><span class="nav-number">6.2.6.</span> <span class="nav-text">部署官方的prometheus-operator</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#踩坑"><span class="nav-number">7.</span> <span class="nav-text">踩坑</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#坑一"><span class="nav-number">7.1.</span> <span class="nav-text">坑一</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#坑二"><span class="nav-number">7.2.</span> <span class="nav-text">坑二</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#监控mysql"><span class="nav-number">8.</span> <span class="nav-text">监控mysql</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#安装mysql-exporter"><span class="nav-number">8.1.</span> <span class="nav-text">安装mysql_exporter</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#创建监控"><span class="nav-number">8.2.</span> <span class="nav-text">创建监控</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#动态添加告警规则"><span class="nav-number">8.3.</span> <span class="nav-text">动态添加告警规则</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#如何动态更新Alertmanager配置"><span class="nav-number">8.4.</span> <span class="nav-text">如何动态更新Alertmanager配置</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Prometheus-Operator配置"><span class="nav-number">8.5.</span> <span class="nav-text">Prometheus-Operator配置</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+<div class="copyright">
+  
+  &copy;  2018 - 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">弓昭</span>
+</div>
+
+
+<div class="powered-by">
+	<i class="fa fa-user-md"></i><span id="busuanzi_container_site_uv">
+	  本站访客数:<span id="busuanzi_value_site_uv"></span>
+	</span>
+</div>
+
+
+<div class="theme-info">
+
+  <span class="post-count">博客全站共253.1k字</span>
+</div>
+
+
+
+        
+<div class="busuanzi-count">
+  <script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+
+  
+</div>
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.2"></script>
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.2"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+    <script type="text/javascript">
+      (function(d, s) {
+        var j, e = d.getElementsByTagName(s)[0];
+        if (typeof LivereTower === 'function') { return; }
+        j = d.createElement(s);
+        j.src = 'https://cdn-city.livere.com/js/embed.dist.js';
+        j.async = true;
+        e.parentNode.insertBefore(j, e);
+      })(document, 'script');
+    </script>
+  
+
+
+
+
+
+
+  
+
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url);
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

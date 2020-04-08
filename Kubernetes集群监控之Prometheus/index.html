@@ -1,0 +1,1646 @@
+<!DOCTYPE html>
+
+
+
+
+<html class="theme-next muse" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.2" rel="stylesheet" type="text/css">
+
+
+  <meta name="keywords" content="kubernetes,prometheus,">
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="GZ" type="application/atom+xml">
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.2">
+
+
+
+
+
+
+<meta name="description" content="[TOC] 参考 http://dockone.io/article/9269 http://dockone.io/article/5716 https://www.jianshu.com/p/fb5c82de935d https://github.com/prometheus/prometheus https://yunlzheng.gitbook.io/prometheus-book http">
+<meta name="keywords" content="kubernetes,prometheus">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Kubernetes集群监控之Prometheus">
+<meta property="og:url" content="https://gongzhao1.coding.me/Kubernetes集群监控之Prometheus/index.html">
+<meta property="og:site_name" content="GZ">
+<meta property="og:description" content="[TOC] 参考 http://dockone.io/article/9269 http://dockone.io/article/5716 https://www.jianshu.com/p/fb5c82de935d https://github.com/prometheus/prometheus https://yunlzheng.gitbook.io/prometheus-book http">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="https://gongzhao-1256784911.cos.ap-shanghai.myqcloud.com/hexo/images/prometheus/1.png">
+<meta property="og:image" content="https://gongzhao-1256784911.cos.ap-shanghai.myqcloud.com/hexo/images/prometheus/2.png">
+<meta property="og:image" content="https://gongzhao-1256784911.cos.ap-shanghai.myqcloud.com/hexo/images/prometheus/3.png">
+<meta property="og:image" content="https://gongzhao-1256784911.cos.ap-shanghai.myqcloud.com/hexo/images/prometheus/4.png">
+<meta property="og:image" content="https://gongzhao-1256784911.cos.ap-shanghai.myqcloud.com/hexo/images/prometheus/5.png">
+<meta property="og:image" content="https://gongzhao-1256784911.cos.ap-shanghai.myqcloud.com/hexo/images/prometheus/6.png">
+<meta property="og:image" content="https://gongzhao-1256784911.cos.ap-shanghai.myqcloud.com/hexo/images/prometheus/7.png">
+<meta property="og:image" content="https://gongzhao-1256784911.cos.ap-shanghai.myqcloud.com/hexo/images/prometheus/8.png">
+<meta property="og:image" content="https://gongzhao-1256784911.cos.ap-shanghai.myqcloud.com/hexo/images/prometheus/9.png">
+<meta property="og:image" content="https://gongzhao-1256784911.cos.ap-shanghai.myqcloud.com/hexo/images/prometheus/10.png">
+<meta property="og:image" content="https://gongzhao-1256784911.cos.ap-shanghai.myqcloud.com/hexo/images/prometheus/18.jpg">
+<meta property="og:image" content="https://gongzhao-1256784911.cos.ap-shanghai.myqcloud.com/hexo/images/prometheus/11.png">
+<meta property="og:image" content="https://gongzhao-1256784911.cos.ap-shanghai.myqcloud.com/hexo/images/prometheus/12.jpg">
+<meta property="og:image" content="https://gongzhao-1256784911.cos.ap-shanghai.myqcloud.com/hexo/images/prometheus/13.png">
+<meta property="og:image" content="https://gongzhao-1256784911.cos.ap-shanghai.myqcloud.com/hexo/images/prometheus/14.png">
+<meta property="og:image" content="https://gongzhao-1256784911.cos.ap-shanghai.myqcloud.com/hexo/images/prometheus/15.jpg">
+<meta property="og:image" content="https://gongzhao-1256784911.cos.ap-shanghai.myqcloud.com/hexo/images/prometheus/16.png">
+<meta property="og:image" content="https://gongzhao-1256784911.cos.ap-shanghai.myqcloud.com/hexo/images/prometheus/17.png">
+<meta property="og:updated_time" content="2020-04-08T14:20:25.843Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Kubernetes集群监控之Prometheus">
+<meta name="twitter:description" content="[TOC] 参考 http://dockone.io/article/9269 http://dockone.io/article/5716 https://www.jianshu.com/p/fb5c82de935d https://github.com/prometheus/prometheus https://yunlzheng.gitbook.io/prometheus-book http">
+<meta name="twitter:image" content="https://gongzhao-1256784911.cos.ap-shanghai.myqcloud.com/hexo/images/prometheus/1.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: false,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://gongzhao1.coding.me/Kubernetes集群监控之Prometheus/">
+
+
+
+
+
+  <title>Kubernetes集群监控之Prometheus | GZ</title>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">GZ</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">痛苦是财富，这话是扯淡。少年，痛苦就是痛苦，对痛苦的思考才是财富</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br>
+            
+            关于
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br>
+            
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off" placeholder="搜索..." spellcheck="false" type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://gongzhao1.coding.me/Kubernetes集群监控之Prometheus/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="弓昭">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/uploads/panda.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="GZ">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Kubernetes集群监控之Prometheus</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-02-17T18:47:33+08:00">
+                2020-02-17
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/监控/" itemprop="url" rel="index">
+                    <span itemprop="name">监控</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+            <span class="post-meta-divider">|</span>
+            <span class="page-pv"><i class="fa fa-file-o"></i>
+            <span class="busuanzi-value" id="busuanzi_value_page_pv"></span>次阅读
+            </span>
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>[TOC]</p>
+<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><ul>
+<li><a href="http://dockone.io/article/9269" target="_blank" rel="noopener">http://dockone.io/article/9269</a></li>
+<li><a href="http://dockone.io/article/5716" target="_blank" rel="noopener">http://dockone.io/article/5716</a></li>
+<li><a href="https://www.jianshu.com/p/fb5c82de935d" target="_blank" rel="noopener">https://www.jianshu.com/p/fb5c82de935d</a></li>
+<li><a href="https://github.com/prometheus/prometheus" target="_blank" rel="noopener">https://github.com/prometheus/prometheus</a></li>
+<li><a href="https://yunlzheng.gitbook.io/prometheus-book" target="_blank" rel="noopener">https://yunlzheng.gitbook.io/prometheus-book</a></li>
+<li><a href="https://prometheus.io/docs/introduction/overview/" target="_blank" rel="noopener">https://prometheus.io/docs/introduction/overview/</a></li>
+<li><a href="https://github.com/samber/awesome-prometheus-alerts" target="_blank" rel="noopener">https://github.com/samber/awesome-prometheus-alerts</a></li>
+</ul>
+<h1 id="监控目的"><a href="#监控目的" class="headerlink" title="监控目的"></a>监控目的</h1><p>在《SRE：Google运维解密》一书中指出，监控系统需要能够有效的支持白盒监控和黑盒监控。通过白盒能够了解其内部的实际运行状态，通过对监控指标的观察能够预判可能出现的问题，从而对潜在的不确定因素进行优化。而黑盒监控，常见的如HTTP探针，TCP探针等，可以在系统或者服务在发生故障时能够快速通知相关的人员进行处理。通过建立完善的监控体系，从而达到以下目的：</p>
+<ul>
+<li>长期趋势分析：通过对监控样本数据的持续收集和统计，对监控指标进行长期趋势分析。例如，通过对磁盘空间增长率的判断，我们可以提前预测在未来什么时间节点上需要对资源进行扩容。</li>
+<li>对照分析：两个版本的系统运行资源使用情况的差异如何？在不同容量情况下系统的并发和负载变化如何？通过监控能够方便的对系统进行跟踪和比较。</li>
+<li>告警：当系统出现或者即将出现故障时，监控系统需要迅速反应并通知管理员，从而能够对问题进行快速的处理或者提前预防问题的发生，避免出现对业务的影响。</li>
+<li>故障分析与定位：当问题发生后，需要对问题进行调查和处理。通过对不同监控指标以及历史数据的分析，能够找到并解决根源问题。</li>
+<li>数据可视化：通过可视化仪表盘能够直接获取系统的运行状态、资源使用情况、以及服务运行状态等直观的信息。</li>
+</ul>
+<p>而对于上一代监控系统而言，在使用过程中往往会面临以下问题：</p>
+<ul>
+<li>与业务脱离的监控：监控系统获取到的监控指标与业务本身也是一种分离的关系。好比客户可能关注的是服务的可用性、服务的SLA等级，而监控系统却只能根据系统负载去产生告警；</li>
+<li>运维管理难度大：Nagios这一类监控系统本身运维管理难度就比较大，需要有专业的人员进行安装，配置和管理，而且过程并不简单；</li>
+<li>可扩展性低： 监控系统自身难以扩展，以适应监控规模的变化；</li>
+<li>问题定位难度大：当问题产生之后（比如主机负载异常增加）对于用户而言，他们看到的依然是一个黑盒，他们无法了解主机上服务真正的运行情况，因此当故障发生后，这些告警信息并不能有效的支持用户对于故障根源问题的分析和定位。</li>
+</ul>
+<p>在上述需求中，我们可以提取出以下对于一个完善的监控解决方案的几个关键词：数据分析、趋势预测、告警、故障定位、可视化。</p>
+<p>除此以外，当前越来越多的产品公司迁移到云或者容器的情况下，对于监控解决方案而言还需要另外一个关键词：云原生。</p>
+<a id="more"></a>
+
+<h1 id="Prometheus"><a href="#Prometheus" class="headerlink" title="Prometheus"></a>Prometheus</h1><h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><p>Prometheus已经被广泛应用于数据中心监控，尤其是和Kubernetes结合的容器监控。本文主要从架构分析到落地实践，详细介绍Prometheus原理和使用。对比Prometheus与其他监控工具（Zabbix、Open-Falcon）的特点与使用场景。然后介绍Prometheus与Kubernetes集成，主要从监控和自动伸缩两个方面。最后通过企业案例，分享实践经验和注意事项。</p>
+<p>Kubernetes从2014年开源以来，迅速成为容器管理的领头羊，它是Google Borg系统的开源实现。和Kubernetes一起火起来的还有另一个开源项目Prometheus，它是Google BorgMon的开源实现。</p>
+<p>2016年，由Google发起的Linux基金会旗下的原生云基金会（Cloud Native Computing Foundation）将Prometheus纳入其第二大开源项目。Prometheus在开源社区也十分活跃，在GitHub上拥有两万多Star，并且系统每隔一两周就会有一个小版本的更新。</p>
+<p>Prometheus是由SoundCloud开发的开源监控报警系统和时序列数据库。从字面上理解，Prometheus由两个部分组成，一个是监控报警系统，另一个是自带的时序数据库（TSDB）。</p>
+<p><img src="https://gongzhao-1256784911.cos.ap-shanghai.myqcloud.com/hexo/images/prometheus/1.png" alt="image"></p>
+<p>上图是Prometheus整体架构图，左侧是各种符合Prometheus数据格式的exporter，除此之外为了支持推动数据类型的Agent，可以通过Pushgateway组件，将Push转化为Pull。Prometheus甚至可以从其它的Prometheus获取数据，组建联邦集群。Prometheus的基本原理是通过HTTP周期性抓取被监控组件的状态，任意组件只要提供对应的HTTP接口并且符合Prometheus定义的数据格式，就可以接入Prometheus监控。</p>
+<p>上侧是服务发现，Prometheus支持监控对象的自动发现机制，从而可以动态获取监控对象。</p>
+<p>图片中间是Prometheus Server，Retrieval模块定时拉取数据，并通过Storage模块保存数据。PromQL为Prometheus提供的查询语法，PromQL模块通过解析语法树，调用Storage模块查询接口获取监控数据。图片右侧是告警和页面展现，Prometheus将告警推送到alertmanger，然后通过alertmanger对告警进行处理并执行相应动作。数据展现除了Prometheus自带的WebUI，还可以通过Grafana等组件查询Prometheus监控数据。</p>
+<h2 id="数据类型"><a href="#数据类型" class="headerlink" title="数据类型"></a>数据类型</h2><p>理解时间序列</p>
+<p>在Node Exporter的/metrics接口中返回的每一行监控数据，在Prometheus下称为一个样本。采集到的样本由以下三部分组成：</p>
+<ul>
+<li>指标（metric）：指标和一组描述当前样本特征的labelsets唯一标识；</li>
+<li>时间戳（timestamp）：一个精确到毫秒的时间戳，一般由采集时间决定；</li>
+<li>样本值（value）： 一个folat64的浮点型数据表示当前样本的值。</li>
+</ul>
+<p>Prometheus会将所有采集到的样本数据以时间序列（time-series）的方式保存在内存数据库中，并且定时保存到硬盘上。每条time-series通过指标名称（metrics name）和一组标签集（labelset）命名。如下所示，可以将time-series理解为一个以时间为X轴的二维矩阵：</p>
+<p><img src="https://gongzhao-1256784911.cos.ap-shanghai.myqcloud.com/hexo/images/prometheus/2.png" alt="image"></p>
+<p>这种多维度的数据存储方式，可以衍生出很多不同的玩法。 比如，如果数据来自不同的数据中心，那么我们可以在样本中添加标签来区分来自不同数据中心的监控样本，例如：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">node_cpu&#123;cpu=&quot;cpu0&quot;,mode=&quot;idle&quot;, dc=&quot;dc0&quot;&#125;</span><br></pre></td></tr></table></figure>
+
+<p>从内部实现上来看Prometheus中所有存储的监控样本数据没有任何差异，均是一组标签，时间戳以及样本值。</p>
+<p>从存储上来讲所有的监控指标metric都是相同的，但是在不同的场景下这些metric又有一些细微的差异。 例如，在Node Exporter返回的样本中指标node_load1反应的是当前系统的负载状态，随着时间的变化这个指标返回的样本数据是在不断变化的。而指标node_cpu所获取到的样本数据却不同，它是一个持续增大的值，因为其反应的是CPU的累积使用时间，从理论上讲只要系统不关机，这个值是会无限变大的。</p>
+<p>为了能够帮助用户理解和区分这些不同监控指标之间的差异，Prometheus定义了4中不同的指标类型（metric type）：Counter（计数器）、Gauge（仪表盘）、Histogram（直方图）、Summary（摘要）</p>
+<p><strong>Counter：只增不减的计数器</strong></p>
+<p>Counter是一个简单但有强大的工具，例如我们可以在应用程序中记录某些事件发生的次数，通过以时序的形式存储这些数据，我们可以轻松的了解该事件产生速率的变化。PromQL内置的聚合操作和函数可以用户对这些数据进行进一步的分析：</p>
+<p>例如，通过rate()函数获取HTTP请求量的增长率：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">rate(http_requests_total[5m])</span><br></pre></td></tr></table></figure>
+
+<p><strong>Gauge：可增可减的仪表盘</strong></p>
+<p>与Counter不同，Gauge类型的指标侧重于反应系统的当前状态。因此这类指标的样本数据可增可减。常见指标如：node_memory_MemFree（主机当前空闲的内容大小）、node_memory_MemAvailable（可用内存大小）都是Gauge类型的监控指标。</p>
+<p>通过Gauge指标，用户可以直接查看系统的当前状态：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">node_memory_MemFree</span><br></pre></td></tr></table></figure>
+
+<p>对于Gauge类型的监控指标，通过PromQL内置函数delta()可以获取样本在一段时间返回内的变化情况。例如，计算CPU温度在两个小时内的差异：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">delta(cpu_temp_celsius&#123;host=&quot;zeus&quot;&#125;[2h])</span><br></pre></td></tr></table></figure>
+
+<p>还可以使用deriv()计算样本的线性回归模型，甚至是直接使用predict_linear()对数据的变化趋势进行预测。例如，预测系统磁盘空间在4个小时之后的剩余情况：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">predict_linear(node_filesystem_free&#123;job=&quot;node&quot;&#125;[1h], 4 * 3600)</span><br></pre></td></tr></table></figure>
+
+<p><strong>使用Histogram和Summary分析数据分布情况</strong></p>
+<p>在大多数情况下人们都倾向于使用某些量化指标的平均值，例如CPU的平均使用率、页面的平均响应时间。这种方式的问题很明显，以系统API调用的平均响应时间为例：如果大多数API请求都维持在100ms的响应时间范围内，而个别请求的响应时间需要5s，那么就会导致某些WEB页面的响应时间落到中位数的情况，而这种现象被称为长尾问题。</p>
+<p>为了区分是平均的慢还是长尾的慢，最简单的方式就是按照请求延迟的范围进行分组。例如，统计延迟在010ms之间的请求数有多少而1020ms之间的请求数又有多少。通过这种方式可以快速分析系统慢的原因。Histogram和Summary都是为了能够解决这样问题的存在，通过Histogram和Summary类型的监控指标，我们可以快速了解监控样本的分布情况。</p>
+<p>例如，指标prometheus_tsdb_wal_fsync_duration_seconds的指标类型为Summary。 它记录了Prometheus Server中wal_fsync处理的处理时间，通过访问Prometheus Server的/metrics地址，可以获取到以下监控样本数据：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">prometheus_tsdb_wal_fsync_duration_seconds&#123;quantile=&quot;0.5&quot;&#125; 0.012352463</span><br><span class="line">prometheus_tsdb_wal_fsync_duration_seconds&#123;quantile=&quot;0.9&quot;&#125; 0.014458005</span><br><span class="line">prometheus_tsdb_wal_fsync_duration_seconds&#123;quantile=&quot;0.99&quot;&#125; 0.017316173</span><br><span class="line">prometheus_tsdb_wal_fsync_duration_seconds_sum 2.888716127000002</span><br><span class="line">prometheus_tsdb_wal_fsync_duration_seconds_count 216</span><br></pre></td></tr></table></figure>
+
+<p>从上面的样本中可以得知当前Promtheus Server进行wal_fsync操作的总次数为216次，耗时2.888716127000002s。其中中位数（quantile=0.5）的耗时为0.012352463，9分位数（quantile=0.9）的耗时为0.014458005s。</p>
+<p>Prometheus对于数据的存储方式就意味着，不同的标签就代表着不同的特征维度。用户可以通过这些特征维度对查询，过滤和聚合样本数据。</p>
+<p>例如，通过node_load1，查询出当前时间序列数据库中所有名为node_load1的时间序列：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">node_load1</span><br></pre></td></tr></table></figure>
+
+<p>如果找到满足某些特征维度的时间序列，则可以使用标签进行过滤：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">node_load1&#123;instance=&quot;localhost:9100&quot;&#125;</span><br></pre></td></tr></table></figure>
+
+<p>通过以标签为核心的特征维度，用户可以对时间序列进行有效的查询和过滤，当然如果仅仅是这样，显然还不够强大，Prometheus提供的丰富的聚合操作以及内置函数，可以通过PromQL轻松回答以下问题：</p>
+<ul>
+<li><p>当前系统的CPU使用率？</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">avg(irate(node_cpu&#123;mode!=&quot;idle&quot;&#125;[2m])) without (cpu, mode)</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>CPU占用率前5位的主机有哪些？</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">topk(5, avg(irate(node_cpu&#123;mode!=&quot;idle&quot;&#125;[2m])) without (cpu, mode))</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>预测在4小时候后，磁盘空间占用大致会是什么情况？</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">predict_linear(node_filesystem_free&#123;job=&quot;node&quot;&#125;[2h], 4 * 3600)</span><br></pre></td></tr></table></figure>
+
+</li>
+</ul>
+<p>其中avg()，topk()等都是PromQL内置的聚合操作，irate()，predict_linear()是PromQL内置的函数，irate()函数可以计算一段时间返回内时间序列中所有样本的单位时间变化率。predict_linear函数内部则通过简单线性回归的方式预测数据的变化趋势。</p>
+<p>以Grafana为例，在Grafana中可以通过将Promtheus作为数据源添加到系统中，后再使用PromQL进行数据可视化。在Grafana v5.1中提供了对Promtheus 4种监控类型的完整支持，可以通过Graph Panel，Singlestat Panel，Heatmap Panel对监控指标数据进行可视化。</p>
+<h2 id="数据采集"><a href="#数据采集" class="headerlink" title="数据采集"></a>数据采集</h2><p><img src="https://gongzhao-1256784911.cos.ap-shanghai.myqcloud.com/hexo/images/prometheus/3.png" alt="image"></p>
+<p>Prometheus通过HTTP接口的方式从各种客户端获取数据，这些客户端必须符合Prometheus监控数据格式，通常有两种方式，一种是侵入式埋点监控，通过在客户端集成，如果Kubernetes API直接通过引入Prometheus go client，提供/metrics接口查询kubernetes API各种指标；另一种是通过exporter方式，在外部将原来各种中间件的监控支持转化为Prometheus的监控数据格式，如redis exporter将Reids指标转化为Prometheus能够识别的HTTP请求。</p>
+<p>HTTP返回Header和Body如上图所示，指标前面两行#是注释，标识指标的含义和类型。指标和指标的值通过空格分割，开发者通常不需要自己拼接这种个数的数据， Prometheus提供了各种语言的SDK支持。</p>
+<p>Prometheus并没有采用json的数据格式，而是采用text/plain纯文本的方式 ，这是它的特殊之处。</p>
+<h2 id="Exporter"><a href="#Exporter" class="headerlink" title="Exporter"></a>Exporter</h2><p><img src="https://gongzhao-1256784911.cos.ap-shanghai.myqcloud.com/hexo/images/prometheus/4.png" alt="image"></p>
+<p>Prometheus为了支持各种中间件以及第三方的监控提供了exporter，大家可以把它理解成监控适配器，将不同指标类型和格式的数据统一转化为Prometheus能够识别的指标类型。</p>
+<p>譬如Node exporter主要通过读取Linux的/proc以及/sys目录下的系统文件获取操作系统运行状态，reids exporter通过Reids命令行获取指标，mysql exporter通过读取数据库监控表获取MySQL的性能数据。他们将这些异构的数据转化为标准的Prometheus格式，并提供HTTP查询接口。</p>
+<h2 id="数据存储"><a href="#数据存储" class="headerlink" title="数据存储"></a>数据存储</h2><p><img src="https://gongzhao-1256784911.cos.ap-shanghai.myqcloud.com/hexo/images/prometheus/5.png" alt="image"></p>
+<p>Prometheus提供了两种数据持久化方式：一种是本地存储，通过Prometheus自带的TSDB（时序数据库），将数据保存到本地磁盘，为了性能考虑，建议使用SSD。但本地存储的容量毕竟有限，建议不要保存超过一个月的数据。Prometheus本地存储经过多年改进，自Prometheus 2.0后提供的V3版本TSDB性能已经非常高，可以支持单机每秒1000w个指标的收集。</p>
+<p>Prometheus本地数据存储能力一直为大家诟病，但Prometheus本地存储设计的初衷就是为了监控数据的查询，Facebook发现85％的查询是针对26小时内的数据。所以Prometheus本地时序数据库的设计更多考虑的是高性能而非分布式大容量。</p>
+<p>另一种是远端存储，适用于大量历史监控数据的存储和查询。通过中间层的适配器的转化，Prometheus将数据保存到远端存储。适配器实现Prometheus存储的remote write和remote read接口，并把数据转化为远端存储支持的数据格式。目前，远端存储主要包括OpenTSDB、InfluxDB、Elasticsearch、M3DB等，其中M3DB是目前非常受欢迎的后端存储。</p>
+<h2 id="PromQL"><a href="#PromQL" class="headerlink" title="PromQL"></a>PromQL</h2><p><img src="https://gongzhao-1256784911.cos.ap-shanghai.myqcloud.com/hexo/images/prometheus/6.png" alt="image"></p>
+<p>Prometheus数据展现除了自带的WebUI还可以通过Grafana，他们本质上都是通过HTTP + PromQL的方式查询Prometheus数据。和关系型数据库的SQL类似，Prometheus也内置了数据查询语言PromQL，它提供对时间序列数据丰富的查询，聚合以及逻辑运算的能力。<br>数据运算包括了：</p>
+<ul>
+<li>+（加法）</li>
+<li>-（减法）</li>
+<li>*（乘法）</li>
+<li>/（除法）</li>
+<li>%（求余）</li>
+<li>^（幂运算）</li>
+</ul>
+<p>聚合包括了：</p>
+<ul>
+<li>sum（求和）</li>
+<li>min（最小值）</li>
+<li>max（最大值）</li>
+<li>avg（平均值）</li>
+<li>stddev（标准差）</li>
+<li>stdvar（标准差异）</li>
+<li>count（计数）</li>
+<li>count_values（对value进行计数）</li>
+<li>bottomk（后n条）</li>
+<li>topk（前n条）</li>
+<li>quantile（分布统计）</li>
+</ul>
+<p>如果需要获取某个时刻的数据可以通过curl ‘<a href="http://Prometheus地址:9090/api/v1/query?query=up&amp;time=xx&#39;查询监控数据，其中query参数就是一个PromQL表达式。除此之外，还支持范围查询query_range，需要额外添加下面的参数：start（起始时间）、end（结束时间）、step=（查询步长）" target="_blank" rel="noopener">http://Prometheus地址:9090/api/v1/query?query=up&amp;time=xx&#39;查询监控数据，其中query参数就是一个PromQL表达式。除此之外，还支持范围查询query_range，需要额外添加下面的参数：start（起始时间）、end（结束时间）、step=（查询步长）</a></p>
+<p><img src="https://gongzhao-1256784911.cos.ap-shanghai.myqcloud.com/hexo/images/prometheus/7.png" alt="image"></p>
+<p>当接收到请求参数后，通过PromQL引擎解析PromQL，确定查询的数据序列和时间范围，通过tsdb接口获取对应数据块（chunks），最后根据聚合函数处理监控数据并返回。</p>
+<h2 id="告警"><a href="#告警" class="headerlink" title="告警"></a>告警</h2><p><img src="https://gongzhao-1256784911.cos.ap-shanghai.myqcloud.com/hexo/images/prometheus/8.png" alt="image"></p>
+<p>如果监控数据达到告警阈值Prometheus Server会通过HTTP将告警发送到告警模块alertmanger。Prometheus告警配置也是通过yaml文件，核心是上面的expr表达式（告警规则）和查询一样也是一个PromQL表达式。 for代表持续时间，如果在for时间内持续触发Prometheus才发出告警<br>告警组件alertmanger地址是在Prometheus的配置文件中指定，告警经过alertmanger去重、抑制等操作，最后执行告警动作，目前支持邮件、slack、微信和webhook，如果是对接钉钉，便可以通过webhook方式触发钉钉的客户端发送告警。</p>
+<h2 id="联邦"><a href="#联邦" class="headerlink" title="联邦"></a>联邦</h2><p><img src="https://gongzhao-1256784911.cos.ap-shanghai.myqcloud.com/hexo/images/prometheus/9.png" alt="image"></p>
+<p>为了扩展单个Prometheus的采集能力和存储能力，Prometheus引入了“联邦”的概念。多个Prometheus节点组成两层联邦结构，如图所示，上面一层是联邦节点，负责定时从下面的Prometheus节点获取数据并汇总，部署多个联邦节点是为了实现高可用以及数据汇聚存储。下层的Prometheus节点又分别负责不同区域的数据采集，在多机房的事件部署中，下层的每个Prometheus节点可以被部署到单独的一个机房，充当代理。</p>
+<p>Improbable开源的Thanos提供了Prometheus集群化能力，感兴趣的朋友可以深入了解一下。</p>
+<p><strong>其他监控分布式</strong><br>熟悉zabbix的朋友可能知道，zabbix中有主动模式和被动模式，主动模式可以实现agent节点自动向server节点汇报，这样就减轻了server端的压力。被动模式中也有一种添加代理节点方式实现分布式监控，实现跨机房异地监控目标。具体方法可以参考本人zabbix监控文章。</p>
+<p><strong>prometheus联邦机制</strong><br>prometheus的分布式类似于nginx的负载均衡模式，主节点配置文件可以配置从节点的地址池，主节点只要定时向从节点拉取数据即可，主节点的作用就是存贮实时数据，并提供给grafana 使用。而从节点作用就是分别从不同的各个采集端中抽取数据，可以实现分机器或者分角色。这种由一个中心的prometheus负则聚合多个prometheus数据中的监控模式，称为prometheus联邦集群。<br>例如：集群规模200台，两个从节点，可以每台机器监控100台，也可以每台机器监控200台，但是分别监控不同角色，第一个从节点监控hdfs，第二个节点监控hbase这种方式，反正想怎么监控就看个人配置了。</p>
+<p><strong>部署配置</strong><br>分布式的部署就是找多台机器分别部署prometheus，部署方式都是一致，只有配置文件不同。<br>联邦集群核心在于每一个prometheus server都包含一个用于获取当前实例中监控样本的接口 /federate 。对于中心prometheus server无论是从其他prometheus实例还是node_exporter采集端获取数据，事实上没有任何差异的。</p>
+<table>
+<thead>
+<tr>
+<th>参数</th>
+<th>作用</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>honor_labels</td>
+<td>防止采集到监控指标冲突，配置true可以确保采集到指标冲突时自动忽略冲突指标；配置false会自动将冲突指标替换为exported_的形式。还可以添加标签区分不同监控目标</td>
+</tr>
+<tr>
+<td>metrics_path</td>
+<td>联邦集群用于获取监控样本参数配置 /federate</td>
+</tr>
+<tr>
+<td>match[ ]</td>
+<td>指定需要获取的时间序列，个人认为也就是填写从节点的角色标签或者环境变量。可以填写job=”zookeeper”或者<strong>name</strong>=~“instance.*”，模糊匹配可以使用通配符。将你想要展示的角色或者变量写入prometheus主节点才可以获取从节点上信息，否则无法获取</td>
+</tr>
+<tr>
+<td>static_configs</td>
+<td>在此填写从节点地址池即可</td>
+</tr>
+</tbody></table>
+<p><strong>主节点配置文件：</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br></pre></td><td class="code"><pre><span class="line"># my global config</span><br><span class="line">global:</span><br><span class="line">  scrape_interval:     15s # Set the scrape interval to every 15 seconds. Default is every 1 minute.</span><br><span class="line">  evaluation_interval: 15s # Evaluate rules every 15 seconds. The default is every 1 minute.</span><br><span class="line">  # scrape_timeout is set to the global default (10s).</span><br><span class="line"></span><br><span class="line"># Alertmanager configuration</span><br><span class="line">alerting:</span><br><span class="line">  alertmanagers:</span><br><span class="line">  - static_configs:</span><br><span class="line">    - targets:</span><br><span class="line">      # - alertmanager:9093</span><br><span class="line"></span><br><span class="line"># Load rules once and periodically evaluate them according to the global &apos;evaluation_interval&apos;.</span><br><span class="line">rule_files:</span><br><span class="line">  # - &quot;first_rules.yml&quot;</span><br><span class="line">  # - &quot;second_rules.yml&quot;</span><br><span class="line"></span><br><span class="line"># A scrape configuration containing exactly one endpoint to scrape:</span><br><span class="line"># Here it&apos;s Prometheus itself.</span><br><span class="line">scrape_configs:</span><br><span class="line">  # The job name is added as a label `job=&lt;job_name&gt;` to any timeseries scraped from this config.</span><br><span class="line">#  - job_name: &apos;prometheus&apos;</span><br><span class="line"></span><br><span class="line">    # metrics_path defaults to &apos;/metrics&apos;</span><br><span class="line">    # scheme defaults to &apos;http&apos;.</span><br><span class="line"></span><br><span class="line">#    static_configs:</span><br><span class="line">#    - targets: [&apos;localhost:9090&apos;]</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">  - job_name: &apos;node_workers&apos;</span><br><span class="line">    honor_labels: true</span><br><span class="line">    metrics_path: &apos;/federate&apos;</span><br><span class="line">    params:</span><br><span class="line">      &apos;match[]&apos;:</span><br><span class="line">        - &apos;&#123;job=&quot;zookeeper&quot;&#125;&apos;</span><br><span class="line">        - &apos;&#123;job=&quot;hbase&quot;&#125;&apos;</span><br><span class="line">        - &apos;&#123;job=&quot;hdfs&quot;&#125;&apos;</span><br><span class="line">        - &apos;&#123;job=&quot;hive&quot;&#125;&apos;</span><br><span class="line">        - &apos;&#123;job=&quot;kafka&quot;&#125;&apos;</span><br><span class="line">        - &apos;&#123;job=&quot;linux_server&quot;&#125;&apos;</span><br><span class="line">        - &apos;&#123;job=&quot;spark&quot;&#125;&apos;</span><br><span class="line">        - &apos;&#123;job=&quot;yarn&quot;&#125;&apos;</span><br><span class="line">        - &apos;&#123;__name__=~&quot;instance.*&quot;&#125;&apos;</span><br><span class="line">    static_configs:</span><br><span class="line">      - targets:</span><br><span class="line">        - &apos;192.168.1.1:9090&apos;</span><br><span class="line">        - &apos;192.168.1.2:9090&apos;</span><br></pre></td></tr></table></figure>
+
+<p><strong>从节点1配置文件</strong>：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br></pre></td><td class="code"><pre><span class="line"># my global config</span><br><span class="line">global:</span><br><span class="line">  scrape_interval:     15s # Set the scrape interval to every 15 seconds. Default is every 1 minute.</span><br><span class="line">  evaluation_interval: 15s # Evaluate rules every 15 seconds. The default is every 1 minute.</span><br><span class="line">  # scrape_timeout is set to the global default (10s).</span><br><span class="line"></span><br><span class="line"># Alertmanager configuration</span><br><span class="line">alerting:</span><br><span class="line">  alertmanagers:</span><br><span class="line">  - static_configs:</span><br><span class="line">    - targets:</span><br><span class="line">      # - alertmanager:9093</span><br><span class="line"></span><br><span class="line"># Load rules once and periodically evaluate them according to the global &apos;evaluation_interval&apos;.</span><br><span class="line">rule_files:</span><br><span class="line">  # - &quot;first_rules.yml&quot;</span><br><span class="line">  # - &quot;second_rules.yml&quot;</span><br><span class="line"></span><br><span class="line"># A scrape configuration containing exactly one endpoint to scrape:</span><br><span class="line"># Here it&apos;s Prometheus itself.</span><br><span class="line">scrape_configs:</span><br><span class="line">  # The job name is added as a label `job=&lt;job_name&gt;` to any timeseries scraped from this config.</span><br><span class="line">  - job_name: &apos;prometheus&apos;</span><br><span class="line"></span><br><span class="line">    # metrics_path defaults to &apos;/metrics&apos;</span><br><span class="line">    # scheme defaults to &apos;http&apos;.</span><br><span class="line"></span><br><span class="line">    static_configs:</span><br><span class="line">    - targets: [&apos;localhost:9090&apos;]</span><br><span class="line">  - job_name: &apos;linux_server&apos;</span><br><span class="line">    file_sd_configs:</span><br><span class="line">     - files:</span><br><span class="line">       - configs/linux.json</span><br><span class="line">  - job_name: &apos;hdfs&apos;</span><br><span class="line">    file_sd_configs:</span><br><span class="line">     - files:</span><br><span class="line">       - configs/hdfs.json</span><br><span class="line">  - job_name: &apos;hbase&apos;</span><br><span class="line">    file_sd_configs:</span><br><span class="line">     - files:</span><br><span class="line">       - configs/hbase.json</span><br><span class="line">  - job_name: &apos;yarn&apos;</span><br><span class="line">    file_sd_configs:</span><br><span class="line">     - files:</span><br><span class="line">       - configs/yarn.json</span><br></pre></td></tr></table></figure>
+
+<p><strong>从节点2配置文件</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br></pre></td><td class="code"><pre><span class="line"># my global config</span><br><span class="line">global:</span><br><span class="line">  scrape_interval:     15s # Set the scrape interval to every 15 seconds. Default is every 1 minute.</span><br><span class="line">  evaluation_interval: 15s # Evaluate rules every 15 seconds. The default is every 1 minute.</span><br><span class="line">  # scrape_timeout is set to the global default (10s).</span><br><span class="line"></span><br><span class="line"># Alertmanager configuration</span><br><span class="line">alerting:</span><br><span class="line">  alertmanagers:</span><br><span class="line">  - static_configs:</span><br><span class="line">    - targets:</span><br><span class="line">      # - alertmanager:9093</span><br><span class="line"></span><br><span class="line"># Load rules once and periodically evaluate them according to the global &apos;evaluation_interval&apos;.</span><br><span class="line">rule_files:</span><br><span class="line">  # - &quot;first_rules.yml&quot;</span><br><span class="line">  # - &quot;second_rules.yml&quot;</span><br><span class="line"></span><br><span class="line"># A scrape configuration containing exactly one endpoint to scrape:</span><br><span class="line"># Here it&apos;s Prometheus itself.</span><br><span class="line">scrape_configs:</span><br><span class="line">  # The job name is added as a label `job=&lt;job_name&gt;` to any timeseries scraped from this config.</span><br><span class="line">  - job_name: &apos;prometheus&apos;</span><br><span class="line"></span><br><span class="line">    # metrics_path defaults to &apos;/metrics&apos;</span><br><span class="line">    # scheme defaults to &apos;http&apos;.</span><br><span class="line"></span><br><span class="line">    static_configs:</span><br><span class="line">    - targets: [&apos;localhost:9090&apos;]</span><br><span class="line"> - job_name: &apos;zookeeper&apos;</span><br><span class="line">    file_sd_configs:</span><br><span class="line">     - files:</span><br><span class="line">       - configs/zookeeper.json</span><br><span class="line">  - job_name: &apos;hive&apos;</span><br><span class="line">    file_sd_configs:</span><br><span class="line">     - files:</span><br><span class="line">       - configs/hive.json</span><br><span class="line">  - job_name: &apos;kafka&apos;</span><br><span class="line">    file_sd_configs:</span><br><span class="line">     - files:</span><br><span class="line">       - configs/kafka.json</span><br><span class="line">  - job_name: &apos;spark&apos;</span><br><span class="line">    file_sd_configs:</span><br><span class="line">     - files:</span><br><span class="line">       - configs/spark.json</span><br></pre></td></tr></table></figure>
+
+<h2 id="服务发现与云原生：以Kubernetes为例"><a href="#服务发现与云原生：以Kubernetes为例" class="headerlink" title="服务发现与云原生：以Kubernetes为例"></a>服务发现与云原生：以Kubernetes为例</h2><p><img src="https://gongzhao-1256784911.cos.ap-shanghai.myqcloud.com/hexo/images/prometheus/10.png" alt="image"></p>
+<p>Prometheus有两种方式配置监控对象，一种是通过静态文件配置，另一种是动态发现机制。</p>
+<p>目前动态发现目前已经支持Kubernetes、etcd、Consul等多种服务，动态发现可以减少运维人员手动配置，在容器运行环境中尤为重要，容器集群通常在几千甚至几万的规模，如果每个容器都需要单独配置监控项不仅需要大量工作量，而且容器经常变动，后续维护更是异常麻烦。针对Kubernetes环境的动态发现，Prometheus通过Watch Kubernetes API动态获取当前集群所有主机、容器以及服务的变化情况。</p>
+<p><img src="https://gongzhao-1256784911.cos.ap-shanghai.myqcloud.com/hexo/images/prometheus/18.jpg" alt="image"></p>
+<p>对于Kubernetes而言，如上图所示，我们可以把当中所有的资源分为几类：</p>
+<ol>
+<li>基础设施层（Node）：集群节点，为整个集群和应用提供运行时资源</li>
+<li>容器基础设施（Container）：为应用提供运行时环境</li>
+<li>用户应用（Pod）：Pod中会包含一组容器，它们一起工作，并且对外提供一个（或者一组）功能</li>
+<li>内部服务负载均衡（Service）：在集群内，通过Service在集群暴露应用功能，集群内应用和应用之间访问时提供内部的负载均衡。</li>
+<li>外部访问入口（Ingress）：通过Ingress提供集群外的访问入口，从而可以使外部客户端能够访问到部署在Kubernetes集群内的服务。</li>
+</ol>
+<p>因此，在不考虑Kubernetes自身组件的情况下，如果要构建一个完整的监控体系，我们应该考虑，以下5个方面：</p>
+<ol>
+<li>集群节点状态监控：从集群中各节点的kubelet服务获取节点的基本运行状态；</li>
+<li>集群节点资源用量监控：通过Daemonset的形式在集群中各个节点部署Node Exporter采集节点的资源使用情况；</li>
+<li>节点中运行的容器监控：通过各个节点中kubelet内置的cAdvisor中获取个节点中所有容器的运行状态和资源使用情况；</li>
+<li>从黑盒监控的角度在集群中部署Blackbox Exporter探针服务，检测Service和Ingress的可用性；</li>
+<li>如果在集群中部署的应用程序本身内置了对Prometheus的监控支持，那么我们还应该找到相应的Pod实例，并从该Pod实例中获取其内部运行状态的监控指标。</li>
+</ol>
+<p>而对于Prometheus这一类基于Pull模式的监控系统，显然也无法继续使用的static_configs的方式静态的定义监控目标。而对于Prometheus而言其解决方案就是引入一个中间的代理人（服务注册中心），这个代理人掌握着当前所有监控目标的访问信息，Prometheus只需要向这个代理人询问有哪些监控目标控即可， 这种模式被称为服务发现。</p>
+<p>Prometheus提供了对Kubernetes的完整支持，通过与Kubernetes的API进行交互，Prometheus可以自动的发现Kubernetes中所有的Node、Service、Pod、Endpoints以及Ingress资源的相关信息。</p>
+<p>通过服务发现找到所有的监控目标后，并通过Prometheus的Relabling机制对这些资源进行过滤，metrics地址替换等操作，从而实现对各类资源的全自动化监控。</p>
+<p>例如，通过以下流程任务配置，可以自动从集群节点的kubelet服务中内置的cAdvisor中获取容器的监控数据：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">- job_name: &apos;kubernetes-cadvisor&apos;</span><br><span class="line">scheme: https</span><br><span class="line"></span><br><span class="line">tls_config:</span><br><span class="line">ca_file: /var/run/secrets/kubernetes.io/serviceaccount/ca.crt</span><br><span class="line">bearer_token_file: /var/run/secrets/kubernetes.io/serviceaccount/token</span><br><span class="line"></span><br><span class="line">kubernetes_sd_configs:</span><br><span class="line">- role: node</span><br><span class="line"></span><br><span class="line">relabel_configs:</span><br><span class="line">- action: labelmap</span><br><span class="line">regex: __meta_kubernetes_node_label_(.+)</span><br><span class="line">- target_label: __address__</span><br><span class="line">replacement: kubernetes.default.svc:443</span><br><span class="line">- source_labels: [__meta_kubernetes_node_name]</span><br><span class="line">regex: (.+)</span><br><span class="line">target_label: __metrics_path__</span><br><span class="line">replacement: /api/v1/nodes/$&#123;1&#125;/proxy/metrics/cadvisor</span><br></pre></td></tr></table></figure>
+
+<p>由或者是通过集群中部署的blackbox exporter对服务进行网络探测：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">- job_name: &apos;kubernetes-services&apos;</span><br><span class="line">metrics_path: /probe</span><br><span class="line"></span><br><span class="line">params:</span><br><span class="line">module: [http_2xx]</span><br><span class="line">kubernetes_sd_configs:</span><br><span class="line">- role: service</span><br><span class="line"></span><br><span class="line">relabel_configs:</span><br><span class="line">- source_labels: [__address__]</span><br><span class="line">target_label: __param_target</span><br><span class="line">- target_label: __address__</span><br><span class="line">replacement: blackbox-exporter.example.com:9115</span><br><span class="line">- source_labels: [__param_target]</span><br><span class="line">target_label: instance</span><br><span class="line">- action: labelmap</span><br><span class="line">regex: __meta_kubernetes_service_label_(.+)</span><br><span class="line">- source_labels: [__meta_kubernetes_namespace]</span><br><span class="line">target_label: kubernetes_namespace</span><br><span class="line">- source_labels: [__meta_kubernetes_service_name]</span><br><span class="line">target_label: kubernetes_name</span><br></pre></td></tr></table></figure>
+
+<h2 id="规模化监控解决方案"><a href="#规模化监控解决方案" class="headerlink" title="规模化监控解决方案"></a>规模化监控解决方案</h2><p>Prometheus周期性的从Target中获取监控数据并保存到本地的time-series中，并且通过PromQL对外暴露数据查询接口。 内部周期性的检查告警规则文件，产生告警并有Alertmanager对告警进行后续处理。</p>
+<p>那么问题来了，这里Prometheus是单点，Alertmanager也是单点。 这样的结构能否支持大规模的监控量？</p>
+<p>对于Prometheus而言，要想完全理解其高可用部署模式，首先我们需要理解Prometheus的数据存储机制。</p>
+<p><img src="https://gongzhao-1256784911.cos.ap-shanghai.myqcloud.com/hexo/images/prometheus/11.png" alt="image"></p>
+<p>如上所示，Prometheus 2.x采用自定义的存储格式将样本数据保存在本地磁盘当中。按照两个小时为一个时间窗口，将两小时内产生的数据存储在一个块（Block）中，每一个块中包含该时间窗口内的所有样本数据（chunks），元数据文件（meta.json）以及索引文件（index）。</p>
+<p>当前时间窗口内正在收集的样本数据，Prometheus则会直接将数据保存在内存当中。为了确保此期间如果Prometheus发生崩溃或者重启时能够恢复数据，Prometheus启动时会从写入日志（WAL）进行重播，从而恢复数据。此期间如果通过API删除时间序列，删除记录也会保存在单独的逻辑文件当中（tombstone）。</p>
+<p><img src="https://gongzhao-1256784911.cos.ap-shanghai.myqcloud.com/hexo/images/prometheus/12.jpg" alt="image"></p>
+<p>通过时间窗口的形式保存所有的样本数据，可以明显提高Prometheus的查询效率，当查询一段时间范围内的所有样本数据时，只需要简单的从落在该范围内的块中查询数据即可。而对于历史数据的删除，也变得非常简单，只要删除相应块所在的目录即可。</p>
+<p>对于单节点的Prometheus而言，这种基于本地文件系统的存储方式能够让其支持数以百万的监控指标，每秒处理数十万的数据点。为了保持自身管理和部署的简单性，Prometheus放弃了管理HA的复杂度。</p>
+<p>因此首先，对于这种存储方式而言，我们需要明确的几点：</p>
+<ol>
+<li>Prometheus本身不适用于持久化存储长期的历史数据，默认情况下Prometheus只保留15天的数据。</li>
+<li>本地存储也意味着Prometheus自身无法进行有效的弹性伸缩。</li>
+</ol>
+<p>而当监控规模变得巨大的时候，对于单台Prometheus而言，其主要挑战包括以下几点：</p>
+<ol>
+<li>服务的可用性，如何确保Prometheus不会发生单点故障；</li>
+<li>监控规模变大的意味着，Prometheus的采集Job的数量也会变大（写）操作会变得非常消耗资源；</li>
+<li>同时也意味着大量的数据存储的需求。</li>
+</ol>
+<h3 id="简单HA：服务可用性"><a href="#简单HA：服务可用性" class="headerlink" title="简单HA：服务可用性"></a>简单HA：服务可用性</h3><p>由于Prometheus的Pull机制的设计，为了确保Prometheus服务的可用性，用户只需要部署多套Prometheus Server实例，并且采集相同的Exporter目标即可。</p>
+<p><img src="https://gongzhao-1256784911.cos.ap-shanghai.myqcloud.com/hexo/images/prometheus/13.png" alt="image"></p>
+<p>基本的HA模式只能确保Prometheus服务的可用性问题，但是不解决Prometheus Server之间的数据一致性问题以及持久化问题（数据丢失后无法恢复），也无法进行动态的扩展。因此这种部署方式适合监控规模不大，Promthues Server也不会频繁发生迁移的情况，并且只需要保存短周期监控数据的场景。</p>
+<h3 id="基本HA-远程存储"><a href="#基本HA-远程存储" class="headerlink" title="基本HA + 远程存储"></a>基本HA + 远程存储</h3><p>在基本HA模式的基础上通过添加Remote Storage存储支持，将监控数据保存在第三方存储服务上。</p>
+<p><img src="https://gongzhao-1256784911.cos.ap-shanghai.myqcloud.com/hexo/images/prometheus/14.png" alt="image"></p>
+<p>当Prometheus在获取监控样本并保存到本地的同时，会将监控数据发送到Remote Storage Adaptor，由Adaptor完成对第三方存储的格式转换以及数据持久化。</p>
+<p>当Prometheus查询数据的时候，也会从Remote Storage Adaptor获取数据，合并本地数据后进行数据查询。</p>
+<p>在解决了Prometheus服务可用性的基础上，同时确保了数据的持久化，当Prometheus Server发生宕机或者数据丢失的情况下，可以快速的恢复。 同时Prometheus Server可能很好的进行迁移。因此，该方案适用于用户监控规模不大，但是希望能够将监控数据持久化，同时能够确保Prometheus Server的可迁移性的场景。</p>
+<h3 id="基本HA-远程存储-联邦集群"><a href="#基本HA-远程存储-联邦集群" class="headerlink" title="基本HA + 远程存储 + 联邦集群"></a>基本HA + 远程存储 + 联邦集群</h3><p>当单台Prometheus Server无法处理大量的采集任务时，用户可以考虑基于Prometheus联邦集群的方式将监控采集任务划分到不同的Prometheus实例当中即在任务级别功能分区。</p>
+<p><img src="https://gongzhao-1256784911.cos.ap-shanghai.myqcloud.com/hexo/images/prometheus/15.jpg" alt="image"></p>
+<p>这种部署方式一般适用于两种场景：</p>
+<p>场景一：单数据中心 + 大量的采集任务</p>
+<p>这种场景下Prometheus的性能瓶颈主要在于大量的采集任务，因此用户需要利用Prometheus联邦集群的特性，将不同类型的采集任务划分到不同的Prometheus子服务中，从而实现功能分区。例如一个Prometheus Server负责采集基础设施相关的监控指标，另外一个Prometheus Server负责采集应用监控指标。再有上层Prometheus Server实现对数据的汇聚。</p>
+<p>场景二：多数据中心</p>
+<p>这种模式也适合与多数据中心的情况，当Prometheus Server无法直接与数据中心中的Exporter进行通讯时，在每一个数据中部署一个单独的Prometheus Server负责当前数据中心的采集任务是一个不错的方式。这样可以避免用户进行大量的网络配置，只需要确保主Prometheus Server实例能够与当前数据中心的Prometheus Server通讯即可。 中心Prometheus Server负责实现对多数据中心数据的聚合。</p>
+<h3 id="高可用方案选择"><a href="#高可用方案选择" class="headerlink" title="高可用方案选择"></a>高可用方案选择</h3><p>上面的部分，根据不同的场景演示了3种不同的高可用部署方案。当然对于Prometheus部署方案需要用户根据监控规模以及自身的需求进行动态调整，下表展示了Prometheus和高可用有关3个选项各自解决的问题，用户可以根据自己的需求灵活选择。</p>
+<p><img src="https://gongzhao-1256784911.cos.ap-shanghai.myqcloud.com/hexo/images/prometheus/16.png" alt="image"></p>
+<p>对于Alertmanager而言，Alertmanager集群之间使用Gossip协议相互传递状态，因此对于Prometheus而言，只需要关联多个Alertmanager实例即可，关于Alertmanager集群的详细详细可以参考：<a href="https://github.com/yunlzheng/prometheus-book/blob/master/ha/alertmanager-high-availability.md" target="_blank" rel="noopener">https://github.com/yunlzheng/p … ty.md</a></p>
+<p><img src="https://gongzhao-1256784911.cos.ap-shanghai.myqcloud.com/hexo/images/prometheus/17.png" alt="image"></p>
+<h2 id="配置文件解析"><a href="#配置文件解析" class="headerlink" title="配置文件解析"></a>配置文件解析</h2><p>Prometheus通过命令行标志和配置文件进行配置。 虽然命令行标志配置了不可变的系统参数（例如存储位置，保留在磁盘和内存中的数据量等），但配置文件定义了与抓取作业及其实例相关的所有内容，以及哪些规则文件 载入。</p>
+<p>要查看所有可用的命令行参数，执行<code>./prometheus -h</code></p>
+<p>Prometheus可以在运行时重新加载其配置。 如果新配置格式不正确，则不会应用更改。 通过向Prometheus进程发送SIGHUP或向<code>/-/reload</code>端点发送HTTP POST请求（启用<code>--web.enable-lifecycle</code>标志时）来触发配置重新加载。 这也将重新加载任何已配置的规则文件。</p>
+<p><strong>配置文件</strong></p>
+<p>要指定要加载的配置文件，</p>
+<p>请使用–config.file标志。</p>
+<p>该文件以YAML格式编写，由下面描述的方案定义。 括号表示参数是可选的。 对于非列表参数，该值设置为指定的默认值。</p>
+<p>通用占位符定义如下：</p>
+<ul>
+<li><boolean>：一个可以取值为true或false的布尔值</boolean></li>
+<li><duration>：与正则表达式匹配的持续时间[0-9] +（ms | [smhdwy]） </duration></li>
+<li><labelname>：与正则表达式匹配的字符串[a-zA-Z _] [a-zA-Z0-9 _] * </labelname></li>
+<li><labelvalue>：一串unicode字符</labelvalue></li>
+<li><filename>：当前工作目录中的有效路径</filename></li>
+<li><host>：由主机名或IP后跟可选端口号组成的有效字符串</host></li>
+<li><path>：有效的URL路径</path></li>
+<li><scheme>：一个可以取值http或https的字符串</scheme></li>
+<li><string>：常规字符串</string></li>
+<li><secret>：一个秘密的常规字符串，例如密码</secret></li>
+<li><tmpl_string>：在使用前进行模板扩展的字符串</tmpl_string></li>
+</ul>
+<p>其他占位符是单独指定的。</p>
+<p><a href="https://links.jianshu.com/go?to=https%3A%2F%2Fgithub.com%2Fprometheus%2Fprometheus%2Fblob%2Frelease-2.8%2Fconfig%2Ftestdata%2Fconf.good.yml" target="_blank" rel="noopener">可以在此处找到有效的示例文件。</a></p>
+<p>全局配置指定在所有其他配置上下文中有效的参数。 它们还可用作其他配置节的默认值</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line">global:</span><br><span class="line">  # 默认情况下抓取目标的频率.</span><br><span class="line">  [ scrape_interval: &lt;duration&gt; | default = 1m ]</span><br><span class="line"></span><br><span class="line">  # 抓取超时时间.</span><br><span class="line">  [ scrape_timeout: &lt;duration&gt; | default = 10s ]</span><br><span class="line"></span><br><span class="line">  # 评估规则的频率.</span><br><span class="line">  [ evaluation_interval: &lt;duration&gt; | default = 1m ]</span><br><span class="line"></span><br><span class="line">  # 与外部系统通信时添加到任何时间序列或警报的标签</span><br><span class="line">  #（联合，远程存储，Alertma# nager）.</span><br><span class="line">  external_labels:</span><br><span class="line">    [ &lt;labelname&gt;: &lt;labelvalue&gt; ... ]</span><br><span class="line"></span><br><span class="line"># 规则文件指定了一个globs列表. </span><br><span class="line"># 从所有匹配的文件中读取规则和警报.</span><br><span class="line">rule_files:</span><br><span class="line">  [ - &lt;filepath_glob&gt; ... ]</span><br><span class="line"></span><br><span class="line"># 抓取配置列表.</span><br><span class="line">scrape_configs:</span><br><span class="line">  [ - &lt;scrape_config&gt; ... ]</span><br><span class="line"></span><br><span class="line"># 警报指定与Alertmanager相关的设置.</span><br><span class="line">alerting:</span><br><span class="line">  alert_relabel_configs:</span><br><span class="line">    [ - &lt;relabel_config&gt; ... ]</span><br><span class="line">  alertmanagers:</span><br><span class="line">    [ - &lt;alertmanager_config&gt; ... ]</span><br><span class="line"></span><br><span class="line"># 与远程写入功能相关的设置.</span><br><span class="line">remote_write:</span><br><span class="line">  [ - &lt;remote_write&gt; ... ]</span><br><span class="line"></span><br><span class="line"># 与远程读取功能相关的设置.</span><br><span class="line">remote_read:</span><br><span class="line">  [ - &lt;remote_read&gt; ... ]</span><br></pre></td></tr></table></figure>
+
+<p><strong><scrape_config></scrape_config></strong></p>
+<p><scrape_config>部分指定一组描述如何刮除它们的目标和参数。 在一般情况下，一个scrape配置指定单个作业。 在高级配置中，这可能会改变。</scrape_config></p>
+<p>目标可以通过<static_configs>参数静态配置，也可以使用其中一种支持的服务发现机制动态发现。</static_configs></p>
+<p>此外，<relabel_configs>允许在抓取之前对任何目标及其标签进行高级修改。</relabel_configs></p>
+<p>其中<job_name>在所有scrape配置中必须是唯一的。</job_name></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br></pre></td><td class="code"><pre><span class="line"># 默认分配给已抓取指标的job名称。</span><br><span class="line">job_name: &lt;job_name&gt;</span><br><span class="line"></span><br><span class="line"># 从job中抓取目标的频率.</span><br><span class="line">[ scrape_interval: &lt;duration&gt; | default = &lt;global_config.scrape_interval&gt; ]</span><br><span class="line"></span><br><span class="line"># 抓取此job时，每次抓取超时时间.</span><br><span class="line">[ scrape_timeout: &lt;duration&gt; | default = &lt;global_config.scrape_timeout&gt; ]</span><br><span class="line"></span><br><span class="line"># 从目标获取指标的HTTP资源路径.</span><br><span class="line">[ metrics_path: &lt;path&gt; | default = /metrics ]</span><br><span class="line"></span><br><span class="line"># honor_labels控制Prometheus如何处理已经存在于已抓取数据中的标签与Prometheus将附加服务器端的标签之间的冲突（&quot;job&quot;和&quot;instance&quot;标签，手动配置的目标标签以及服务发现实现生成的标签）。</span><br><span class="line"># </span><br><span class="line"># 如果honor_labels设置为&quot;true&quot;，则通过保留已抓取数据的标签值并忽略冲突的服务器端标签来解决标签冲突。</span><br><span class="line">#</span><br><span class="line"># 如果honor_labels设置为&quot;false&quot;，则通过将已抓取数据中的冲突标签重命名为&quot;exported_ &lt;original-label&gt;&quot;（例如&quot;exported_instance&quot;，&quot;exported_job&quot;）然后附加服务器端标签来解决标签冲突。 这对于联合等用例很有用，其中应保留目标中指定的所有标签。</span><br><span class="line"># </span><br><span class="line"># 请注意，任何全局配置的&quot;external_labels&quot;都不受此设置的影响。 在与外部系统通信时，它们始终仅在时间序列尚未具有给定标签时应用，否则将被忽略。</span><br><span class="line"># </span><br><span class="line">[ honor_labels: &lt;boolean&gt; | default = false ]</span><br><span class="line"></span><br><span class="line"># 配置用于请求的协议方案.</span><br><span class="line">[ scheme: &lt;scheme&gt; | default = http ]</span><br><span class="line"></span><br><span class="line"># 可选的HTTP URL参数.</span><br><span class="line">params:</span><br><span class="line">  [ &lt;string&gt;: [&lt;string&gt;, ...] ]</span><br><span class="line"></span><br><span class="line"># 使用配置的用户名和密码在每个scrape请求上设置`Authorization`标头。 password和password_file是互斥的。</span><br><span class="line">basic_auth:</span><br><span class="line">  [ username: &lt;string&gt; ]</span><br><span class="line">  [ password: &lt;secret&gt; ]</span><br><span class="line">  [ password_file: &lt;string&gt; ]</span><br><span class="line"></span><br><span class="line"># 使用配置的承载令牌在每个scrape请求上设置`Authorization`标头。 它`bearer_token_file`和是互斥的。</span><br><span class="line">[ bearer_token: &lt;secret&gt; ]</span><br><span class="line"></span><br><span class="line"># 使用配置的承载令牌在每个scrape请求上设置`Authorization`标头。 它`bearer_token`和是互斥的。</span><br><span class="line">[ bearer_token_file: /path/to/bearer/token/file ]</span><br><span class="line"></span><br><span class="line"># 配置scrape请求的TLS设置.</span><br><span class="line">tls_config:</span><br><span class="line">  [ &lt;tls_config&gt; ]</span><br><span class="line"></span><br><span class="line"># 可选的代理URL.</span><br><span class="line">[ proxy_url: &lt;string&gt; ]</span><br><span class="line"></span><br><span class="line"># Azure服务发现配置列表.</span><br><span class="line">azure_sd_configs:</span><br><span class="line">  [ - &lt;azure_sd_config&gt; ... ]</span><br><span class="line"></span><br><span class="line"># Consul服务发现配置列表.</span><br><span class="line">consul_sd_configs:</span><br><span class="line">  [ - &lt;consul_sd_config&gt; ... ]</span><br><span class="line"></span><br><span class="line"># DNS服务发现配置列表。</span><br><span class="line">dns_sd_configs:</span><br><span class="line">  [ - &lt;dns_sd_config&gt; ... ]</span><br><span class="line"></span><br><span class="line"># EC2服务发现配置列表。</span><br><span class="line">ec2_sd_configs:</span><br><span class="line">  [ - &lt;ec2_sd_config&gt; ... ]</span><br><span class="line"></span><br><span class="line"># OpenStack服务发现配置列表。</span><br><span class="line">openstack_sd_configs:</span><br><span class="line">  [ - &lt;openstack_sd_config&gt; ... ]</span><br><span class="line"></span><br><span class="line"># 文件服务发现配置列表。</span><br><span class="line">file_sd_configs:</span><br><span class="line">  [ - &lt;file_sd_config&gt; ... ]</span><br><span class="line"></span><br><span class="line"># GCE服务发现配置列表。</span><br><span class="line">gce_sd_configs:</span><br><span class="line">  [ - &lt;gce_sd_config&gt; ... ]</span><br><span class="line"></span><br><span class="line"># Kubernetes服务发现配置列表。</span><br><span class="line">kubernetes_sd_configs:</span><br><span class="line">  [ - &lt;kubernetes_sd_config&gt; ... ]</span><br><span class="line"></span><br><span class="line"># Marathon服务发现配置列表。</span><br><span class="line">marathon_sd_configs:</span><br><span class="line">  [ - &lt;marathon_sd_config&gt; ... ]</span><br><span class="line"></span><br><span class="line"># AirBnB的神经服务发现配置列表。</span><br><span class="line">nerve_sd_configs:</span><br><span class="line">  [ - &lt;nerve_sd_config&gt; ... ]</span><br><span class="line"></span><br><span class="line"># Zookeeper Serverset服务发现配置列表。</span><br><span class="line">serverset_sd_configs:</span><br><span class="line">  [ - &lt;serverset_sd_config&gt; ... ]</span><br><span class="line"></span><br><span class="line"># Triton服务发现配置列表。</span><br><span class="line">triton_sd_configs:</span><br><span class="line">  [ - &lt;triton_sd_config&gt; ... ]</span><br><span class="line"></span><br><span class="line"># 此job的标记静态配置目标列表。</span><br><span class="line">static_configs:</span><br><span class="line">  [ - &lt;static_config&gt; ... ]</span><br><span class="line"></span><br><span class="line"># 目标重新标记配置列表。</span><br><span class="line">relabel_configs:</span><br><span class="line">  [ - &lt;relabel_config&gt; ... ]</span><br><span class="line"></span><br><span class="line"># 度量标准重新配置列表。</span><br><span class="line">metric_relabel_configs:</span><br><span class="line">  [ - &lt;relabel_config&gt; ... ]</span><br><span class="line"></span><br><span class="line"># 对每个将被接受的样本数量的每次抓取限制。</span><br><span class="line"># 如果在度量重新标记后存在超过此数量的样本，则整个抓取将被视为失败。 0表示没有限制。</span><br><span class="line">[ sample_limit: &lt;int&gt; | default = 0 ]</span><br></pre></td></tr></table></figure>
+
+<p><strong><tls_config></tls_config></strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"># 用于验证API服务器证书的CA证书。</span><br><span class="line">[ ca_file: &lt;filename&gt; ]</span><br><span class="line"></span><br><span class="line"># 用于服务器的客户端证书身份验证的证书和密钥文件。</span><br><span class="line">[ cert_file: &lt;filename&gt; ]</span><br><span class="line">[ key_file: &lt;filename&gt; ]</span><br><span class="line"></span><br><span class="line"># ServerName扩展名，用于指示服务器的名称。</span><br><span class="line"># https://tools.ietf.org/html/rfc4366#section-3.1</span><br><span class="line">[ server_name: &lt;string&gt; ]</span><br><span class="line"></span><br><span class="line"># 禁用服务器证书的验证。</span><br><span class="line">[ insecure_skip_verify: &lt;boolean&gt; ]</span><br></pre></td></tr></table></figure>
+
+<p><strong><dns_sd_config></dns_sd_config></strong></p>
+<p>基于DNS的服务发现配置允许指定一组DNS域名，这些域名会定期查询以发现目标列表。 要联系的DNS服务器从<code>/etc/resolv.conf</code>中读取。</p>
+<p>此服务发现方法仅支持基本的DNS A，AAAA和SRV记录查询，但不支持RFC6763中指定的高级DNS-SD方法。</p>
+<p>在重新标记阶段，元标签<code>__meta_dns_name</code>在每个目标上可用，并设置为生成已发现目标的记录名称。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"># 要查询的DNS域名列表。</span><br><span class="line">names:</span><br><span class="line">  [ - &lt;domain_name&gt; ]</span><br><span class="line"></span><br><span class="line"># 要执行的DNS查询的类型。</span><br><span class="line">[ type: &lt;query_type&gt; | default = &apos;SRV&apos; ]</span><br><span class="line"></span><br><span class="line"># 查询类型不是SRV时使用的端口号。</span><br><span class="line">[ port: &lt;number&gt;]</span><br><span class="line"></span><br><span class="line"># 提供名称后刷新的时间。</span><br><span class="line">[ refresh_interval: &lt;duration&gt; | default = 30s ]</span><br></pre></td></tr></table></figure>
+
+<p>其中<domain_name>是有效的DNS域名。 其中<query_type>是SRV，A或AAAA。</query_type></domain_name></p>
+<p><strong><kubernetes_sd_config></kubernetes_sd_config></strong></p>
+<p>Kubernetes SD配置允许从Kubernetes的RESTAPI中检索scrape目标，并始终与群集状态保持同步。</p>
+<p>可以配置以下<code>role</code>类型之一来发现目标</p>
+<p><strong>node</strong><br> node角色发现每个群集节点有一个目标，其地址默认为Kubelet的HTTP端口。 目标地址默认为NodeInternalIP，NodeExternalIP，NodeLegacyHostIP和NodeHostName的地址类型顺序中Kubernetes节点对象的第一个现有地址。</p>
+<p>可用元标签：</p>
+<ul>
+<li>__meta_kubernetes_node_name：节点对象的名称。</li>
+<li><em>_meta_kubernetes_node_label</em> <labelname>：节点对象中的每个标签。<br> _<em>meta_kubernetes_node_annotation</em><annotationname>`：节点对象中的每个注释。</annotationname></labelname></li>
+<li><em>_meta_kubernetes_node_address</em><address_type>：每个节点地址类型的第一个地址（如果存在）。</address_type></li>
+</ul>
+<p>此外，节点的instance标签将设置为从API服务器检索的节点名称。</p>
+<p><strong>service</strong><br> service角色为每个服务发现每个服务端口的目标。 这对于服务的黑盒监控通常很有用。 该地址将设置为服务的Kubernetes DNS名称和相应的服务端口。</p>
+<p>可用元标签：</p>
+<ul>
+<li>__meta_kubernetes_namespace：服务对象的命名空间。</li>
+<li><em>_meta_kubernetes_service_annotation</em><annotationname>：服务对象的注释。</annotationname></li>
+<li>__meta_kubernetes_service_cluster_ip：服务的群集IP地址。 （不适用于ExternalName类型的服务）</li>
+<li>__meta_kubernetes_service_external_name：服务的DNS名称。 （适用于ExternalName类型的服务）</li>
+<li><em>_meta_kubernetes_service_label</em> <labelname>：服务对象的标签。</labelname></li>
+<li>__meta_kubernetes_service_name：服务对象的名称。</li>
+<li>__meta_kubernetes_service_port_name：目标服务端口的名称。</li>
+<li>__meta_kubernetes_service_port_number：目标的服务端口号。</li>
+<li>__meta_kubernetes_service_port_protocol：目标服务端口的协议。</li>
+</ul>
+<p><strong>pod</strong><br> pod角色发现所有pod并将其容器暴露为目标。 对于容器的每个声明端口，将生成单个目标。 如果容器没有指定端口，则会创建每个容器的无端口目标，以通过重新标记手动添加端口。</p>
+<p>可用元标签：</p>
+<ul>
+<li>__meta_kubernetes_namespace：pod对象的命名空间。</li>
+<li>__meta_kubernetes_pod_name：pod对象的名称。</li>
+<li>__meta_kubernetes_pod_ip：pod对象的pod IP。</li>
+<li><em>_meta_kubernetes_pod_label</em> <labelname>：pod对象的标签。</labelname></li>
+<li><em>_meta_kubernetes_pod_annotation</em> <annotationname>：pod对象的注释。</annotationname></li>
+<li>__meta_kubernetes_pod_container_name：目标地址指向的容器的名称。</li>
+<li>__meta_kubernetes_pod_container_port_name：容器端口的名称。</li>
+<li>__meta_kubernetes_pod_container_port_number：容器端口号。</li>
+<li>__meta_kubernetes_pod_container_port_protocol：容器端口的协议。</li>
+<li>__meta_kubernetes_pod_ready：对于pod的就绪状态，设置为true或false。</li>
+<li>__meta_kubernetes_pod_phase：在生命周期中设置为Pending，Running，Succeeded，Failed或Unknown。</li>
+<li>__meta_kubernetes_pod_node_name：将pod安排到的节点的名称。</li>
+<li>__meta_kubernetes_pod_host_ip：pod对象的当前主机IP。</li>
+<li>__meta_kubernetes_pod_uid：pod对象的UID。</li>
+<li>__meta_kubernetes_pod_controller_kind：对象类型的pod控制器。</li>
+<li>__meta_kubernetes_pod_controller_name：pod控制器的名称。</li>
+</ul>
+<p><strong>endpoints</strong><br> endpoints角色从列出的服务端点发现目标。 对于每个端点地址，每个端口发现一个目标。 如果端点由pod支持，则pod的所有其他容器端口（未绑定到端点端口）也会被发现为目标。</p>
+<p>可用元标签：</p>
+<ul>
+<li>__meta_kubernetes_namespace：端点对象的命名空间。</li>
+<li>__meta_kubernetes_endpoints_name：端点对象的名称。对于直接从端点列表中发现的所有目标（不是从底层pod中另外推断的那些），附加以下标签：</li>
+<li>__meta_kubernetes_endpoint_ready：对端点的就绪状态设置为true或false。</li>
+<li>__meta_kubernetes_endpoint_port_name：端点端口的名称。</li>
+<li>__meta_kubernetes_endpoint_port_protocol：端点端口的协议。</li>
+<li>__meta_kubernetes_endpoint_address_target_kind：端点地址目标的种类。</li>
+<li>__meta_kubernetes_endpoint_address_target_name：端点地址目标的名称。<br> 如果端点属于某个服务，则会附加角色：服务发现的所有标签。<br> 对于由pod支持的所有目标，将附加角色的所有标签：pod发现。</li>
+</ul>
+<p><strong>ingress</strong><br> ingress角色发现每个入口的每个路径的目标。 这通常用于黑盒监控入口。 地址将设置为入口规范中指定的主机。</p>
+<p>可用元标签：</p>
+<ul>
+<li>__meta_kubernetes_namespace：入口对象的名称空间。</li>
+<li>__meta_kubernetes_ingress_name：入口对象的名称。</li>
+<li><em>_meta_kubernetes_ingress_label</em> <labelname>：入口对象的标签。</labelname></li>
+<li><em>_meta_kubernetes_ingress_annotation</em><annotationname>：入口对象的注释。</annotationname></li>
+<li>__meta_kubernetes_ingress_scheme：入口的协议方案，如果设置了TLS配置，则为https。 默认为http。</li>
+<li>__meta_kubernetes_ingress_path：来自入口规范的路径。 默认为/。</li>
+</ul>
+<p>有关Kubernetes发现的配置选项，请参见下文：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"># 访问Kubernetes API的信息。</span><br><span class="line"></span><br><span class="line"># API服务器地址。 如果保留为空，则假定Prometheus在集群内部运行并自动发现API服务器，并在/var/run/secrets/kubernetes.io/serviceaccount/上使用pod的CA证书和不记名令牌文件。</span><br><span class="line">[ api_server: &lt;host&gt; ]</span><br><span class="line"></span><br><span class="line"># 应该被发现的实体的Kubernetes角色。</span><br><span class="line">role: &lt;role&gt;</span><br><span class="line"></span><br><span class="line"># 用于向API服务器进行身份验证的可选身份验证信息。请注意，`basic_auth`，`bearer_token`和`bearer_token_file`选项是互斥的.password和password_file是互斥的。</span><br><span class="line"></span><br><span class="line"># 可选的HTTP基本认证信息。</span><br><span class="line">basic_auth:</span><br><span class="line">  [ username: &lt;string&gt; ]</span><br><span class="line">  [ password: &lt;secret&gt; ]</span><br><span class="line">  [ password_file: &lt;string&gt; ]</span><br><span class="line"></span><br><span class="line"># 可选的承载令牌认证信息。</span><br><span class="line">[ bearer_token: &lt;secret&gt; ]</span><br><span class="line"></span><br><span class="line"># 可选的承载令牌文件认证信息。</span><br><span class="line">[ bearer_token_file: &lt;filename&gt; ]</span><br><span class="line"></span><br><span class="line"># 可选的代理URL。</span><br><span class="line">[ proxy_url: &lt;string&gt; ]</span><br><span class="line"></span><br><span class="line"># TLS配置。</span><br><span class="line">tls_config:</span><br><span class="line">  [ &lt;tls_config&gt; ]</span><br><span class="line"></span><br><span class="line"># 可选命名空间发现 如果省略，则使用所有名称空间。</span><br><span class="line">namespaces:</span><br><span class="line">  names:</span><br><span class="line">    [ - &lt;string&gt; ]</span><br></pre></td></tr></table></figure>
+
+<p>其中``必须是<code>endpoints</code>，<code>service</code>，<code>pod</code>，<code>node</code>或<code>ingress</code>。</p>
+<p>有关为Kubernetes配置Prometheus的详细<a href="https://links.jianshu.com/go?to=https%3A%2F%2Fgithub.com%2Fprometheus%2Fprometheus%2Fblob%2Frelease-2.8%2Fdocumentation%2Fexamples%2Fprometheus-kubernetes.yml" target="_blank" rel="noopener">示例</a>，请参阅此示例Prometheus配置文件。</p>
+<p>您可能希望查看第三方Prometheus<a href="https://links.jianshu.com/go?to=https%3A%2F%2Fgithub.com%2Fcoreos%2Fprometheus-operator" target="_blank" rel="noopener">操作</a>，它可以在Kubernetes上自动执行Prometheus设置。</p>
+<p><strong><static_config></static_config></strong></p>
+<p>static_config允许指定目标列表和它们的公共标签集。 这是在scrape配置中指定静态目标的规范方法。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"># 静态配置指定的目标。</span><br><span class="line">targets:</span><br><span class="line">  [ - &apos;&lt;host&gt;&apos; ]</span><br><span class="line"></span><br><span class="line"># 分配给从目标中已抓取的所有指标的标签。</span><br><span class="line">labels:</span><br><span class="line">  [ &lt;labelname&gt;: &lt;labelvalue&gt; ... ]</span><br></pre></td></tr></table></figure>
+
+<p><strong><relabel_config></relabel_config></strong></p>
+<p>重新标记是一种强大的工具，可以在抓取目标之前动态重写目标的标签集。 每个抓取配置可以配置多个重新标记步骤。 它们按照它们在配置文件中的出现顺序应用于每个目标的标签集。</p>
+<p>最初，除了配置的每目标标签之外，目标的作业标签设置为相应的scrape配置的<code>job_name</code>值。 <code>__address__</code>标签设置为目标的<code>&lt;host&gt;:&lt;port&gt;</code>地址。 重新标记后，如果在重新标记期间未设置实例标签，则实例标签默认设置为<code>__address__</code>的值。 <code>__scheme__</code>和<code>__metrics_path__</code>标签分别设置为目标的方案和度量标准路径。 <code>__param_&lt;name&gt;</code>标签设置为名为<name>的第一个传递的URL参数的值。</name></p>
+<p>在重新标记阶段，可以使用带有<code>__meta_</code>前缀的附加标签。 它们由提供目标的服务发现机制设置，并在不同机制之间变化。</p>
+<p>在目标重新标记完成后，将从标签集中删除以<code>__</code>开头的标签。</p>
+<p>如果重新标记步骤仅需临时存储标签值（作为后续重新标记步骤的输入），请使用<code>__tmp</code>标签名称前缀。 保证Prometheus本身不会使用此前缀。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"># 源标签从现有标签中选择值。 它们的内容使用已配置的分隔符进行连接，并与已配置的正则表达式进行匹配，以进行替换，保留和删除操作。</span><br><span class="line">[ source_labels: &apos;[&apos; &lt;labelname&gt; [, ...] &apos;]&apos; ]</span><br><span class="line"></span><br><span class="line"># 分隔符放置在连接的源标签值之间。</span><br><span class="line">[ separator: &lt;string&gt; | default = ; ]</span><br><span class="line"></span><br><span class="line"># 在替换操作中将结果值写入的标签。</span><br><span class="line"># 替换操作是强制性的。 正则表达式捕获组可用。</span><br><span class="line">[ target_label: &lt;labelname&gt; ]</span><br><span class="line"></span><br><span class="line"># 与提取的值匹配的正则表达式。</span><br><span class="line">[ regex: &lt;regex&gt; | default = (.*) ]</span><br><span class="line"></span><br><span class="line"># 采用源标签值的散列的模数。</span><br><span class="line">[ modulus: &lt;uint64&gt; ]</span><br><span class="line"></span><br><span class="line"># 如果正则表达式匹配，则执行正则表达式替换的替换值。 正则表达式捕获组可用。</span><br><span class="line">[ replacement: &lt;string&gt; | default = $1 ]</span><br><span class="line"></span><br><span class="line"># 基于正则表达式匹配执行的操作。</span><br><span class="line">[ action: &lt;relabel_action&gt; | default = replace ]</span><br></pre></td></tr></table></figure>
+
+<p><regex>是任何有效的RE2正则表达式。 它是replace，keep，drop，labelmap，labeldrop和labelkeep操作所必需的。 正则表达式固定在两端。 要取消锚定正则表达式，请使用。* <regex>.*。</regex></regex></p>
+<p><relabel_action>确定要采取的重新签名行动：</relabel_action></p>
+<ul>
+<li>replace：将regex与连接的source_labels匹配。 然后，将target_label设置为replacement，将匹配组引用（${1}，${2}，…）替换为其值。 如果正则表达式不匹配，则不进行替换。</li>
+<li>keep：删除regex与连接的source_labels不匹配的目标。</li>
+<li>drop：删除regex与连接的source_labels匹配的目标。</li>
+<li>hashmod：将target_label设置为连接的source_labels的哈希模数。</li>
+<li>labelmap：将regex与所有标签名称匹配。 然后将匹配标签的值复制到替换时给出的标签名称，替换为匹配组引用（${1}，{2}，…）替换为其值。</li>
+<li>labeldrop：将regex与所有标签名称匹配。匹配的任何标签都将从标签集中删除。</li>
+<li>labelkeep：将regex与所有标签名称匹配。任何不匹配的标签都将从标签集中删除。</li>
+</ul>
+<p>必须小心使用labeldrop和labelkeep，以确保在删除标签后仍然对指标进行唯一标记。</p>
+<p><strong><metric_relabel_configs></metric_relabel_configs></strong></p>
+<p>度量重新标记应用于样本，作为摄取前的最后一步。 它具有与目标重新标记相同的配置格式和操作。 度量标准重新标记不适用于自动生成的时间序列，例如<code>up</code>。</p>
+<p>一个用途是将黑名单时间序列列入黑名单，这些时间序列太昂贵而无法摄取。</p>
+<p><strong><alert_relabel_configs></alert_relabel_configs></strong></p>
+<p>警报重新标记在发送到Alertmanager之前应用于警报。 它具有与目标重新标记相同的配置格式和操作。 外部标签后应用警报重新标记。</p>
+<p>这样做的一个用途是确保具有不同外部标签的HA对Prometheus服务器发送相同的警报。</p>
+<p><strong><alertmanager_config></alertmanager_config></strong></p>
+<p><code>alertmanager_config</code>部分指定Prometheus服务器向其发送警报的Alertmanager实例。 它还提供参数以配置如何与这些Alertmanagers进行通信。</p>
+<p>Alertmanagers可以通过<code>static_configs</code>参数静态配置，也可以使用其中一种支持的服务发现机制动态发现。</p>
+<p>此外，<code>relabel_configs</code>允许从发现的实体中选择Alertmanagers，并对使用的API路径提供高级修改，该路径通过<code>__alerts_path__</code>标签公开。</p>
+<p><strong><remote_write></remote_write></strong></p>
+<p><code>write_relabel_configs</code>是在将样本发送到远程端点之前应用于样本的重新标记。 在外部标签之后应用写入重新标记。 这可用于限制发送的样本。</p>
+<p>有一个如何使用此功能的小型<a href="https://links.jianshu.com/go?to=https%3A%2F%2Fgithub.com%2Fprometheus%2Fprometheus%2Ftree%2Frelease-2.8%2Fdocumentation%2Fexamples%2Fremote_storage" target="_blank" rel="noopener">演示</a>。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br></pre></td><td class="code"><pre><span class="line"># 要发送样本的端点的URL.</span><br><span class="line">url: &lt;string&gt;</span><br><span class="line"></span><br><span class="line"># 对远程写端点的请求超时。</span><br><span class="line">[ remote_timeout: &lt;duration&gt; | default = 30s ]</span><br><span class="line"></span><br><span class="line"># 远程写入重新标记配置列表。</span><br><span class="line">write_relabel_configs:</span><br><span class="line">  [ - &lt;relabel_config&gt; ... ]</span><br><span class="line"></span><br><span class="line"># 使用配置的用户名和密码在每个远程写请求上设置`Authorization`标头.password和password_file是互斥的。</span><br><span class="line">basic_auth:</span><br><span class="line">  [ username: &lt;string&gt; ]</span><br><span class="line">  [ password: &lt;string&gt; ]</span><br><span class="line">  [ password_file: &lt;string&gt; ]</span><br><span class="line"></span><br><span class="line"># 使用配置的承载令牌在每个远程写请求上设置`Authorization`头。 它与`bearer_token_file`互斥。</span><br><span class="line">[ bearer_token: &lt;string&gt; ]</span><br><span class="line"></span><br><span class="line"># 使用配置的承载令牌在每个远程写请求上设置`Authorization`头。 它与`bearer_token`互斥。</span><br><span class="line">[ bearer_token_file: /path/to/bearer/token/file ]</span><br><span class="line"></span><br><span class="line"># 配置远程写入请求的TLS设置。</span><br><span class="line">tls_config:</span><br><span class="line">  [ &lt;tls_config&gt; ]</span><br><span class="line"></span><br><span class="line"># 可选的代理URL。</span><br><span class="line">[ proxy_url: &lt;string&gt; ]</span><br><span class="line"></span><br><span class="line"># 配置用于写入远程存储的队列。</span><br><span class="line">queue_config:</span><br><span class="line">  # 在我们开始删除之前每个分片缓冲的样本数。</span><br><span class="line">  [ capacity: &lt;int&gt; | default = 10000 ]</span><br><span class="line">  # 最大分片数，即并发数。</span><br><span class="line">  [ max_shards: &lt;int&gt; | default = 1000 ]</span><br><span class="line">  # 最小分片数，即并发数。</span><br><span class="line">  [ min_shards: &lt;int&gt; | default = 1 ]</span><br><span class="line">  # 每次发送的最大样本数。</span><br><span class="line">  [ max_samples_per_send: &lt;int&gt; | default = 100]</span><br><span class="line">  # 样本在缓冲区中等待的最长时间。</span><br><span class="line">  [ batch_send_deadline: &lt;duration&gt; | default = 5s ]</span><br><span class="line">  # 在可恢复错误上重试批处理的最大次数。</span><br><span class="line">  [ max_retries: &lt;int&gt; | default = 3 ]</span><br><span class="line">  # 初始重试延迟。 每次重试都会加倍。</span><br><span class="line">  [ min_backoff: &lt;duration&gt; | default = 30ms ]</span><br><span class="line">  # 最大重试延迟。</span><br><span class="line">  [ max_backoff: &lt;duration&gt; | default = 100ms ]</span><br></pre></td></tr></table></figure>
+
+<p>有一个与此功能<a href="https://links.jianshu.com/go?to=https%3A%2F%2Fprometheus.io%2Fdocs%2Foperating%2Fintegrations%2F%23remote-endpoints-and-storage" target="_blank" rel="noopener">集成</a>的列表。</p>
+<p><strong><remote_read></remote_read></strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line"># 要发送样本的端点的URL.</span><br><span class="line">url: &lt;string&gt;</span><br><span class="line"></span><br><span class="line"># 可选的匹配器列表，必须存在于选择器中以查询远程读取端点。</span><br><span class="line">required_matchers:</span><br><span class="line">  [ &lt;labelname&gt;: &lt;labelvalue&gt; ... ]</span><br><span class="line"></span><br><span class="line"># 对远程读取端点的请求超时。</span><br><span class="line">[ remote_timeout: &lt;duration&gt; | default = 1m ]</span><br><span class="line"></span><br><span class="line"># 本地存储应该有完整的数据。</span><br><span class="line">[ read_recent: &lt;boolean&gt; | default = false ]</span><br><span class="line"></span><br><span class="line"># 使用配置的用户名和密码在每个远程写请求上设置`Authorization`标头.password和password_file是互斥的。</span><br><span class="line">basic_auth:</span><br><span class="line">  [ username: &lt;string&gt; ]</span><br><span class="line">  [ password: &lt;string&gt; ]</span><br><span class="line">  [ password_file: &lt;string&gt; ]</span><br><span class="line"></span><br><span class="line"># 使用配置的承载令牌在每个远程写请求上设置`Authorization`头。 它与`bearer_toke_filen`互斥。</span><br><span class="line">[ bearer_token: &lt;string&gt; ]</span><br><span class="line"></span><br><span class="line"># 使用配置的承载令牌在每个远程写请求上设置`Authorization`头。 它与`bearer_token`互斥。</span><br><span class="line">[ bearer_token_file: /path/to/bearer/token/file ]</span><br><span class="line"></span><br><span class="line"># 配置远程写入请求的TLS设置。</span><br><span class="line">tls_config:</span><br><span class="line">  [ &lt;tls_config&gt; ]</span><br><span class="line"></span><br><span class="line"># 可选的代理URL。</span><br><span class="line">[ proxy_url: &lt;string&gt; ]</span><br></pre></td></tr></table></figure>
+
+<p>有一个与此功能<a href="https://links.jianshu.com/go?to=https%3A%2F%2Fprometheus.io%2Fdocs%2Foperating%2Fintegrations%2F%23remote-endpoints-and-storage" target="_blank" rel="noopener">集成</a>的列表。</p>
+<h1 id="Prometheus-API"><a href="#Prometheus-API" class="headerlink" title="Prometheus API"></a>Prometheus API</h1><h2 id="清理prometheus数据"><a href="#清理prometheus数据" class="headerlink" title="清理prometheus数据"></a>清理prometheus数据</h2><ol>
+<li><p><strong>确保 prometheus 启动的时候， 加了参数 –web.enable-admin-api</strong></p>
+</li>
+<li><p><strong>清理这个key的全部的数据</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">curl -X POST \</span><br><span class="line">  -g &apos;http://192.168.2.100:9090/api/v1/admin/tsdb/delete_series?match[]=up&amp;match[]=mysql_global_status_threads_running&#123;instance=&quot;test-db13:9104&quot;,job=&quot;mysql&quot;&#125;&apos;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>清理这个key指定时间段的数据 （清理的时间戳区间：1557903714 到 155790395 ）</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">curl -X POST \</span><br><span class="line">  -g &apos;http://192.168.2.100:9090/api/v1/admin/tsdb/delete_series?start=1557903714&amp;end=1557903954&amp;match[]=mysql_global_status_threads_running&#123;instance=&quot;test-db13:9104&quot;,job=&quot;mysql&quot;&#125;&apos;</span><br></pre></td></tr></table></figure>
+
+</li>
+</ol>
+<h1 id="Prometheus-Alerts"><a href="#Prometheus-Alerts" class="headerlink" title="Prometheus Alerts"></a>Prometheus Alerts</h1><p>可以参考这个<a href="https://github.com/samber/awesome-prometheus-alerts" target="_blank" rel="noopener">https://github.com/samber/awesome-prometheus-alerts</a></p>
+
+      
+    </div>
+    
+    
+    
+	
+	<div>
+	  
+		<div>
+    
+        <div style="text-align:center;color: #ccc;font-size:14px;">--------------------本文结束，感谢您的阅读--------------------</div>
+    
+</div>
+	  
+	</div>
+	
+	<div>
+      
+        
+      
+	</div>
+	
+
+
+    
+
+    
+      <div>
+        <div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center;">
+  <div></div>
+  <button id="rewardButton" disable="enable" onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}">
+    <span>Donate</span>
+  </button>
+  <div id="QR" style="display: none;">
+
+    
+      <div id="wechat" style="display: inline-block">
+        <img id="wechat_qr" src="/images/wechat.jpg" alt="弓昭 WeChat Pay">
+        <p>WeChat Pay</p>
+      </div>
+    
+
+    
+      <div id="alipay" style="display: inline-block">
+        <img id="alipay_qr" src="/images/ali.jpg" alt="弓昭 Alipay">
+        <p>Alipay</p>
+      </div>
+    
+
+    
+
+  </div>
+</div>
+
+      </div>
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/kubernetes/" rel="tag"><i class="fa fa-tag"></i>kubernetes</a>
+          
+            <a href="/tags/prometheus/" rel="tag"><i class="fa fa-tag"></i>prometheus</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/基金定投之5G基金/" rel="next" title="基金定投之5G基金">
+                <i class="fa fa-chevron-left"></i> 基金定投之5G基金
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/Kubernetes集群监控之Prometheus-Operator/" rel="prev" title="Kubernetes集群监控之Prometheus Operator">
+                Kubernetes集群监控之Prometheus Operator <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div id="lv-container" data-id="city" data-uid="MTAyMC80MTcyNy8xODI3Mw=="></div>
+    
+  </div>
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image" src="/uploads/panda.jpg" alt="弓昭">
+          <p class="site-author-name" itemprop="name">弓昭</p>
+           
+              <p class="site-description motion-element" itemprop="description">弓昭的个人主页，主要涉及网络、运维、前端、Python等等知识</p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives/">
+                <span class="site-state-item-count">83</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">25</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">72</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+          <div class="feed-link motion-element">
+            <a href="/atom.xml" rel="alternate">
+              <i class="fa fa-rss"></i>
+              RSS
+            </a>
+          </div>
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/gongzhao1" target="_blank" title="GitHub">
+                  
+                    <i class="fa fa-fw fa-github"></i>
+                  
+                    
+                      GitHub
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://blog.csdn.net/zhao12795969" target="_blank" title="csdn">
+                  
+                    <i class="fa fa-fw fa-crosshairs"></i>
+                  
+                    
+                      csdn
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://www.jianshu.com/u/1dbca13c6043" target="_blank" title="简书">
+                  
+                    <i class="fa fa-fw fa-heartbeat"></i>
+                  
+                    
+                      简书
+                    
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+          <div class="links-of-blogroll motion-element links-of-blogroll-inline">
+            <div class="links-of-blogroll-title">
+              <i class="fa  fa-fw fa-globe"></i>
+              Links
+            </div>
+            <ul class="links-of-blogroll-list">
+              
+                <li class="links-of-blogroll-item">
+                  <a href="http://ccieh3c.com/" title="网络之路" target="_blank">网络之路</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="http://jm.taobao.org/" title="阿里云中间件" target="_blank">阿里云中间件</a>
+                </li>
+              
+            </ul>
+          </div>
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#参考"><span class="nav-number">1.</span> <span class="nav-text">参考</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#监控目的"><span class="nav-number">2.</span> <span class="nav-text">监控目的</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Prometheus"><span class="nav-number">3.</span> <span class="nav-text">Prometheus</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#简介"><span class="nav-number">3.1.</span> <span class="nav-text">简介</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#数据类型"><span class="nav-number">3.2.</span> <span class="nav-text">数据类型</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#数据采集"><span class="nav-number">3.3.</span> <span class="nav-text">数据采集</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Exporter"><span class="nav-number">3.4.</span> <span class="nav-text">Exporter</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#数据存储"><span class="nav-number">3.5.</span> <span class="nav-text">数据存储</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#PromQL"><span class="nav-number">3.6.</span> <span class="nav-text">PromQL</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#告警"><span class="nav-number">3.7.</span> <span class="nav-text">告警</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#联邦"><span class="nav-number">3.8.</span> <span class="nav-text">联邦</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#服务发现与云原生：以Kubernetes为例"><span class="nav-number">3.9.</span> <span class="nav-text">服务发现与云原生：以Kubernetes为例</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#规模化监控解决方案"><span class="nav-number">3.10.</span> <span class="nav-text">规模化监控解决方案</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#简单HA：服务可用性"><span class="nav-number">3.10.1.</span> <span class="nav-text">简单HA：服务可用性</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#基本HA-远程存储"><span class="nav-number">3.10.2.</span> <span class="nav-text">基本HA + 远程存储</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#基本HA-远程存储-联邦集群"><span class="nav-number">3.10.3.</span> <span class="nav-text">基本HA + 远程存储 + 联邦集群</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#高可用方案选择"><span class="nav-number">3.10.4.</span> <span class="nav-text">高可用方案选择</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#配置文件解析"><span class="nav-number">3.11.</span> <span class="nav-text">配置文件解析</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Prometheus-API"><span class="nav-number">4.</span> <span class="nav-text">Prometheus API</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#清理prometheus数据"><span class="nav-number">4.1.</span> <span class="nav-text">清理prometheus数据</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Prometheus-Alerts"><span class="nav-number">5.</span> <span class="nav-text">Prometheus Alerts</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+<div class="copyright">
+  
+  &copy;  2018 - 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">弓昭</span>
+</div>
+
+
+<div class="powered-by">
+	<i class="fa fa-user-md"></i><span id="busuanzi_container_site_uv">
+	  本站访客数:<span id="busuanzi_value_site_uv"></span>
+	</span>
+</div>
+
+
+<div class="theme-info">
+
+  <span class="post-count">博客全站共253.1k字</span>
+</div>
+
+
+
+        
+<div class="busuanzi-count">
+  <script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+
+  
+</div>
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.2"></script>
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.2"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+    <script type="text/javascript">
+      (function(d, s) {
+        var j, e = d.getElementsByTagName(s)[0];
+        if (typeof LivereTower === 'function') { return; }
+        j = d.createElement(s);
+        j.src = 'https://cdn-city.livere.com/js/embed.dist.js';
+        j.async = true;
+        e.parentNode.insertBefore(j, e);
+      })(document, 'script');
+    </script>
+  
+
+
+
+
+
+
+  
+
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url);
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

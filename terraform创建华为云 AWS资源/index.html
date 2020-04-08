@@ -1,0 +1,1322 @@
+<!DOCTYPE html>
+
+
+
+
+<html class="theme-next muse" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.2" rel="stylesheet" type="text/css">
+
+
+  <meta name="keywords" content="terraform,华为云,AWS,">
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="GZ" type="application/atom+xml">
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.2">
+
+
+
+
+
+
+<meta name="description" content="前言目前IT设备对于大多数企业公司来说是必不可少的基础设施，由于云计算的按需付费，便捷配置计算资源（资源包括网络，服务器，存储，应用软件，服务）的特点很受企业的欢迎，因此大多数企业都从传统的IDC迁移到云平台，或者直接到云平台上搭建自己的业务。然而云计算平台很多家，国外有云计算鼻祖亚马AWS，还有微软的Azure，Google的GCP，国内而言比较有名的，阿里巴巴的Alicloud，腾讯的Tenc">
+<meta name="keywords" content="terraform,华为云,AWS">
+<meta property="og:type" content="article">
+<meta property="og:title" content="terraform创建华为云、AWS资源">
+<meta property="og:url" content="https://gongzhao1.coding.me/terraform创建华为云 AWS资源/index.html">
+<meta property="og:site_name" content="GZ">
+<meta property="og:description" content="前言目前IT设备对于大多数企业公司来说是必不可少的基础设施，由于云计算的按需付费，便捷配置计算资源（资源包括网络，服务器，存储，应用软件，服务）的特点很受企业的欢迎，因此大多数企业都从传统的IDC迁移到云平台，或者直接到云平台上搭建自己的业务。然而云计算平台很多家，国外有云计算鼻祖亚马AWS，还有微软的Azure，Google的GCP，国内而言比较有名的，阿里巴巴的Alicloud，腾讯的Tenc">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2020-04-08T14:20:25.874Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="terraform创建华为云、AWS资源">
+<meta name="twitter:description" content="前言目前IT设备对于大多数企业公司来说是必不可少的基础设施，由于云计算的按需付费，便捷配置计算资源（资源包括网络，服务器，存储，应用软件，服务）的特点很受企业的欢迎，因此大多数企业都从传统的IDC迁移到云平台，或者直接到云平台上搭建自己的业务。然而云计算平台很多家，国外有云计算鼻祖亚马AWS，还有微软的Azure，Google的GCP，国内而言比较有名的，阿里巴巴的Alicloud，腾讯的Tenc">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: false,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://gongzhao1.coding.me/terraform创建华为云 AWS资源/">
+
+
+
+
+
+  <title>terraform创建华为云、AWS资源 | GZ</title>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">GZ</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">痛苦是财富，这话是扯淡。少年，痛苦就是痛苦，对痛苦的思考才是财富</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br>
+            
+            关于
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br>
+            
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off" placeholder="搜索..." spellcheck="false" type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://gongzhao1.coding.me/terraform创建华为云 AWS资源/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="弓昭">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/uploads/panda.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="GZ">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">terraform创建华为云、AWS资源</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-06-03T22:12:56+08:00">
+                2019-06-03
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/linux工具/" itemprop="url" rel="index">
+                    <span itemprop="name">linux工具</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+            <span class="post-meta-divider">|</span>
+            <span class="page-pv"><i class="fa fa-file-o"></i>
+            <span class="busuanzi-value" id="busuanzi_value_page_pv"></span>次阅读
+            </span>
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>目前IT设备对于大多数企业公司来说是必不可少的基础设施，由于云计算的按需付费，便捷配置计算资源（资源包括网络，服务器，存储，应用软件，服务）的特点很受企业的欢迎，因此大多数企业都从传统的IDC迁移到云平台，或者直接到云平台上搭建自己的业务。然而云计算平台很多家，国外有云计算鼻祖亚马AWS，还有微软的Azure，Google的GCP，国内而言比较有名的，阿里巴巴的Alicloud，腾讯的TencentCloud，华为的HuaweiCloud。</p>
+<p>在运维领域中，针对这些云平台的IT资源管理也是重中之重。尤其是最近几逐渐流行的DevOps理念，Infrastructure as Code（基础架构即代码）文化，所以在社区的贡献下，Terraform这个工具应用而生，Terraform是来自HashiCorp家族，因此采用了 <a href="https://www.terraform.io/docs/configuration/syntax.html" target="_blank" rel="noopener">HashiCorp 配置语言</a> (HCL)，Terraform的意义在于，通过同一套规则和命令来操作不同的云平台（包括私有云）。详情可参考官方文档<a href="https://www.terraform.io/" target="_blank" rel="noopener">https://www.terraform.io</a>。</p>
+<blockquote>
+<p>参考：</p>
+<p><a href="https://bbs.huaweicloud.com/blogs/86505eb5eefa11e8bd5a7ca23e93a891" target="_blank" rel="noopener">https://bbs.huaweicloud.com/blogs/86505eb5eefa11e8bd5a7ca23e93a891</a></p>
+<p><a href="https://www.jianshu.com/p/d0035b7c3801" target="_blank" rel="noopener">https://www.jianshu.com/p/d0035b7c3801</a></p>
+<p><a href="https://www.linode.com/docs/applications/configuration-management/create-terraform-module/" target="_blank" rel="noopener">https://www.linode.com/docs/applications/configuration-management/create-terraform-module/</a></p>
+</blockquote>
+<a id="more"></a>
+
+<h1 id="安装terraform"><a href="#安装terraform" class="headerlink" title="安装terraform"></a>安装terraform</h1><p>以下是官方安装教程<a href="https://www.terraform.io/intro/getting-started/install.html" target="_blank" rel="noopener">https://www.terraform.io/intro/getting-started/install.html</a>，下载解压，配置环境变量即可。以下是我的环境</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">[centos@ip-10-20-6-165 ~]$ uname -r</span><br><span class="line">3.10.0-514.26.2.el7.x86_64</span><br><span class="line">[centos@ip-10-20-6-165 ~]$ cat /etc/redhat-release</span><br><span class="line">CentOS Linux release 7.3.1611 (Core)</span><br><span class="line">[centos@ip-10-20-6-165 ~]$ ll /opt/terraform*</span><br><span class="line">-rwxrwxr-x 1 centos centos 69122624 Apr 10  2018 /opt/terraform</span><br><span class="line">-rw-r--r-- 1 root   root   16490308 Apr 10  2018 /opt/terraform_0.11.7_linux_amd64.zip</span><br><span class="line">[centos@ip-10-20-6-165 ~]$ grep opt /etc/profile</span><br><span class="line">export PATH=$PATH:/opt</span><br><span class="line">[centos@ip-10-20-6-165 ~]$ which terraform</span><br><span class="line">/opt/terraform</span><br><span class="line"></span><br><span class="line">[centos@ip-10-20-6-165 ~]$ terraform  --version</span><br><span class="line">Terraform v0.11.7</span><br><span class="line">Your version of Terraform is out of date! The latest version</span><br><span class="line">is 0.11.9. You can update by downloading from www.terraform.io/downloads.html</span><br></pre></td></tr></table></figure>
+
+<h1 id="编写配置"><a href="#编写配置" class="headerlink" title="编写配置"></a>编写配置</h1><h2 id="目录配置"><a href="#目录配置" class="headerlink" title="目录配置"></a>目录配置</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">terraform_scripts/</span><br><span class="line">├── main.tf                               #主执行文件</span><br><span class="line">├── outputs.tf                            #定义输出变量</span><br><span class="line">├── secrets.tfvars                        #.....</span><br><span class="line">├── terraform                             #.....</span><br><span class="line">├── terraform.tfvars					#直接定义变量文件（变量需要在variables.tf事先定义）</span><br><span class="line">├── variables.tf					    #变量文件</span><br><span class="line">└── modules/                              #模块</span><br><span class="line">    ├── network/                          </span><br><span class="line">    │   ├── main.tf</span><br><span class="line">    │   ├── variables.tf</span><br><span class="line">    │   └── outputs.tf</span><br><span class="line">    └── instance/</span><br><span class="line">        ├── main.tf</span><br><span class="line">        ├── variables.tf</span><br><span class="line">        └── outputs.tf</span><br></pre></td></tr></table></figure>
+
+<h2 id="模块化脚本（华为云）"><a href="#模块化脚本（华为云）" class="headerlink" title="模块化脚本（华为云）"></a>模块化脚本（华为云）</h2><h3 id="network模块"><a href="#network模块" class="headerlink" title="network模块"></a>network模块</h3><p>network/variables.tf</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">variable &quot;vpc_name&quot; &#123;</span><br><span class="line">    </span><br><span class="line">&#125;</span><br><span class="line">variable &quot;vpc_cidr&quot; &#123;</span><br><span class="line">    default = &quot;192.168.0.0/16&quot;</span><br><span class="line">&#125;</span><br><span class="line">variable &quot;subnet_name&quot; &#123;</span><br><span class="line">    </span><br><span class="line">&#125;</span><br><span class="line">variable &quot;subnet_dir&quot; &#123;</span><br><span class="line">    default = &quot;192.168.2.0/24&quot;</span><br><span class="line">&#125;</span><br><span class="line">variable &quot;subnet_gateway_ip&quot; &#123;</span><br><span class="line">    default = &quot;192.168.2.1&quot;</span><br><span class="line">&#125;</span><br><span class="line">variable &quot;secgroup_name&quot; &#123;</span><br><span class="line">    </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>network/outputs.tf</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">output &quot;vpc_id&quot; &#123;</span><br><span class="line">	value = &quot;$&#123;huaweicloud_vpc_v1.vpc.id&#125;&quot;</span><br><span class="line">&#125;</span><br><span class="line">output &quot;secgroup_1_name&quot; &#123;</span><br><span class="line">    value = &quot;$&#123;huaweicloud_networking_secgroup_v2.secgroup_1.name&#125;&quot;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>network/main.tf</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">#-----VPC</span><br><span class="line">resource &quot;huaweicloud_vpc_v1&quot; &quot;vpc&quot; &#123;</span><br><span class="line">    name = &quot;$&#123;var.vpc_name&#125;&quot;</span><br><span class="line">    cidr = &quot;$&#123;var.vpc_cidr&#125;&quot;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">#----subnet-----</span><br><span class="line">resource &quot;huaweicloud_vpc_subnet_v1&quot; &quot;subnet&quot; &#123;</span><br><span class="line">    name = &quot;$&#123;var.subnet_name&#125;&quot;</span><br><span class="line">    cidr = &quot;$&#123;var.subnet_cidr&#125;&quot;</span><br><span class="line">    gateway_ip = &quot;$&#123;var.subnet_gateway_ip&#125;&quot;</span><br><span class="line">    vpc_id = &quot;$&#123;huaweicloud_vpc_v1.vpc.id&#125;&quot;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">#----secgroup</span><br><span class="line">resource &quot;huaweicloud_networking_secgroup_v2&quot; &quot;secgroup_1&quot; &#123;</span><br><span class="line">    name = &quot;$&#123;var.secgroup_name&#125;&quot;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="instance模块"><a href="#instance模块" class="headerlink" title="instance模块"></a>instance模块</h3><p>instance/variables.tf</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">variable &quot;instance_sg&quot; &#123;</span><br><span class="line">    </span><br><span class="line">&#125;</span><br><span class="line">variable &quot;instance_name&quot; &#123;</span><br><span class="line">    </span><br><span class="line">&#125;</span><br><span class="line">variable &quot;instance_az&quot; &#123;</span><br><span class="line">    default = &quot;cn-east-2b&quot;</span><br><span class="line">&#125;</span><br><span class="line">vaiable &quot;instance_image_id&quot; &#123;</span><br><span class="line">    default = &quot;9526f9b7-423c-4fdc-92ad-f1630a524652&quot;</span><br><span class="line">    description = &quot;CentOS7.6 64bit&quot;</span><br><span class="line">&#125;</span><br><span class="line">variable &quot;instance_flavor_name&quot; &#123;</span><br><span class="line">	default = &quot;s3.small.1&quot;</span><br><span class="line">&#125;</span><br><span class="line">variable &quot;instance_network_id&quot; &#123;</span><br><span class="line">    </span><br><span class="line">&#125;</span><br><span class="line">variable &quot;instance_admin_pass&quot; &#123;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>instance/outputs.tf</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>instance/main.tf</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">#-----ECS</span><br><span class="line">resources &quot;huaweicloud_compute_instance_v2&quot; &quot;instance&quot; &#123;</span><br><span class="line">    availability_zone = &quot;$&#123;var.instance_az&#125;&quot;</span><br><span class="line">    name = &quot;$&#123;var.instance_name&#125;&quot;</span><br><span class="line">    image_id = &quot;$&#123;var.instance_image_id&#125;&quot;</span><br><span class="line">    flavor_name = &quot;$&#123;var.instance_flavor_name&#125;&quot;</span><br><span class="line">    security_groups = &quot;$&#123;var.instance_sg&#125;&quot;</span><br><span class="line">    admin_pass = &quot;$&#123;var.instance_admin_pass&#125;&quot;</span><br><span class="line">    network &#123;</span><br><span class="line">        name = &quot;$&#123;var.instance_network_id&#125;&quot;               #not sure, maybe should be uuid</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="主执行文件"><a href="#主执行文件" class="headerlink" title="主执行文件"></a>主执行文件</h3><p>variables.tf</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">variable &quot;secret_key&quot; &#123;</span><br><span class="line">    </span><br><span class="line">&#125;</span><br><span class="line">variable &quot;access_key&quot; &#123;</span><br><span class="line">    </span><br><span class="line">&#125;</span><br><span class="line">variable &quot;region&quot; &#123;</span><br><span class="line">	default = &quot;cn-east-2&quot;</span><br><span class="line">	description = &quot;string&quot;</span><br><span class="line">&#125;</span><br><span class="line">variable &quot;env&quot; &#123;</span><br><span class="line">    </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>terraform.tfvars</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">secret_key = &quot;string&quot;</span><br><span class="line">access_key = &quot;string&quot;</span><br><span class="line">env = &quot;test&quot;</span><br></pre></td></tr></table></figure>
+
+<p>main.tf</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">#---provider</span><br><span class="line">provider &quot;huaweicloud&quot; &#123;</span><br><span class="line">	access_key = &quot;$&#123;var.access_key&#125;&quot;</span><br><span class="line">	secret_key = &quot;$&#123;var.secret_key&#125;&quot;</span><br><span class="line">	tenant_name = &quot;tenant&quot;</span><br><span class="line">	region = &quot;$&#123;var.region&#125;&quot;</span><br><span class="line">	auth_url = &quot;https://iam.myhwclouds.com:443/v3&quot;</span><br><span class="line">&#125;</span><br><span class="line">module &quot;network&quot; &#123;</span><br><span class="line">    source = &quot;./modules/network&quot;</span><br><span class="line">    vpc_name = &quot;vpc-$&#123;var.env&#125;&quot;</span><br><span class="line">    subnet_name = &quot;subnet-$&#123;var.env&#125;&quot;</span><br><span class="line">    secgroup_name = &quot;sg-$&#123;var.env&#125;&quot;</span><br><span class="line">&#125;</span><br><span class="line">module &quot;instance&quot; &#123;</span><br><span class="line">    source = &quot;./modules/instance&quot;</span><br><span class="line">    instance_name = &quot;test&quot;</span><br><span class="line">    instance_flavor_name = &quot;s3.small.1&quot;</span><br><span class="line">    instance_security_group = &quot;$&#123;modules.network.secgroup_name&#125;&quot;</span><br><span class="line">    instance_network_id = &quot;$&#123;modules.network.vpc_id&#125;&quot;</span><br><span class="line">    instance_admin_pass &quot;$&#123;var.admin_pass&#125;&quot;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="AWS基本使用脚本（非模块化）"><a href="#AWS基本使用脚本（非模块化）" class="headerlink" title="AWS基本使用脚本（非模块化）"></a>AWS基本使用脚本（非模块化）</h2><h3 id="目录结构"><a href="#目录结构" class="headerlink" title="目录结构"></a>目录结构</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">[centos@ip-10-20-6-165 stg_cn_rubin]$ ll</span><br><span class="line">total 32</span><br><span class="line">-rw-rw-r-- 1 centos centos  285 Sep 21 07:24 backend.tf</span><br><span class="line">-rw-rw-r-- 1 centos centos 1723 Sep 25 07:54 bastion.tf</span><br><span class="line">-rw-rw-r-- 1 centos centos  977 Sep 25 08:10 common.tf</span><br><span class="line">-rw-rw-r-- 1 centos centos  593 Sep 25 09:27 outputs.tf</span><br><span class="line">-rw-rw-r-- 1 centos centos  173 Sep 21 07:24 terraform.tfvars</span><br><span class="line">-rw-rw-r-- 1 centos centos  901 Sep 25 09:48 variables.tf</span><br><span class="line">-rw-rw-r-- 1 centos centos 6676 Oct 20 03:09 vpc.tf</span><br></pre></td></tr></table></figure>
+
+<h3 id="backend-tf"><a href="#backend-tf" class="headerlink" title="backend.tf"></a>backend.tf</h3><p>这个文件是定义provider和远程存储terraform.tfstate的s3存储桶，provider是Terraform定制的一套接口，阿里云、AWS、私有云等如果想接入进来被Terraform编排和管理就要实现一套Provider，官网<a href="https://www.terraform.io/docs/providers/index.html" target="_blank" rel="noopener">https://www.terraform.io/docs/providers/index.html</a>，我使用的AWS的云平台，所以使用的AWS的provider。</p>
+<p>关于terraform.tfstate，我在前言中说过，状态文件是记录当前资源的状态。每次运行terraform apply时，都会把最新的配置和当前状态文件中的内容进行比较后，再做更改。所以这个文件不能乱改，团队协作时可以加个锁，因此手动通过AWS console添加了一个存储桶，然后再加了一个dynamodb_table的锁。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">[centos@ip-10-20-6-165 stg_cn_rubin]$ cat backend.tf</span><br><span class="line">provider &quot;aws&quot; &#123;</span><br><span class="line">  region = &quot;$&#123;var.aws_region&#125;&quot;  # 引用了变量，变量值在variables.tf中</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">terraform &#123;</span><br><span class="line">  required_version = &quot;&gt;= 0.11.7&quot;</span><br><span class="line">  backend &quot;s3&quot; &#123;</span><br><span class="line">  encrypt = &quot;true&quot;</span><br><span class="line">  bucket = &quot;rubin-cn-stg-terraform-state&quot;</span><br><span class="line">  region = &quot;cn-north-1&quot;</span><br><span class="line">  key = &quot;vpc/stg_cn_rubin/terraform.tfstate&quot;</span><br><span class="line">  dynamodb_table = &quot;terraform-lock&quot;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="variables-tf"><a href="#variables-tf" class="headerlink" title="variables.tf"></a>variables.tf</h3><p>这个文件相当于申明了variable，可以在此加一个默认的值</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br></pre></td><td class="code"><pre><span class="line">[centos@ip-10-20-6-165 stg_cn_rubin]$ cat variables.tf</span><br><span class="line">variable &quot;aws_region&quot; &#123;</span><br><span class="line">  default = &quot;cn-north-1&quot;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">variable &quot;vpc_name&quot; &#123;</span><br><span class="line">  description = &quot;The name of the VPC&quot;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">variable &quot;cidr_numeral&quot; &#123;</span><br><span class="line">  description = &quot;The VPC CIDR numeral (10.x.0.0/16)&quot;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">variable &quot;cidr_numeral_public&quot; &#123;</span><br><span class="line">  default = &#123;</span><br><span class="line">    &quot;0&quot; = &quot;0&quot;</span><br><span class="line">    &quot;1&quot; = &quot;1&quot;</span><br><span class="line">    &quot;2&quot; = &quot;2&quot;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">variable &quot;cidr_numeral_private&quot; &#123;</span><br><span class="line">  default = &#123;</span><br><span class="line">    &quot;0&quot; = &quot;3&quot;</span><br><span class="line">    &quot;1&quot; = &quot;4&quot;</span><br><span class="line">    &quot;2&quot; = &quot;5&quot;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">variable &quot;cidr_numeral_private_db&quot; &#123;</span><br><span class="line">  default = &#123;</span><br><span class="line">    &quot;0&quot; = &quot;6&quot;</span><br><span class="line">    &quot;1&quot; = &quot;7&quot;</span><br><span class="line">    &quot;2&quot; = &quot;8&quot;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">variable &quot;cidr_numeral_private_emr&quot; &#123;</span><br><span class="line">  default = &#123;</span><br><span class="line">    &quot;0&quot; = &quot;9&quot;</span><br><span class="line">    &quot;1&quot; = &quot;10&quot;</span><br><span class="line">    &quot;2&quot; = &quot;11&quot;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">variable &quot;ssh_key_name&quot; &#123;</span><br><span class="line">  description = &quot;A master ssh key&quot;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">variable &quot;bastion_image&quot; &#123;</span><br><span class="line">  default = &#123;</span><br><span class="line">    cn-north-1 = &quot;ami-7866b115&quot;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">variable &quot;env&quot; &#123;</span><br><span class="line">  description = &quot;The AWS env tag&quot;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">variable &quot;availability_zones&quot; &#123;</span><br><span class="line">  description = &quot;A comma-delimited list of availability zones for the VPC.&quot;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="terraform-tfvars"><a href="#terraform-tfvars" class="headerlink" title="terraform.tfvars"></a>terraform.tfvars</h3><p>此文件是在文件申明的变量赋值，赋值可以供当前目录的其他的文件引用</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">[centos@ip-10-20-6-165 stg_cn_rubin]$ cat terraform.tfvars</span><br><span class="line">aws_region = &quot;cn-north-1&quot;</span><br><span class="line">cidr_numeral = &quot;101&quot;</span><br><span class="line">vpc_name = &quot;rubin_stg_cn&quot;</span><br><span class="line">ssh_key_name = &quot;rubin-stg-cn-master&quot;</span><br><span class="line">env = &quot;staging&quot;</span><br><span class="line">availability_zones = &quot;cn-north-1a,cn-north-1b&quot;</span><br></pre></td></tr></table></figure>
+
+<h3 id="vpc-tf"><a href="#vpc-tf" class="headerlink" title="vpc.tf"></a>vpc.tf</h3><p>这个文件就是主文件，用来建立VPC，subnet，gateway，natgateway，路由表，路由表关联等一系列操作。其中有些是Terraform的内部函数，关于内部函数可参考<a href="https://www.terraform.io/docs/configuration/interpolation.html" target="_blank" rel="noopener">https://www.terraform.io/docs/configuration/interpolation.html</a></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br><span class="line">164</span><br><span class="line">165</span><br><span class="line">166</span><br><span class="line">167</span><br><span class="line">168</span><br><span class="line">169</span><br><span class="line">170</span><br><span class="line">171</span><br><span class="line">172</span><br><span class="line">173</span><br><span class="line">174</span><br><span class="line">175</span><br><span class="line">176</span><br><span class="line">177</span><br><span class="line">178</span><br><span class="line">179</span><br><span class="line">180</span><br><span class="line">181</span><br><span class="line">182</span><br><span class="line">183</span><br><span class="line">184</span><br><span class="line">185</span><br><span class="line">186</span><br><span class="line">187</span><br><span class="line">188</span><br><span class="line">189</span><br><span class="line">190</span><br><span class="line">191</span><br><span class="line">192</span><br><span class="line">193</span><br><span class="line">194</span><br><span class="line">195</span><br><span class="line">196</span><br><span class="line">197</span><br><span class="line">198</span><br><span class="line">199</span><br><span class="line">200</span><br><span class="line">201</span><br><span class="line">202</span><br><span class="line">203</span><br><span class="line">204</span><br><span class="line">205</span><br></pre></td><td class="code"><pre><span class="line">[centos@ip-10-20-6-165 stg_cn_rubin]$ cat vpc.tf </span><br><span class="line"># VPC DESIGN</span><br><span class="line"></span><br><span class="line">resource &quot;aws_vpc&quot; &quot;default&quot; &#123;</span><br><span class="line">  cidr_block           = &quot;10.$&#123;var.cidr_numeral&#125;.0.0/16&quot;</span><br><span class="line">  enable_dns_hostnames = true</span><br><span class="line"></span><br><span class="line">  tags &#123;</span><br><span class="line">    Name = &quot;vpc-$&#123;var.vpc_name&#125;&quot;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">resource &quot;aws_internet_gateway&quot; &quot;default&quot; &#123;</span><br><span class="line">  vpc_id = &quot;$&#123;aws_vpc.default.id&#125;&quot;</span><br><span class="line"></span><br><span class="line">  tags &#123;</span><br><span class="line">    Name = &quot;igw-$&#123;var.vpc_name&#125;&quot;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">resource &quot;aws_eip&quot; &quot;nat&quot; &#123;</span><br><span class="line">  count = &quot;$&#123;length(split(&quot;,&quot;, &quot;$&#123;var.availability_zones&#125;&quot;))&#125;&quot;</span><br><span class="line">  vpc   = true</span><br><span class="line"></span><br><span class="line">  tags &#123;</span><br><span class="line">    Name = &quot;ip-NAT-$&#123;var.vpc_name&#125;&quot;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">resource &quot;aws_nat_gateway&quot; &quot;nat&quot; &#123;</span><br><span class="line">  count  = &quot;$&#123;length(split(&quot;,&quot;, &quot;$&#123;var.availability_zones&#125;&quot;))&#125;&quot;</span><br><span class="line"></span><br><span class="line">  allocation_id = &quot;$&#123;element(aws_eip.nat.*.id, count.index)&#125;&quot;</span><br><span class="line">  subnet_id = &quot;$&#123;element(aws_subnet.public.*.id, count.index)&#125;&quot;</span><br><span class="line"></span><br><span class="line">  tags &#123;</span><br><span class="line">    Name = &quot;gw-NAT-$&#123;var.vpc_name&#125;&quot;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"># PUBLIC SUBNETS</span><br><span class="line"># The public subnet is where the bastion, NATs and ELBs reside. In most cases,</span><br><span class="line"># there should not be any servers in the public subnet.</span><br><span class="line"></span><br><span class="line">resource &quot;aws_subnet&quot; &quot;public&quot; &#123;</span><br><span class="line">  count  = &quot;$&#123;length(split(&quot;,&quot;, &quot;$&#123;var.availability_zones&#125;&quot;))&#125;&quot;</span><br><span class="line">  vpc_id = &quot;$&#123;aws_vpc.default.id&#125;&quot;</span><br><span class="line"></span><br><span class="line">  cidr_block              = &quot;10.$&#123;var.cidr_numeral&#125;.$&#123;lookup(var.cidr_numeral_public, count.index)&#125;.0/24&quot;</span><br><span class="line">  availability_zone       = &quot;$&#123;element(split(&quot;,&quot;, var.availability_zones), count.index)&#125;&quot;</span><br><span class="line">  map_public_ip_on_launch = true</span><br><span class="line"></span><br><span class="line">  tags &#123;</span><br><span class="line">    Name               = &quot;public$&#123;count.index&#125;-$&#123;var.vpc_name&#125;&quot;</span><br><span class="line">    immutable_metadata = &quot;&#123; \&quot;purpose\&quot;: \&quot;external_$&#123;var.vpc_name&#125;\&quot;, \&quot;target\&quot;: null &#125;&quot;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"># PUBLIC SUBNETS - Default route</span><br><span class="line">#</span><br><span class="line">resource &quot;aws_route_table&quot; &quot;public&quot; &#123;</span><br><span class="line">  vpc_id = &quot;$&#123;aws_vpc.default.id&#125;&quot;</span><br><span class="line"></span><br><span class="line">  route &#123;</span><br><span class="line">    cidr_block = &quot;0.0.0.0/0&quot;</span><br><span class="line">    gateway_id = &quot;$&#123;aws_internet_gateway.default.id&#125;&quot;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  tags &#123;</span><br><span class="line">    Name = &quot;publicrt-$&#123;var.vpc_name&#125;&quot;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"># PUBLIC SUBNETS - Route associations</span><br><span class="line">#</span><br><span class="line">resource &quot;aws_route_table_association&quot; &quot;public&quot; &#123;</span><br><span class="line">  count          = &quot;$&#123;length(split(&quot;,&quot;, &quot;$&#123;var.availability_zones&#125;&quot;))&#125;&quot;</span><br><span class="line">  subnet_id      = &quot;$&#123;element(aws_subnet.public.*.id, count.index)&#125;&quot;</span><br><span class="line">  route_table_id = &quot;$&#123;aws_route_table.public.id&#125;&quot;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"># PRIVATE SUBNETS</span><br><span class="line">#</span><br><span class="line"># Route Tables in a private subnet will not have Route resources created</span><br><span class="line"># statically for them as the NAT instances are responsible for dynamically</span><br><span class="line"># managing them on a per-AZ level using the Network=Private tag.</span><br><span class="line"></span><br><span class="line">resource &quot;aws_subnet&quot; &quot;private&quot; &#123;</span><br><span class="line">  count  = &quot;$&#123;length(split(&quot;,&quot;, &quot;$&#123;var.availability_zones&#125;&quot;))&#125;&quot;</span><br><span class="line">  vpc_id = &quot;$&#123;aws_vpc.default.id&#125;&quot;</span><br><span class="line"></span><br><span class="line">  cidr_block        = &quot;10.$&#123;var.cidr_numeral&#125;.$&#123;lookup(var.cidr_numeral_private, count.index)&#125;.0/24&quot;</span><br><span class="line">  availability_zone = &quot;$&#123;element(split(&quot;,&quot;, var.availability_zones), count.index)&#125;&quot;</span><br><span class="line"></span><br><span class="line">  tags &#123;</span><br><span class="line">    Name               = &quot;private$&#123;count.index&#125;-$&#123;var.vpc_name&#125;&quot;</span><br><span class="line">    immutable_metadata = &quot;&#123; \&quot;purpose\&quot;: \&quot;internal_$&#123;var.vpc_name&#125;\&quot;, \&quot;target\&quot;: null &#125;&quot;</span><br><span class="line">    Network            = &quot;Private&quot;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">resource &quot;aws_route_table&quot; &quot;private&quot; &#123;</span><br><span class="line">  count  = &quot;$&#123;length(split(&quot;,&quot;, &quot;$&#123;var.availability_zones&#125;&quot;))&#125;&quot;</span><br><span class="line">  vpc_id = &quot;$&#123;aws_vpc.default.id&#125;&quot;</span><br><span class="line"></span><br><span class="line">  route &#123;</span><br><span class="line">    cidr_block     = &quot;0.0.0.0/0&quot;</span><br><span class="line">    nat_gateway_id = &quot;$&#123;element(aws_nat_gateway.nat.*.id, count.index)&#125;&quot;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  tags &#123;</span><br><span class="line">    Name    = &quot;private$&#123;count.index&#125;rt-$&#123;var.vpc_name&#125;&quot;</span><br><span class="line">    Network = &quot;Private&quot;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">resource &quot;aws_route_table_association&quot; &quot;private&quot; &#123;</span><br><span class="line">  count          = &quot;$&#123;length(split(&quot;,&quot;, &quot;$&#123;var.availability_zones&#125;&quot;))&#125;&quot;</span><br><span class="line">  subnet_id      = &quot;$&#123;element(aws_subnet.private.*.id, count.index)&#125;&quot;</span><br><span class="line">  route_table_id = &quot;$&#123;element(aws_route_table.private.*.id, count.index)&#125;&quot;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"># PRIVATE SUBNETS (DB)</span><br><span class="line">#</span><br><span class="line"># Route Tables in a private subnet will not have Route resources created</span><br><span class="line"># statically for them as the NAT instances are responsible for dynamically</span><br><span class="line"># managing them on a per-AZ level using the Network=Private tag.</span><br><span class="line"></span><br><span class="line">resource &quot;aws_subnet&quot; &quot;private_db&quot; &#123;</span><br><span class="line">  count  = &quot;$&#123;length(split(&quot;,&quot;, &quot;$&#123;var.availability_zones&#125;&quot;))&#125;&quot;</span><br><span class="line">  vpc_id = &quot;$&#123;aws_vpc.default.id&#125;&quot;</span><br><span class="line"></span><br><span class="line">  cidr_block        = &quot;10.$&#123;var.cidr_numeral&#125;.$&#123;lookup(var.cidr_numeral_private_db, count.index)&#125;.0/24&quot;</span><br><span class="line">  availability_zone = &quot;$&#123;element(split(&quot;,&quot;, var.availability_zones), count.index)&#125;&quot;</span><br><span class="line"></span><br><span class="line">  tags &#123;</span><br><span class="line">    Name               = &quot;db-private$&#123;count.index&#125;-$&#123;var.vpc_name&#125;&quot;</span><br><span class="line">    immutable_metadata = &quot;&#123; \&quot;purpose\&quot;: \&quot;internal_$&#123;var.vpc_name&#125;\&quot;, \&quot;target\&quot;: null &#125;&quot;</span><br><span class="line">    Network            = &quot;Private&quot;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">resource &quot;aws_route_table&quot; &quot;private_db&quot; &#123;</span><br><span class="line">  count  = &quot;$&#123;length(split(&quot;,&quot;, &quot;$&#123;var.availability_zones&#125;&quot;))&#125;&quot;</span><br><span class="line">  vpc_id = &quot;$&#123;aws_vpc.default.id&#125;&quot;</span><br><span class="line"></span><br><span class="line">  route &#123;</span><br><span class="line">    cidr_block     = &quot;0.0.0.0/0&quot;</span><br><span class="line">    nat_gateway_id = &quot;$&#123;element(aws_nat_gateway.nat.*.id, count.index)&#125;&quot;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  tags &#123;</span><br><span class="line">    Name    = &quot;privatedb$&#123;count.index&#125;rt-$&#123;var.vpc_name&#125;&quot;</span><br><span class="line">    Network = &quot;Private&quot;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">resource &quot;aws_route_table_association&quot; &quot;private_db&quot; &#123;</span><br><span class="line">  count          = &quot;$&#123;length(split(&quot;,&quot;, &quot;$&#123;var.availability_zones&#125;&quot;))&#125;&quot;</span><br><span class="line">  subnet_id      = &quot;$&#123;element(aws_subnet.private_db.*.id, count.index)&#125;&quot;</span><br><span class="line">  route_table_id = &quot;$&#123;element(aws_route_table.private_db.*.id, count.index)&#125;&quot;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"># PRIVATE SUBNETS</span><br><span class="line">#</span><br><span class="line"># Route Tables in a private subnet will not have Route resources created</span><br><span class="line"># statically for them as the NAT instances are responsible for dynamically</span><br><span class="line"># managing them on a per-AZ level using the Network=Private tag.</span><br><span class="line"></span><br><span class="line">resource &quot;aws_subnet&quot; &quot;private_emr&quot; &#123;</span><br><span class="line">  count  = &quot;$&#123;length(split(&quot;,&quot;, &quot;$&#123;var.availability_zones&#125;&quot;))&#125;&quot;</span><br><span class="line">  vpc_id = &quot;$&#123;aws_vpc.default.id&#125;&quot;</span><br><span class="line"></span><br><span class="line">  cidr_block        = &quot;10.$&#123;var.cidr_numeral&#125;.$&#123;lookup(var.cidr_numeral_private_emr, count.index)&#125;.0/24&quot;</span><br><span class="line">  availability_zone = &quot;$&#123;element(split(&quot;,&quot;, var.availability_zones), count.index)&#125;&quot;</span><br><span class="line"></span><br><span class="line">  tags &#123;</span><br><span class="line">    Name               = &quot;private_emr$&#123;count.index&#125;-$&#123;var.vpc_name&#125;&quot;</span><br><span class="line">    immutable_metadata = &quot;&#123; \&quot;purpose\&quot;: \&quot;internal_$&#123;var.vpc_name&#125;\&quot;, \&quot;target\&quot;: null &#125;&quot;</span><br><span class="line">    Network            = &quot;Private&quot;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">resource &quot;aws_route_table&quot; &quot;private_emr&quot; &#123;</span><br><span class="line">  count  = &quot;$&#123;length(split(&quot;,&quot;, &quot;$&#123;var.availability_zones&#125;&quot;))&#125;&quot;</span><br><span class="line">  vpc_id = &quot;$&#123;aws_vpc.default.id&#125;&quot;</span><br><span class="line"></span><br><span class="line">  route &#123;</span><br><span class="line">    cidr_block     = &quot;0.0.0.0/0&quot;</span><br><span class="line">    nat_gateway_id = &quot;$&#123;element(aws_nat_gateway.nat.*.id, count.index)&#125;&quot;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  tags &#123;</span><br><span class="line">    Name    = &quot;private_emr$&#123;count.index&#125;rt-$&#123;var.vpc_name&#125;&quot;</span><br><span class="line">    Network = &quot;Private&quot;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">resource &quot;aws_route_table_association&quot; &quot;private_emr&quot; &#123;</span><br><span class="line">  count          = &quot;$&#123;length(split(&quot;,&quot;, &quot;$&#123;var.availability_zones&#125;&quot;))&#125;&quot;</span><br><span class="line">  subnet_id      = &quot;$&#123;element(aws_subnet.private_emr.*.id, count.index)&#125;&quot;</span><br><span class="line">  route_table_id = &quot;$&#123;element(aws_route_table.private_emr.*.id, count.index)&#125;&quot;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="outputs-tf"><a href="#outputs-tf" class="headerlink" title="outputs.tf"></a>outputs.tf</h3><p>当我们创建的资源后，经常需要知道这些资源的ID，因此定义一个output，将我们想要的资源ID显示出来或者输出到文件，从而避免我们在去控制台上查询获取这些信息。Terraform的出参就像是存过的产出，开发人员可以在编排时定义output出参来指定自己关心的内容，该内容会在任务执行的日志中高亮显示，而且在任务执行完毕后我们可以通过terrafomr output var_name的方式查看参数结果。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line">[centos@ip-10-20-6-165 stg_cn_rubin]$ cat outputs.tf </span><br><span class="line">output &quot;vpc_id&quot; &#123;</span><br><span class="line">  value = &quot;$&#123;aws_vpc.default.id&#125;&quot;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">output &quot;cidr_block&quot; &#123;</span><br><span class="line">  value = &quot;$&#123;aws_vpc.default.cidr_block&#125;&quot;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">output &quot;private_subnets&quot; &#123;</span><br><span class="line">  value = &quot;$&#123;join(&quot;,&quot;, aws_subnet.private.*.id)&#125;&quot;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">output &quot;public_subnets&quot; &#123;</span><br><span class="line">  value = &quot;$&#123;join(&quot;,&quot;, aws_subnet.public.*.id)&#125;&quot;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">output &quot;private_db_subnets&quot; &#123;</span><br><span class="line">  value = &quot;$&#123;join(&quot;,&quot;, aws_subnet.private_db.*.id)&#125;&quot;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">output &quot;private_emr_subnets&quot; &#123;</span><br><span class="line">  value = &quot;$&#123;join(&quot;,&quot;, aws_subnet.private_emr.*.id)&#125;&quot;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">output &quot;nat_eip&quot; &#123;</span><br><span class="line">  value = &quot;$&#123;join(&quot;,&quot;, aws_eip.nat.*.public_ip)&#125;&quot;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">output &quot;bastion_eip&quot; &#123;</span><br><span class="line">  value = &quot;$&#123;aws_eip.bastion.public_ip&#125;&quot;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="bastion-tf"><a href="#bastion-tf" class="headerlink" title="bastion.tf"></a>bastion.tf</h3><p>当VPC建立好的时候，我们只需要通过一台有公网IP的跳板机，去访问私网的机器，这个文件就是创建一个跳板机的安全组，能通过IP(1.<em>.</em>.*/28 )访问跳板机的22，2022端口，80，443，53，123端口流量能出，通过安全组限制网络进出流量。安全起见，我对其中IP加密显示，可以自行更改。更严格的还可以通过VPC配置的Network ACLs去控制。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br></pre></td><td class="code"><pre><span class="line">[centos@ip-10-20-6-165 stg_cn_rubin]$ cat bastion.tf </span><br><span class="line">resource &quot;aws_security_group&quot; &quot;bastion&quot; &#123;</span><br><span class="line">  name        = &quot;bastion-$&#123;var.vpc_name&#125;&quot;</span><br><span class="line">  description = &quot;Allows SSH access to the bastion server&quot;</span><br><span class="line"></span><br><span class="line">  vpc_id = &quot;$&#123;aws_vpc.default.id&#125;&quot;</span><br><span class="line"></span><br><span class="line">  ingress &#123;</span><br><span class="line">      from_port       = 22</span><br><span class="line">      to_port         = 22</span><br><span class="line">      protocol        = &quot;tcp&quot;</span><br><span class="line">      cidr_blocks     = [&quot;1.*.*.*/28&quot;]</span><br><span class="line">      description     = &quot;Office IP&quot;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  ingress &#123;</span><br><span class="line">      from_port       = 2022</span><br><span class="line">      to_port         = 2022</span><br><span class="line">      protocol        = &quot;tcp&quot;</span><br><span class="line">      cidr_blocks     = [&quot;1.*.*.*/28&quot;]</span><br><span class="line">      description     = &quot;Office IP&quot;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  egress &#123;</span><br><span class="line">    from_port   = 80</span><br><span class="line">    to_port     = 80</span><br><span class="line">    protocol    = &quot;tcp&quot;</span><br><span class="line">    cidr_blocks = [&quot;0.0.0.0/0&quot;]</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  egress &#123;</span><br><span class="line">    from_port   = 443</span><br><span class="line">    to_port     = 443</span><br><span class="line">    protocol    = &quot;tcp&quot;</span><br><span class="line">    cidr_blocks = [&quot;0.0.0.0/0&quot;]</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  egress &#123;</span><br><span class="line">    from_port   = 53</span><br><span class="line">    to_port     = 53</span><br><span class="line">    protocol    = &quot;tcp&quot;</span><br><span class="line">    cidr_blocks = [&quot;0.0.0.0/0&quot;]</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  egress &#123;</span><br><span class="line">    from_port   = 53</span><br><span class="line">    to_port     = 53</span><br><span class="line">    protocol    = &quot;udp&quot;</span><br><span class="line">    cidr_blocks = [&quot;0.0.0.0/0&quot;]</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  egress &#123;</span><br><span class="line">    from_port   = 123</span><br><span class="line">    to_port     = 123</span><br><span class="line">    protocol    = &quot;tcp&quot;</span><br><span class="line">    cidr_blocks = [&quot;0.0.0.0/0&quot;]</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  egress &#123;</span><br><span class="line">    from_port   = 123</span><br><span class="line">    to_port     = 123</span><br><span class="line">    protocol    = &quot;udp&quot;</span><br><span class="line">    cidr_blocks = [&quot;0.0.0.0/0&quot;]</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  egress &#123;</span><br><span class="line">    from_port   = 0</span><br><span class="line">    to_port     = 0</span><br><span class="line">    protocol    = &quot;-1&quot;</span><br><span class="line">    cidr_blocks = [&quot;10.0.0.0/8&quot;]</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  tags &#123;</span><br><span class="line">    Name = &quot;bastion-$&#123;var.vpc_name&#125;&quot;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"># EIP for bastion</span><br><span class="line">resource &quot;aws_eip&quot; &quot;bastion&quot; &#123;</span><br><span class="line">  vpc = true</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="common-tf"><a href="#common-tf" class="headerlink" title="common.tf"></a>common.tf</h3><p>这个文件是创建了一个共有的安全组给私网地址的机器使用。能接受当前VPC下私网10.0.0.0/8网段的任何流量，流量能从80，443，53，123的端口出。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br></pre></td><td class="code"><pre><span class="line">[centos@ip-10-20-6-165 stg_cn_rubin]$ cat common.tf </span><br><span class="line">resource &quot;aws_security_group&quot; &quot;internal_common&quot; &#123;</span><br><span class="line">  name = &quot;internal_common-$&#123;var.vpc_name&#125;&quot;</span><br><span class="line">  description = &quot;commonly used security group for ocf instances&quot;</span><br><span class="line"></span><br><span class="line">  vpc_id = &quot;$&#123;aws_vpc.default.id&#125;&quot;</span><br><span class="line">  </span><br><span class="line">  ingress &#123;</span><br><span class="line">    from_port   = 0</span><br><span class="line">    to_port     = 0</span><br><span class="line">    protocol    = &quot;-1&quot;</span><br><span class="line">    cidr_blocks = [&quot;10.0.0.0/8&quot;]</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  egress &#123;</span><br><span class="line">    from_port = 80</span><br><span class="line">    to_port = 80</span><br><span class="line">    protocol = &quot;tcp&quot;</span><br><span class="line">    cidr_blocks = [&quot;0.0.0.0/0&quot;]</span><br><span class="line">  &#125;</span><br><span class="line">  egress &#123;</span><br><span class="line">    from_port = 443</span><br><span class="line">    to_port = 443</span><br><span class="line">    protocol = &quot;tcp&quot;</span><br><span class="line">    cidr_blocks = [&quot;0.0.0.0/0&quot;]</span><br><span class="line">  &#125;</span><br><span class="line">  egress &#123; # dns</span><br><span class="line">    from_port = 53          </span><br><span class="line">    to_port = 53</span><br><span class="line">    protocol = &quot;tcp&quot;</span><br><span class="line">    cidr_blocks = [&quot;0.0.0.0/0&quot;]</span><br><span class="line">  &#125;</span><br><span class="line">  egress &#123; # dns</span><br><span class="line">    from_port = 53</span><br><span class="line">    to_port = 53</span><br><span class="line">    protocol = &quot;udp&quot;</span><br><span class="line">    cidr_blocks = [&quot;0.0.0.0/0&quot;]</span><br><span class="line">  &#125;</span><br><span class="line">  egress &#123; # ntp </span><br><span class="line">    from_port = 123</span><br><span class="line">    to_port = 123</span><br><span class="line">    protocol = &quot;tcp&quot;</span><br><span class="line">    cidr_blocks = [&quot;0.0.0.0/0&quot;]</span><br><span class="line">  &#125;</span><br><span class="line">  egress &#123; # ntp</span><br><span class="line">    from_port = 123</span><br><span class="line">    to_port = 123</span><br><span class="line">    protocol = &quot;udp&quot;</span><br><span class="line">    cidr_blocks = [&quot;0.0.0.0/0&quot;]</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="AWS-key"><a href="#AWS-key" class="headerlink" title="AWS key"></a>AWS key</h3><p>创建Access key 参考官网<a href="https://docs.aws.amazon.com/zh_cn/IAM/latest/UserGuide/id_credentials_access-keys.html" target="_blank" rel="noopener">https://docs.aws.amazon.com/zh_cn/IAM/latest/UserGuide/id_credentials_access-keys.html</a><br>配置Access key 参考官网<a href="https://docs.aws.amazon.com/zh_cn/cli/latest/userguide/cli-chap-getting-started.html" target="_blank" rel="noopener">https://docs.aws.amazon.com/zh_cn/cli/latest/userguide/cli-chap-getting-started.html</a></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">[centos@ip-10-20-6-165 ~]$ aws configure --profile rubin-stg</span><br><span class="line">AWS Access Key ID [****************M67J]: </span><br><span class="line">AWS Secret Access Key [****************mgNp]: </span><br><span class="line">Default region name [cn-north-1]: </span><br><span class="line">Default output format [json]: </span><br><span class="line">[centos@ip-10-20-6-165 ~]$ sed -n &apos;24,26p&apos; /home/centos/.aws/config </span><br><span class="line">[profile rubin-stg]</span><br><span class="line">output = json</span><br><span class="line">region = cn-north-1</span><br><span class="line">[centos@ip-10-20-6-165 ~]$ sed -n &apos;25,27p&apos; /home/centos/.aws/credentials </span><br><span class="line">[rubin-stg]</span><br><span class="line">aws_access_key_id = ****************M67J</span><br><span class="line">aws_secret_access_key = ****************mgNp</span><br></pre></td></tr></table></figure>
+
+<h1 id="创建资源"><a href="#创建资源" class="headerlink" title="创建资源"></a>创建资源</h1><h2 id="Terrform-get-amp-init"><a href="#Terrform-get-amp-init" class="headerlink" title="Terrform get &amp; init"></a>Terrform get &amp; init</h2><p>执行terraform init命令，就像git init一样，对当前目录做初始化，下载tf中的provider，并为后续的操作准备必要的环境条件</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br></pre></td><td class="code"><pre><span class="line">[centos@ip-10-20-6-165 ~]$ cd rubin/terraform/vpc/stg_cn_rubin/</span><br><span class="line">[centos@ip-10-20-6-165 stg_cn_rubin]$ pwd</span><br><span class="line">/home/centos/rubin/terraform/vpc/stg_cn_rubin</span><br><span class="line">[centos@ip-10-20-6-165 stg_cn_rubin]$ export AWS_DEFAULT_PROFILE=rubin-stg &amp;&amp; export AWS_PROFILE=rubin-stg</span><br><span class="line">[centos@ip-10-20-6-165 stg_cn_rubin]$ terraform --help</span><br><span class="line">Usage: terraform [--version] [--help] &lt;command&gt; [args]</span><br><span class="line"></span><br><span class="line">The available commands for execution are listed below.</span><br><span class="line">The most common, useful commands are shown first, followed by</span><br><span class="line">less common or more advanced commands. If you&apos;re just getting</span><br><span class="line">started with Terraform, stick with the common commands. For the</span><br><span class="line">other commands, please read the help and docs before usage.</span><br><span class="line"></span><br><span class="line">Common commands:</span><br><span class="line">    apply              Builds or changes infrastructure</span><br><span class="line">    console            Interactive console for Terraform interpolations</span><br><span class="line">    destroy            Destroy Terraform-managed infrastructure</span><br><span class="line">    env                Workspace management</span><br><span class="line">    fmt                Rewrites config files to canonical format</span><br><span class="line">    get                Download and install modules for the configuration</span><br><span class="line">    graph              Create a visual graph of Terraform resources</span><br><span class="line">    import             Import existing infrastructure into Terraform</span><br><span class="line">    init               Initialize a Terraform working directory</span><br><span class="line">    output             Read an output from a state file</span><br><span class="line">    plan               Generate and show an execution plan</span><br><span class="line">    providers          Prints a tree of the providers used in the configuration</span><br><span class="line">    push               Upload this Terraform module to Atlas to run</span><br><span class="line">    refresh            Update local state file against real resources</span><br><span class="line">    show               Inspect Terraform state or plan</span><br><span class="line">    taint              Manually mark a resource for recreation</span><br><span class="line">    untaint            Manually unmark a resource as tainted</span><br><span class="line">    validate           Validates the Terraform files</span><br><span class="line">    version            Prints the Terraform version</span><br><span class="line">    workspace          Workspace management</span><br><span class="line"></span><br><span class="line">All other commands:</span><br><span class="line">    debug              Debug output management (experimental)</span><br><span class="line">    force-unlock       Manually unlock the terraform state</span><br><span class="line">    state              Advanced state management</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">[centos@ip-10-20-6-165 stg_cn_rubin]$ terraform get  #编写配置文件中没有导入module，所以执行没有结果，如果配置文件有导入module应先执行</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">[centos@ip-10-20-6-165 stg_cn_rubin]$ terraform init</span><br><span class="line"></span><br><span class="line">Initializing the backend...</span><br><span class="line"></span><br><span class="line">Initializing provider plugins...</span><br><span class="line">- Checking for available provider plugins on https://releases.hashicorp.com...</span><br><span class="line">- Downloading plugin for provider &quot;aws&quot; (1.41.0)...</span><br><span class="line"></span><br><span class="line">The following providers do not have any version constraints in configuration,</span><br><span class="line">so the latest version was installed.</span><br><span class="line"></span><br><span class="line">To prevent automatic upgrades to new major versions that may contain breaking</span><br><span class="line">changes, it is recommended to add version = &quot;...&quot; constraints to the</span><br><span class="line">corresponding provider blocks in configuration, with the constraint strings</span><br><span class="line">suggested below.</span><br><span class="line"></span><br><span class="line">* provider.aws: version = &quot;~&gt; 1.41&quot;</span><br><span class="line"></span><br><span class="line">Terraform has been successfully initialized!</span><br><span class="line"></span><br><span class="line">You may now begin working with Terraform. Try running &quot;terraform plan&quot; to see</span><br><span class="line">any changes that are required for your infrastructure. All Terraform commands</span><br><span class="line">should now work.</span><br><span class="line"></span><br><span class="line">If you ever set or change modules or backend configuration for Terraform,</span><br><span class="line">rerun this command to reinitialize your working directory. If you forget, other</span><br><span class="line">commands will detect it and remind you to do so if necessary.</span><br></pre></td></tr></table></figure>
+
+<h2 id="Terraform-plan"><a href="#Terraform-plan" class="headerlink" title="Terraform plan"></a>Terraform plan</h2><p>预览执行计划，不是必须，可以预览要创建的资源,终端日志太长，只粘贴一部分</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br></pre></td><td class="code"><pre><span class="line">[centos@ip-10-20-6-165 stg_cn_rubin]$ terraform plan</span><br><span class="line">Refreshing Terraform state in-memory prior to plan...</span><br><span class="line">The refreshed state will be used to calculate this plan, but will not be</span><br><span class="line">persisted to local or remote state storage.</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">------------------------------------------------------------------------</span><br><span class="line"></span><br><span class="line">An execution plan has been generated and is shown below.</span><br><span class="line">Resource actions are indicated with the following symbols:</span><br><span class="line">  + create</span><br><span class="line"></span><br><span class="line">Terraform will perform the following actions:</span><br><span class="line"></span><br><span class="line">  + aws_eip.bastion</span><br><span class="line">      id:                                          &lt;computed&gt;</span><br><span class="line">      allocation_id:                               &lt;computed&gt;</span><br><span class="line">      association_id:                              &lt;computed&gt;</span><br><span class="line">      domain:                                      &lt;computed&gt;</span><br><span class="line">      instance:                                    &lt;computed&gt;</span><br><span class="line">      network_interface:                           &lt;computed&gt;</span><br><span class="line">      private_ip:                                  &lt;computed&gt;</span><br><span class="line">      public_ip:                                   &lt;computed&gt;</span><br><span class="line">      vpc:                                         &quot;true&quot;</span><br><span class="line"></span><br><span class="line">  + aws_eip.nat[0]</span><br><span class="line">      id:                                          &lt;computed&gt;</span><br><span class="line">      allocation_id:                               &lt;computed&gt;</span><br><span class="line">      association_id:                              &lt;computed&gt;</span><br><span class="line">      domain:                                      &lt;computed&gt;</span><br><span class="line">      instance:                                    &lt;computed&gt;</span><br><span class="line">      network_interface:                           &lt;computed&gt;</span><br><span class="line">      private_ip:                                  &lt;computed&gt;</span><br><span class="line">      public_ip:                                   &lt;computed&gt;</span><br><span class="line">      tags.%:                                      &quot;1&quot;</span><br><span class="line">      tags.Name:                                   &quot;ip-NAT-rubin_stg_cn&quot;</span><br><span class="line">      vpc:                                         &quot;true&quot;</span><br><span class="line"></span><br><span class="line">  + aws_eip.nat[1]</span><br><span class="line">      id:                                          &lt;computed&gt;</span><br><span class="line">      allocation_id:                               &lt;computed&gt;</span><br><span class="line">      association_id:                              &lt;computed&gt;</span><br><span class="line">      domain:                                      &lt;computed&gt;</span><br><span class="line">...</span><br><span class="line"></span><br><span class="line">  + aws_subnet.public[1]</span><br><span class="line">      id:                                          &lt;computed&gt;</span><br><span class="line">      arn:                                         &lt;computed&gt;</span><br><span class="line">      assign_ipv6_address_on_creation:             &quot;false&quot;</span><br><span class="line">      availability_zone:                           &quot;cn-north-1b&quot;</span><br><span class="line">      cidr_block:                                  &quot;10.101.1.0/24&quot;</span><br><span class="line">      ipv6_cidr_block:                             &lt;computed&gt;</span><br><span class="line">      ipv6_cidr_block_association_id:              &lt;computed&gt;</span><br><span class="line">      map_public_ip_on_launch:                     &quot;true&quot;</span><br><span class="line">      tags.%:                                      &quot;2&quot;</span><br><span class="line">      tags.Name:                                   &quot;public1-rubin_stg_cn&quot;</span><br><span class="line">      tags.immutable_metadata:                     &quot;&#123; \&quot;purpose\&quot;: \&quot;external_rubin_stg_cn\&quot;, \&quot;target\&quot;: null &#125;&quot;</span><br><span class="line">      vpc_id:                                      &quot;$&#123;aws_vpc.default.id&#125;&quot;</span><br><span class="line"></span><br><span class="line">  + aws_vpc.default</span><br><span class="line">      id:                                          &lt;computed&gt;</span><br><span class="line">      arn:                                         &lt;computed&gt;</span><br><span class="line">      assign_generated_ipv6_cidr_block:            &quot;false&quot;</span><br><span class="line">      cidr_block:                                  &quot;10.101.0.0/16&quot;</span><br><span class="line">      default_network_acl_id:                      &lt;computed&gt;</span><br><span class="line">      default_route_table_id:                      &lt;computed&gt;</span><br><span class="line">      default_security_group_id:                   &lt;computed&gt;</span><br><span class="line">      dhcp_options_id:                             &lt;computed&gt;</span><br><span class="line">      enable_classiclink:                          &lt;computed&gt;</span><br><span class="line">      enable_classiclink_dns_support:              &lt;computed&gt;</span><br><span class="line">      enable_dns_hostnames:                        &quot;true&quot;</span><br><span class="line">      enable_dns_support:                          &quot;true&quot;</span><br><span class="line">      instance_tenancy:                            &quot;default&quot;</span><br><span class="line">      ipv6_association_id:                         &lt;computed&gt;</span><br><span class="line">      ipv6_cidr_block:                             &lt;computed&gt;</span><br><span class="line">      main_route_table_id:                         &lt;computed&gt;</span><br><span class="line">      tags.%:                                      &quot;1&quot;</span><br><span class="line">      tags.Name:                                   &quot;vpc-rubin_stg_cn&quot;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">Plan: 32 to add, 0 to change, 0 to destroy.</span><br><span class="line"></span><br><span class="line">------------------------------------------------------------------------</span><br><span class="line"></span><br><span class="line">Note: You didn&apos;t specify an &quot;-out&quot; parameter to save this plan, so Terraform</span><br><span class="line">can&apos;t guarantee that exactly these actions will be performed if</span><br><span class="line">&quot;terraform apply&quot; is subsequently run.</span><br></pre></td></tr></table></figure>
+
+<h2 id="Terraform-apply"><a href="#Terraform-apply" class="headerlink" title="Terraform apply"></a>Terraform apply</h2><p>真正执行编排计划,创建资源的终端日志太长,只粘贴一部分，几分钟后整个资源全被创建完成，最后output把当前资源的ID显示出来了</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br></pre></td><td class="code"><pre><span class="line">[centos@ip-10-20-6-165 stg_cn_rubin]$ terraform apply</span><br><span class="line"></span><br><span class="line">An execution plan has been generated and is shown below.</span><br><span class="line">Resource actions are indicated with the following symbols:</span><br><span class="line">  + create</span><br><span class="line"></span><br><span class="line">Terraform will perform the following actions:</span><br><span class="line"></span><br><span class="line">  + aws_eip.bastion</span><br><span class="line">      id:                                          &lt;computed&gt;</span><br><span class="line">      allocation_id:                               &lt;computed&gt;</span><br><span class="line">      association_id:                              &lt;computed&gt;</span><br><span class="line"></span><br><span class="line">...</span><br><span class="line"></span><br><span class="line">      tags.Name:                                   &quot;vpc-rubin_stg_cn&quot;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">Plan: 32 to add, 0 to change, 0 to destroy.</span><br><span class="line"></span><br><span class="line">Do you want to perform these actions?</span><br><span class="line">  Terraform will perform the actions described above.</span><br><span class="line">  Only &apos;yes&apos; will be accepted to approve.</span><br><span class="line"></span><br><span class="line">  Enter a value: yes</span><br><span class="line">aws_vpc.default: Creating...</span><br><span class="line">  arn:                              &quot;&quot; =&gt; &quot;&lt;computed&gt;&quot;</span><br><span class="line">  assign_generated_ipv6_cidr_block: &quot;&quot; =&gt; &quot;false&quot;</span><br><span class="line">  cidr_block:                       &quot;&quot; =&gt; &quot;10.101.0.0/16&quot;</span><br><span class="line">  default_network_acl_id:           &quot;&quot; =&gt; &quot;&lt;computed&gt;&quot;</span><br><span class="line">  default_route_table_id:           &quot;&quot; =&gt; &quot;&lt;computed&gt;&quot;</span><br><span class="line"></span><br><span class="line">...</span><br><span class="line"></span><br><span class="line">aws_route_table_association.private[0]: Creation complete after 0s (ID: rtbassoc-0dec0c6caa85081aa)</span><br><span class="line">aws_route_table_association.private[1]: Creation complete after 0s (ID: rtbassoc-00541f1193c1f006a)</span><br><span class="line">aws_route_table_association.private_db[0]: Creation complete after 0s (ID: rtbassoc-0707dc991b6f0b502)</span><br><span class="line">aws_route_table_association.private_db[1]: Creation complete after 0s (ID: rtbassoc-0e1c00b46b31e13a6)</span><br><span class="line">aws_route_table_association.private_emr[1]: Creation complete after 0s (ID: rtbassoc-0dcfc3ec369382fa4)</span><br><span class="line">aws_route_table_association.private_emr[0]: Creation complete after 0s (ID: rtbassoc-0ed91fcc9955b3674)</span><br><span class="line"></span><br><span class="line">Apply complete! Resources: 32 added, 0 changed, 0 destroyed.</span><br><span class="line"></span><br><span class="line">Outputs:</span><br><span class="line"></span><br><span class="line">bastion_eip = 54.223.216.43</span><br><span class="line">cidr_block = 10.101.0.0/16</span><br><span class="line">nat_eip = 54.222.176.3,54.222.249.234</span><br><span class="line">private_db_subnets = subnet-095f9065be2e9bb6d,subnet-0d9fdec0b255f17c1</span><br><span class="line">private_emr_subnets = subnet-090653a4e725b8d90,subnet-0d0fd140f10721f60</span><br><span class="line">private_subnets = subnet-0f34c39ec475c0384,subnet-095341650c1b43695</span><br><span class="line">public_subnets = subnet-06bb6bea3d757253b,subnet-03307ab8f793fd944</span><br><span class="line">vpc_id = vpc-02d9520415468c7f0</span><br></pre></td></tr></table></figure>
+
+
+      
+    </div>
+    
+    
+    
+	
+	<div>
+	  
+		<div>
+    
+        <div style="text-align:center;color: #ccc;font-size:14px;">--------------------本文结束，感谢您的阅读--------------------</div>
+    
+</div>
+	  
+	</div>
+	
+	<div>
+      
+        
+<div class="my_post_copyright">
+  <script src="//cdn.bootcss.com/clipboard.js/1.5.10/clipboard.min.js"></script>
+  
+  <!-- JS库 sweetalert 可修改路径 -->
+  <script src="https://cdn.bootcss.com/jquery/2.0.0/jquery.min.js"></script>
+  <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+  <p><span>本文标题:</span><a href="/terraform创建华为云 AWS资源/">terraform创建华为云、AWS资源</a></p>
+  <p><span>文章作者:</span><a href="/" title="访问 弓昭 的个人博客">弓昭</a></p>
+  <p><span>发布时间:</span>2019年06月03日 - 22:12</p>
+  <p><span>最后更新:</span>2020年04月08日 - 22:20</p>
+  <p><span>原始链接:</span><a href="/terraform创建华为云 AWS资源/" title="terraform创建华为云、AWS资源">https://gongzhao1.coding.me/terraform创建华为云 AWS资源/</a>
+    <span class="copy-path" title="点击复制文章链接"><i class="fa fa-clipboard" data-clipboard-text="https://gongzhao1.coding.me/terraform创建华为云 AWS资源/" aria-label="复制成功！"></i></span>
+  </p>
+  <p><span>联系邮箱:</span>gongzhao1@foxmail.com</p>  
+</div>
+<script> 
+    var clipboard = new Clipboard('.fa-clipboard');
+    $(".fa-clipboard").click(function(){
+      clipboard.on('success', function(){
+        swal({   
+          title: "",   
+          text: '复制成功',
+          icon: "success", 
+          showConfirmButton: true
+          });
+	});
+    });  
+</script>
+
+      
+	</div>
+	
+
+
+    
+
+    
+      <div>
+        <div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center;">
+  <div></div>
+  <button id="rewardButton" disable="enable" onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}">
+    <span>Donate</span>
+  </button>
+  <div id="QR" style="display: none;">
+
+    
+      <div id="wechat" style="display: inline-block">
+        <img id="wechat_qr" src="/images/wechat.jpg" alt="弓昭 WeChat Pay">
+        <p>WeChat Pay</p>
+      </div>
+    
+
+    
+      <div id="alipay" style="display: inline-block">
+        <img id="alipay_qr" src="/images/ali.jpg" alt="弓昭 Alipay">
+        <p>Alipay</p>
+      </div>
+    
+
+    
+
+  </div>
+</div>
+
+      </div>
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/terraform/" rel="tag"><i class="fa fa-tag"></i>terraform</a>
+          
+            <a href="/tags/华为云/" rel="tag"><i class="fa fa-tag"></i>华为云</a>
+          
+            <a href="/tags/AWS/" rel="tag"><i class="fa fa-tag"></i>AWS</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/Systemd服务介绍/" rel="next" title="Systemd服务介绍">
+                <i class="fa fa-chevron-left"></i> Systemd服务介绍
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/Kubernetes集群日志收集-Filebeat-ELK/" rel="prev" title="Kubernetes集群日志收集 Filebeat+ELK">
+                Kubernetes集群日志收集 Filebeat+ELK <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div id="lv-container" data-id="city" data-uid="MTAyMC80MTcyNy8xODI3Mw=="></div>
+    
+  </div>
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image" src="/uploads/panda.jpg" alt="弓昭">
+          <p class="site-author-name" itemprop="name">弓昭</p>
+           
+              <p class="site-description motion-element" itemprop="description">弓昭的个人主页，主要涉及网络、运维、前端、Python等等知识</p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives/">
+                <span class="site-state-item-count">83</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">25</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">72</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+          <div class="feed-link motion-element">
+            <a href="/atom.xml" rel="alternate">
+              <i class="fa fa-rss"></i>
+              RSS
+            </a>
+          </div>
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/gongzhao1" target="_blank" title="GitHub">
+                  
+                    <i class="fa fa-fw fa-github"></i>
+                  
+                    
+                      GitHub
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://blog.csdn.net/zhao12795969" target="_blank" title="csdn">
+                  
+                    <i class="fa fa-fw fa-crosshairs"></i>
+                  
+                    
+                      csdn
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://www.jianshu.com/u/1dbca13c6043" target="_blank" title="简书">
+                  
+                    <i class="fa fa-fw fa-heartbeat"></i>
+                  
+                    
+                      简书
+                    
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+          <div class="links-of-blogroll motion-element links-of-blogroll-inline">
+            <div class="links-of-blogroll-title">
+              <i class="fa  fa-fw fa-globe"></i>
+              Links
+            </div>
+            <ul class="links-of-blogroll-list">
+              
+                <li class="links-of-blogroll-item">
+                  <a href="http://ccieh3c.com/" title="网络之路" target="_blank">网络之路</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="http://jm.taobao.org/" title="阿里云中间件" target="_blank">阿里云中间件</a>
+                </li>
+              
+            </ul>
+          </div>
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#前言"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#安装terraform"><span class="nav-number">2.</span> <span class="nav-text">安装terraform</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#编写配置"><span class="nav-number">3.</span> <span class="nav-text">编写配置</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#目录配置"><span class="nav-number">3.1.</span> <span class="nav-text">目录配置</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#模块化脚本（华为云）"><span class="nav-number">3.2.</span> <span class="nav-text">模块化脚本（华为云）</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#network模块"><span class="nav-number">3.2.1.</span> <span class="nav-text">network模块</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#instance模块"><span class="nav-number">3.2.2.</span> <span class="nav-text">instance模块</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#主执行文件"><span class="nav-number">3.2.3.</span> <span class="nav-text">主执行文件</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#AWS基本使用脚本（非模块化）"><span class="nav-number">3.3.</span> <span class="nav-text">AWS基本使用脚本（非模块化）</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#目录结构"><span class="nav-number">3.3.1.</span> <span class="nav-text">目录结构</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#backend-tf"><span class="nav-number">3.3.2.</span> <span class="nav-text">backend.tf</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#variables-tf"><span class="nav-number">3.3.3.</span> <span class="nav-text">variables.tf</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#terraform-tfvars"><span class="nav-number">3.3.4.</span> <span class="nav-text">terraform.tfvars</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#vpc-tf"><span class="nav-number">3.3.5.</span> <span class="nav-text">vpc.tf</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#outputs-tf"><span class="nav-number">3.3.6.</span> <span class="nav-text">outputs.tf</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#bastion-tf"><span class="nav-number">3.3.7.</span> <span class="nav-text">bastion.tf</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#common-tf"><span class="nav-number">3.3.8.</span> <span class="nav-text">common.tf</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#AWS-key"><span class="nav-number">3.3.9.</span> <span class="nav-text">AWS key</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#创建资源"><span class="nav-number">4.</span> <span class="nav-text">创建资源</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Terrform-get-amp-init"><span class="nav-number">4.1.</span> <span class="nav-text">Terrform get &amp; init</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Terraform-plan"><span class="nav-number">4.2.</span> <span class="nav-text">Terraform plan</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Terraform-apply"><span class="nav-number">4.3.</span> <span class="nav-text">Terraform apply</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+<div class="copyright">
+  
+  &copy;  2018 - 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">弓昭</span>
+</div>
+
+
+<div class="powered-by">
+	<i class="fa fa-user-md"></i><span id="busuanzi_container_site_uv">
+	  本站访客数:<span id="busuanzi_value_site_uv"></span>
+	</span>
+</div>
+
+
+<div class="theme-info">
+
+  <span class="post-count">博客全站共253.1k字</span>
+</div>
+
+
+
+        
+<div class="busuanzi-count">
+  <script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+
+  
+</div>
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.2"></script>
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.2"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+    <script type="text/javascript">
+      (function(d, s) {
+        var j, e = d.getElementsByTagName(s)[0];
+        if (typeof LivereTower === 'function') { return; }
+        j = d.createElement(s);
+        j.src = 'https://cdn-city.livere.com/js/embed.dist.js';
+        j.async = true;
+        e.parentNode.insertBefore(j, e);
+      })(document, 'script');
+    </script>
+  
+
+
+
+
+
+
+  
+
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url);
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

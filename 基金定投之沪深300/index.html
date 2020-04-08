@@ -1,0 +1,1351 @@
+<!DOCTYPE html>
+
+
+
+
+<html class="theme-next muse" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.2" rel="stylesheet" type="text/css">
+
+
+  <meta name="keywords" content="基金,">
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="GZ" type="application/atom+xml">
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.2">
+
+
+
+
+
+
+<meta name="description" content="[TOC] 基本概念沪深300：2005年4月成立，由沪深证券交易所发布，所选取沪深两市规模大、流动性好的300支股票作为样本股。（指数基日是2004.12，也就是收集数据从2004.12起） 五个条件：  股市交易时间超过一个季度 非ST、*ST股票，非暂停上市股票 公司经营状况良好，最近一年无重大违法违规事件、财务报告无重大问题;股票价格无明 显的异常波动或市场操纵，剔除其他经专家认定不能进入">
+<meta name="keywords" content="基金">
+<meta property="og:type" content="article">
+<meta property="og:title" content="基金定投之沪深300">
+<meta property="og:url" content="https://gongzhao1.coding.me/基金定投之沪深300/index.html">
+<meta property="og:site_name" content="GZ">
+<meta property="og:description" content="[TOC] 基本概念沪深300：2005年4月成立，由沪深证券交易所发布，所选取沪深两市规模大、流动性好的300支股票作为样本股。（指数基日是2004.12，也就是收集数据从2004.12起） 五个条件：  股市交易时间超过一个季度 非ST、*ST股票，非暂停上市股票 公司经营状况良好，最近一年无重大违法违规事件、财务报告无重大问题;股票价格无明 显的异常波动或市场操纵，剔除其他经专家认定不能进入">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="https://gongzhao-1256784911.cos.ap-shanghai.myqcloud.com/hexo/images/financial/financial-19.webp">
+<meta property="og:image" content="https://gongzhao-1256784911.cos.ap-shanghai.myqcloud.com/hexo/images/financial/financial-20.webp">
+<meta property="og:image" content="https://gongzhao-1256784911.cos.ap-shanghai.myqcloud.com/hexo/images/financial/financial-21.webp">
+<meta property="og:image" content="https://gongzhao-1256784911.cos.ap-shanghai.myqcloud.com/hexo/images/financial/financial-07.jpg">
+<meta property="og:image" content="https://gongzhao-1256784911.cos.ap-shanghai.myqcloud.com/hexo/images/financial/financial-08.jpg">
+<meta property="og:image" content="https://gongzhao-1256784911.cos.ap-shanghai.myqcloud.com/hexo/images/financial/financial-22.jpg">
+<meta property="og:image" content="https://gongzhao-1256784911.cos.ap-shanghai.myqcloud.com/hexo/images/financial/financial-23.jpg">
+<meta property="og:image" content="https://gongzhao-1256784911.cos.ap-shanghai.myqcloud.com/hexo/images/financial/financial-51.webp">
+<meta property="og:image" content="https://gongzhao-1256784911.cos.ap-shanghai.myqcloud.com/hexo/images/financial/financial-52.webp">
+<meta property="og:updated_time" content="2020-04-08T14:20:25.881Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="基金定投之沪深300">
+<meta name="twitter:description" content="[TOC] 基本概念沪深300：2005年4月成立，由沪深证券交易所发布，所选取沪深两市规模大、流动性好的300支股票作为样本股。（指数基日是2004.12，也就是收集数据从2004.12起） 五个条件：  股市交易时间超过一个季度 非ST、*ST股票，非暂停上市股票 公司经营状况良好，最近一年无重大违法违规事件、财务报告无重大问题;股票价格无明 显的异常波动或市场操纵，剔除其他经专家认定不能进入">
+<meta name="twitter:image" content="https://gongzhao-1256784911.cos.ap-shanghai.myqcloud.com/hexo/images/financial/financial-19.webp">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: false,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://gongzhao1.coding.me/基金定投之沪深300/">
+
+
+
+
+
+  <title>基金定投之沪深300 | GZ</title>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">GZ</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">痛苦是财富，这话是扯淡。少年，痛苦就是痛苦，对痛苦的思考才是财富</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br>
+            
+            关于
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br>
+            
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off" placeholder="搜索..." spellcheck="false" type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://gongzhao1.coding.me/基金定投之沪深300/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="弓昭">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/uploads/panda.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="GZ">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">基金定投之沪深300</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-09-19T22:06:52+08:00">
+                2019-09-19
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/基金/" itemprop="url" rel="index">
+                    <span itemprop="name">基金</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+            <span class="post-meta-divider">|</span>
+            <span class="page-pv"><i class="fa fa-file-o"></i>
+            <span class="busuanzi-value" id="busuanzi_value_page_pv"></span>次阅读
+            </span>
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>[TOC]</p>
+<h1 id="基本概念"><a href="#基本概念" class="headerlink" title="基本概念"></a>基本概念</h1><p><strong>沪深300</strong>：2005年4月成立，由沪深证券交易所发布，所选取沪深两市规模大、流动性好的300支股票作为样本股。（指数基日是2004.12，也就是收集数据从2004.12起）</p>
+<p><strong>五个条件：</strong></p>
+<ol>
+<li>股市交易时间超过一个季度</li>
+<li>非ST、*ST股票，非暂停上市股票</li>
+<li>公司经营状况良好，最近一年无重大违法违规事件、财务报告无重大问题;股票价格无明</li>
+<li>显的异常波动或市场操纵，剔除其他经专家认定不能进入指数的股</li>
+<li>选样标准为选取规模大、流动性好的股票作为样本股。</li>
+</ol>
+<p><strong>300价值指数</strong>：2004年12月成立，由中证指数有限公司发布，以沪深300指数样本股中价值因子评分最高的100只股票为成分股。300价值指数可以理解成沪深300的低估值增强策略指数。</p>
+<p><strong>二个条件：</strong></p>
+<ol>
+<li>从沪深300中去选100支价值成份最高的公司。</li>
+<li>价值因子包含四个变量：股息收益率（D/P），每股净资产与价格比率（B/P），每股净现金流与价格比率（CF/P）、每股收益与价格比率（E/P）。</li>
+</ol>
+<a id="more"></a>
+
+<h1 id="比较"><a href="#比较" class="headerlink" title="比较"></a>比较</h1><h2 id="沪深300-VS-300价值"><a href="#沪深300-VS-300价值" class="headerlink" title="沪深300 VS 300价值"></a>沪深300 VS 300价值</h2><p>是否应该把沪深300指数换成300价值指数，核心逻辑是看涨幅。</p>
+<p><img src="https://gongzhao-1256784911.cos.ap-shanghai.myqcloud.com/hexo/images/financial/financial-19.webp" alt="image"></p>
+<p>2010年至2019年8月2日，300价值指数上涨28.27%，同期沪深300指数上涨4.8%，300价值指数战胜沪深300指数。</p>
+<p>在大部分时候，300价值的表现都是优于300价值指数的，跌得比沪深300少，涨的比沪深300多。</p>
+<p>但是在2010年以及2019年，沪深300的表现又比300价值强。</p>
+<p><strong>结论</strong>：</p>
+<p>10年中有8年跑赢，仅2年跑输。理论上讲，<strong>如果你买的是完全跟踪指数的被动型指数基金，那就有必要换成300价值指数。</strong>但是转换也并不是毫无风险的，比如2010年和2019年，300价值表现就比沪深300差。</p>
+<h2 id="增强型沪深300-VS-300价值"><a href="#增强型沪深300-VS-300价值" class="headerlink" title="增强型沪深300 VS 300价值"></a>增强型沪深300 VS 300价值</h2><p>买跟踪300价值的被动指数基金，就相当于买了自带增强策略的沪深300增强指数基金。</p>
+<p>那么有必要从现有的沪深300增强指数基金，换成跟踪300价值的指数基金吗？</p>
+<p>以2只沪深300指数基金163407兴全沪深300，以及100038富国沪深300与老牌300价值指数基金519671银河300价值指数为例，收益对比如下：</p>
+<p><img src="https://gongzhao-1256784911.cos.ap-shanghai.myqcloud.com/hexo/images/financial/financial-20.webp" alt="image"></p>
+<p>从2011年至今，兴全沪深300与富国沪深300的收益率都在103%左右，高于银河沪深300价值。</p>
+<p>从2010年至今，富国沪深300收益率84.96%，也高于银河沪深300指数。</p>
+<p>从各个单独的年份上看，各有优略，增强型指数基金收益率并不比300价值指数基金差，互有高低。</p>
+<p>这很容易理解，300价值指数是自带增强策略的指数基金。其他的指数增强基金也有自己的增强策略。相比锁定低估值增强策略的300价值指数，普通的沪深300增强指数基金增强策略更灵活，可以根据市场风格进行调整。</p>
+<p><img src="https://gongzhao-1256784911.cos.ap-shanghai.myqcloud.com/hexo/images/financial/financial-21.webp" alt="image"></p>
+<p>优秀的沪深300增强指数基金可以做到<strong>每一年</strong>都跑赢沪深300指数。</p>
+<p>而不像300价值一样，有时跑赢，有时跑输。</p>
+<p><strong>结论：</strong></p>
+<p>300价值指数 = 沪深300的增强指数</p>
+<p>跟踪300价值的指数基金 = 沪深300的增强指数基金</p>
+<h2 id="结论"><a href="#结论" class="headerlink" title="结论"></a>结论</h2><ol>
+<li>从游戏规则上看，300价值指数估值必定是低于沪深300指数的</li>
+<li>从涨幅上看，300价值指数大部分时候表现都优于沪深300指数</li>
+<li>个别年份（2010/2019年），300价值指数表现也会比沪深300差</li>
+<li>如果你买的是纯被动指数型基金，可以考虑换成300价值指数，但应该知道第3条风险。</li>
+<li>如果投资的已经是沪深300增强指数基金，就没有必要换成300价值指数基金了。</li>
+<li>300价值只是沪深300增强策略中的一种而已。</li>
+</ol>
+<h1 id="选择"><a href="#选择" class="headerlink" title="选择"></a>选择</h1><h2 id="沪深300"><a href="#沪深300" class="headerlink" title="沪深300"></a>沪深300</h2><p><img src="https://gongzhao-1256784911.cos.ap-shanghai.myqcloud.com/hexo/images/financial/financial-07.jpg" alt="image"></p>
+<p>按照成立时间，资产规模，涨跌幅来对基金进行排序，筛选出较好的基金</p>
+<p>知乎、雪球、且慢、天天基金等等搜索</p>
+<table>
+<thead>
+<tr>
+<th>序号</th>
+<th>基金名称</th>
+<th>代码</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>1</td>
+<td>申万菱信沪深300价值指数</td>
+<td>310398</td>
+</tr>
+<tr>
+<td>2</td>
+<td>兴全沪深300指数增强</td>
+<td>163407</td>
+</tr>
+<tr>
+<td>3</td>
+<td>景顺长城沪深300指数增强</td>
+<td>000311</td>
+</tr>
+<tr>
+<td>4</td>
+<td>富国沪深300指数增强</td>
+<td>100038</td>
+</tr>
+<tr>
+<td>5</td>
+<td>易方达沪深300量化增强</td>
+<td>110030</td>
+</tr>
+<tr>
+<td>6</td>
+<td>易方达沪深300ETF联接</td>
+<td>110020</td>
+</tr>
+<tr>
+<td>8</td>
+<td>博时沪深300指数A</td>
+<td>050002</td>
+</tr>
+<tr>
+<td>9</td>
+<td>华夏沪深300ETF联接</td>
+<td>000051</td>
+</tr>
+</tbody></table>
+<p>按照规模、跟踪误差、收益率、基金经理、费率等列出excel表格</p>
+<p><img src="https://gongzhao-1256784911.cos.ap-shanghai.myqcloud.com/hexo/images/financial/financial-08.jpg" alt="image"></p>
+<p><strong>最终选择</strong></p>
+<ul>
+<li>兴全沪深300指数增强（163407）</li>
+<li>景顺长城沪深300指数增强（000311）</li>
+</ul>
+<h2 id="300价值"><a href="#300价值" class="headerlink" title="300价值"></a>300价值</h2><p><img src="https://gongzhao-1256784911.cos.ap-shanghai.myqcloud.com/hexo/images/financial/financial-22.jpg" alt="image"></p>
+<p><img src="https://gongzhao-1256784911.cos.ap-shanghai.myqcloud.com/hexo/images/financial/financial-23.jpg" alt="image"></p>
+<p>根据如下几点进行判断</p>
+<ol>
+<li>基金收益</li>
+<li>基金规模</li>
+<li>基金成立时间</li>
+<li>基金经理</li>
+<li>基金评级</li>
+</ol>
+<p><strong>最终选择</strong></p>
+<p><strong>银河沪深300指数基金（519671）</strong></p>
+<h1 id="什么时候买"><a href="#什么时候买" class="headerlink" title="什么时候买"></a>什么时候买</h1><p>大家习惯用市盈率和市净率来进行估值，因为沪深300指数的成分股中金融股权重很高，我认为用市净率进行估值相对合理。</p>
+<p>现在余额宝的年化收益率大约是4%，如果沪深300指数未来可以保持10%的净资产收益率，并考虑20%风险溢价的话，那么，在2倍市净率以下投资沪深300指数基金，要比投资余额宝划算得多。</p>
+<p>我们再看下相对估值。自沪深300指数发布以来，到2018-04-13收盘，沪深300指数每天市净率的平均值是2.31；中位数是1.85，这个数值在2005年、2006年、2011年、2012年和2015年初多次出现；最小值为1.17，这个数值在2014年5月多次出现；最大值为7.46，出现在2007年10月16日，具体可以看下面图表。</p>
+<p><img src="https://gongzhao-1256784911.cos.ap-shanghai.myqcloud.com/hexo/images/financial/financial-51.webp" alt="image"></p>
+<p><img src="https://gongzhao-1256784911.cos.ap-shanghai.myqcloud.com/hexo/images/financial/financial-52.webp" alt="image"></p>
+<p><strong>怎么买</strong></p>
+<p>如果波动承受能力弱，并且认为沪深300指数会低估很久，可以选择定投，具体方法有很多，比如说定期不定额，每个月都会投资，但数量会有不同，低估的时候多一些，估值贵了就少一些或干脆不投；也可以根据估值的变化，制定定投计划，比如说，在沪深300 1.8倍市净率以下可买入40%的仓位，1.5倍市净率时可加仓到60%，1.2倍市净率以下时，可满仓，当然我这只是举一个例子，具体还是大家自己来决定。</p>
+<p>需要说明的是，定投可以降低账户的波动，但在单边上涨中也会降低整体的收益率，在低估时间较短时，也会因为没完成建仓，而充满遗憾。没办法，盈亏同源，甘蔗没有两头甜，这是必然的事情。</p>
+<p>如果波动承受能力强，可以一次性建仓，但要承受巨大波动，一次性买入之前，一定要衡量好自己的波动承受能力，切实考虑好自己的现金流、负债等情况。</p>
+<p>市场是有效的，好机会总是稀缺的，指数基金出现极佳买入机会的时间窗口，是非常短暂的，一旦错过，留给自己的就只剩下悔恨，因此我个人倾向于战略底仓（一次性建立底仓，比如说计划仓位的50%）与日常现金流定投（用工资等收入定期加仓）相结合的投资方法。</p>
+<p>跟踪沪深300的指数基金有很多，场内场外都有，如果定投的话，建议大家选场外自动扣款的那种，因为这样可以克服自己人性的弱点，不受股市短期涨跌的影响，能真正坚持下来，对上班族来说，也更省心。</p>
+<p>场内成交量最大的应该是300ETF(SH510300)，场外的就更多了。</p>
+
+      
+    </div>
+    
+    
+    
+	
+	<div>
+	  
+		<div>
+    
+        <div style="text-align:center;color: #ccc;font-size:14px;">--------------------本文结束，感谢您的阅读--------------------</div>
+    
+</div>
+	  
+	</div>
+	
+	<div>
+      
+        
+      
+	</div>
+	
+
+
+    
+
+    
+      <div>
+        <div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center;">
+  <div></div>
+  <button id="rewardButton" disable="enable" onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}">
+    <span>Donate</span>
+  </button>
+  <div id="QR" style="display: none;">
+
+    
+      <div id="wechat" style="display: inline-block">
+        <img id="wechat_qr" src="/images/wechat.jpg" alt="弓昭 WeChat Pay">
+        <p>WeChat Pay</p>
+      </div>
+    
+
+    
+      <div id="alipay" style="display: inline-block">
+        <img id="alipay_qr" src="/images/ali.jpg" alt="弓昭 Alipay">
+        <p>Alipay</p>
+      </div>
+    
+
+    
+
+  </div>
+</div>
+
+      </div>
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/基金/" rel="tag"><i class="fa fa-tag"></i>基金</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/基金定投之红利指数/" rel="next" title="基金定投之红利指数">
+                <i class="fa fa-chevron-left"></i> 基金定投之红利指数
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/基金定投之基本面指数/" rel="prev" title="基金定投之基本面指数">
+                基金定投之基本面指数 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div id="lv-container" data-id="city" data-uid="MTAyMC80MTcyNy8xODI3Mw=="></div>
+    
+  </div>
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image" src="/uploads/panda.jpg" alt="弓昭">
+          <p class="site-author-name" itemprop="name">弓昭</p>
+           
+              <p class="site-description motion-element" itemprop="description">弓昭的个人主页，主要涉及网络、运维、前端、Python等等知识</p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives/">
+                <span class="site-state-item-count">83</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">25</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">72</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+          <div class="feed-link motion-element">
+            <a href="/atom.xml" rel="alternate">
+              <i class="fa fa-rss"></i>
+              RSS
+            </a>
+          </div>
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/gongzhao1" target="_blank" title="GitHub">
+                  
+                    <i class="fa fa-fw fa-github"></i>
+                  
+                    
+                      GitHub
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://blog.csdn.net/zhao12795969" target="_blank" title="csdn">
+                  
+                    <i class="fa fa-fw fa-crosshairs"></i>
+                  
+                    
+                      csdn
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://www.jianshu.com/u/1dbca13c6043" target="_blank" title="简书">
+                  
+                    <i class="fa fa-fw fa-heartbeat"></i>
+                  
+                    
+                      简书
+                    
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+          <div class="links-of-blogroll motion-element links-of-blogroll-inline">
+            <div class="links-of-blogroll-title">
+              <i class="fa  fa-fw fa-globe"></i>
+              Links
+            </div>
+            <ul class="links-of-blogroll-list">
+              
+                <li class="links-of-blogroll-item">
+                  <a href="http://ccieh3c.com/" title="网络之路" target="_blank">网络之路</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="http://jm.taobao.org/" title="阿里云中间件" target="_blank">阿里云中间件</a>
+                </li>
+              
+            </ul>
+          </div>
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#基本概念"><span class="nav-number">1.</span> <span class="nav-text">基本概念</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#比较"><span class="nav-number">2.</span> <span class="nav-text">比较</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#沪深300-VS-300价值"><span class="nav-number">2.1.</span> <span class="nav-text">沪深300 VS 300价值</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#增强型沪深300-VS-300价值"><span class="nav-number">2.2.</span> <span class="nav-text">增强型沪深300 VS 300价值</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#结论"><span class="nav-number">2.3.</span> <span class="nav-text">结论</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#选择"><span class="nav-number">3.</span> <span class="nav-text">选择</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#沪深300"><span class="nav-number">3.1.</span> <span class="nav-text">沪深300</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#300价值"><span class="nav-number">3.2.</span> <span class="nav-text">300价值</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#什么时候买"><span class="nav-number">4.</span> <span class="nav-text">什么时候买</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+<div class="copyright">
+  
+  &copy;  2018 - 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">弓昭</span>
+</div>
+
+
+<div class="powered-by">
+	<i class="fa fa-user-md"></i><span id="busuanzi_container_site_uv">
+	  本站访客数:<span id="busuanzi_value_site_uv"></span>
+	</span>
+</div>
+
+
+<div class="theme-info">
+
+  <span class="post-count">博客全站共253.1k字</span>
+</div>
+
+
+
+        
+<div class="busuanzi-count">
+  <script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+
+  
+</div>
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.2"></script>
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.2"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+    <script type="text/javascript">
+      (function(d, s) {
+        var j, e = d.getElementsByTagName(s)[0];
+        if (typeof LivereTower === 'function') { return; }
+        j = d.createElement(s);
+        j.src = 'https://cdn-city.livere.com/js/embed.dist.js';
+        j.async = true;
+        e.parentNode.insertBefore(j, e);
+      })(document, 'script');
+    </script>
+  
+
+
+
+
+
+
+  
+
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url);
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

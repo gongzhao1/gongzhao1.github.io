@@ -1,0 +1,1318 @@
+<!DOCTYPE html>
+
+
+
+
+<html class="theme-next muse" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.2" rel="stylesheet" type="text/css">
+
+
+  <meta name="keywords" content="python,">
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="GZ" type="application/atom+xml">
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.2">
+
+
+
+
+
+
+<meta name="description" content="[TOC] 简介subprocess最早在2.4版本引入。用来生成子进程，并可以通过管道连接他们的输入/输出/错误，以及获得他们的返回值。 subprocess用来替换多个旧模块和函数：  os.system os.spawn* os.popen* popen2.* commands.*  运行python的时候，我们都是在创建并运行一个进程，linux中一个进程可以fork一个子进程，并让这个子">
+<meta name="keywords" content="python">
+<meta property="og:type" content="article">
+<meta property="og:title" content="python模块之subprocess">
+<meta property="og:url" content="https://gongzhao1.coding.me/python模块之subprocess/index.html">
+<meta property="og:site_name" content="GZ">
+<meta property="og:description" content="[TOC] 简介subprocess最早在2.4版本引入。用来生成子进程，并可以通过管道连接他们的输入/输出/错误，以及获得他们的返回值。 subprocess用来替换多个旧模块和函数：  os.system os.spawn* os.popen* popen2.* commands.*  运行python的时候，我们都是在创建并运行一个进程，linux中一个进程可以fork一个子进程，并让这个子">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2020-04-08T14:20:25.872Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="python模块之subprocess">
+<meta name="twitter:description" content="[TOC] 简介subprocess最早在2.4版本引入。用来生成子进程，并可以通过管道连接他们的输入/输出/错误，以及获得他们的返回值。 subprocess用来替换多个旧模块和函数：  os.system os.spawn* os.popen* popen2.* commands.*  运行python的时候，我们都是在创建并运行一个进程，linux中一个进程可以fork一个子进程，并让这个子">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: false,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://gongzhao1.coding.me/python模块之subprocess/">
+
+
+
+
+
+  <title>python模块之subprocess | GZ</title>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">GZ</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">痛苦是财富，这话是扯淡。少年，痛苦就是痛苦，对痛苦的思考才是财富</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br>
+            
+            关于
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br>
+            
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off" placeholder="搜索..." spellcheck="false" type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://gongzhao1.coding.me/python模块之subprocess/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="弓昭">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/uploads/panda.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="GZ">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">python模块之subprocess</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-03-15T11:04:49+08:00">
+                2020-03-15
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/python/" itemprop="url" rel="index">
+                    <span itemprop="name">python</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+            <span class="post-meta-divider">|</span>
+            <span class="page-pv"><i class="fa fa-file-o"></i>
+            <span class="busuanzi-value" id="busuanzi_value_page_pv"></span>次阅读
+            </span>
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>[TOC]</p>
+<h1 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h1><p>subprocess最早在2.4版本引入。用来生成子进程，并可以通过管道连接他们的输入/输出/错误，以及获得他们的返回值。</p>
+<p>subprocess用来替换多个旧模块和函数：</p>
+<ul>
+<li>os.system</li>
+<li>os.spawn*</li>
+<li>os.popen*</li>
+<li>popen2.*</li>
+<li>commands.*</li>
+</ul>
+<p>运行python的时候，我们都是在创建并运行一个进程，linux中一个进程可以fork一个子进程，并让这个子进程exec另外一个程序。在python中，我们通过标准库中的subprocess包来fork一个子进程，并且运行一个外部的程序。subprocess包中定义有数个创建子进程的函数，这些函数分别以不同的方式创建子进程，所欲我们可以根据需要来从中选取一个使用。另外subprocess还提供了一些管理标准流(standard stream)和管道(pipe)的工具，从而在进程间使用文本通信。</p>
+<a id="more"></a>
+
+<h1 id="subprocess模块"><a href="#subprocess模块" class="headerlink" title="subprocess模块"></a>subprocess模块</h1><h2 id="常用函数"><a href="#常用函数" class="headerlink" title="常用函数"></a>常用函数</h2><table>
+<thead>
+<tr>
+<th>函数</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>subprocess.run()</td>
+<td>Python 3.5中新增的函数。执行指定的命令，等待命令执行完成后返回一个包含执行结果的CompletedProcess类的实例。</td>
+</tr>
+<tr>
+<td>subprocess.call()</td>
+<td>执行指定的命令，返回命令执行状态，其功能类似于os.system(cmd)。</td>
+</tr>
+<tr>
+<td>subprocess.check_call()</td>
+<td>Python 2.5中新增的函数。 执行指定的命令，如果执行成功则返回状态码，否则抛出异常。其功能等价于subprocess.run(…, check=True)。</td>
+</tr>
+<tr>
+<td>subprocess.check_output()</td>
+<td>Python 2.7中新增的的函数。执行指定的命令，如果执行状态码为0则返回命令执行结果，否则抛出异常。</td>
+</tr>
+<tr>
+<td>subprocess.getoutput(cmd)</td>
+<td>接收字符串格式的命令，执行命令并返回执行结果，其功能类似于os.popen(cmd).read()和commands.getoutput(cmd)。</td>
+</tr>
+<tr>
+<td>subprocess.getstatusoutput(cmd)</td>
+<td>执行cmd命令，返回一个元组(命令执行状态, 命令执行结果输出)，其功能类似于commands.getstatusoutput()。</td>
+</tr>
+</tbody></table>
+<blockquote>
+<p><strong>说明：</strong></p>
+<ol>
+<li>在Python 3.5之后的版本中，官方文档中提倡通过subprocess.run()函数替代其他函数来使用subproccess模块的功能；</li>
+<li>在Python 3.5之前的版本中，我们可以通过subprocess.call()，subprocess.getoutput()等上面列出的其他函数来使用subprocess模块的功能；</li>
+<li>subprocess.run()、subprocess.call()、subprocess.check_call()和subprocess.check_output()都是通过对subprocess.Popen的封装来实现的高级函数，因此如果我们需要更复杂功能时，可以通过subprocess.Popen来完成。</li>
+<li>subprocess.getoutput()和subprocess.getstatusoutput()函数是来自Python 2.x的commands模块的两个遗留函数。它们隐式的调用系统shell，并且不保证其他函数所具有的安全性和异常处理的一致性。另外，它们从Python 3.3.4开始才支持Windows平台。</li>
+</ol>
+</blockquote>
+<h2 id="subprocess-run"><a href="#subprocess-run" class="headerlink" title="subprocess.run()"></a><strong>subprocess.run()</strong></h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">&gt;&gt;&gt; import subprocess</span><br><span class="line"><span class="comment"># python 解析则传入命令的每个参数的列表</span></span><br><span class="line">&gt;&gt;&gt; subprocess.run([<span class="string">"df"</span>,<span class="string">"-h"</span>])</span><br><span class="line">Filesystem      Size Used Avail Use% Mounted on</span><br><span class="line">/dev/mapper/VolGroup-LogVol00</span><br><span class="line">           289G  70G 204G 26% /</span><br><span class="line">tmpfs         64G   0  64G  0% /dev/shm</span><br><span class="line">/dev/sda1       283M  27M 241M 11% /boot</span><br><span class="line">CompletedProcess(args=[<span class="string">'df'</span>, <span class="string">'-h'</span>], returncode=0)</span><br><span class="line"><span class="comment"># 需要交给Linux shell自己解析，则:传入命令字符串，shell=True</span></span><br><span class="line">&gt;&gt;&gt; subprocess.run(<span class="string">"df -h|grep /dev/sda1"</span>,shell=True)</span><br><span class="line">/dev/sda1       283M  27M 241M 11% /boot</span><br><span class="line">CompletedProcess(args=<span class="string">'df -h|grep /dev/sda1'</span>, returncode=0)</span><br></pre></td></tr></table></figure>
+
+<h2 id="subprocess-call"><a href="#subprocess-call" class="headerlink" title="subprocess.call()"></a><strong>subprocess.call()</strong></h2><p>执行命令，返回命令的结果和执行状态，0或者非0</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">&gt;&gt;&gt; res = subprocess.call([<span class="string">"ls"</span>,<span class="string">"-l"</span>])</span><br><span class="line">总用量 28</span><br><span class="line">-rw-r--r-- 1 root root   0 6月 16 10:28 1</span><br><span class="line">drwxr-xr-x 2 root root 4096 6月 22 17:48 _1748</span><br><span class="line">-rw-------. 1 root root 1264 4月 28 20:51 anaconda-ks.cfg</span><br><span class="line">drwxr-xr-x 2 root root 4096 5月 25 14:45 monitor</span><br><span class="line">-rw-r--r-- 1 root root 13160 5月  9 13:36 npm-debug.log</span><br><span class="line"><span class="comment"># 命令执行状态</span></span><br><span class="line">&gt;&gt;&gt; res</span><br><span class="line">0</span><br></pre></td></tr></table></figure>
+
+<h2 id="subprocess-check-call"><a href="#subprocess-check-call" class="headerlink" title="subprocess.check_call()"></a><strong>subprocess.check_call()</strong></h2><p>执行命令，返回结果和状态，正常为0 ，执行错误则抛出异常</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">&gt;&gt;&gt; subprocess.check_call([<span class="string">"ls"</span>,<span class="string">"-l"</span>])</span><br><span class="line">总用量 28</span><br><span class="line">-rw-r--r-- 1 root root   0 6月 16 10:28 1</span><br><span class="line">drwxr-xr-x 2 root root 4096 6月 22 17:48 _1748</span><br><span class="line">-rw-------. 1 root root 1264 4月 28 20:51 anaconda-ks.cfg</span><br><span class="line">drwxr-xr-x 2 root root 4096 5月 25 14:45 monitor</span><br><span class="line">-rw-r--r-- 1 root root 13160 5月  9 13:36 npm-debug.log</span><br><span class="line">0</span><br><span class="line">&gt;&gt;&gt; subprocess.check_call([<span class="string">"lm"</span>,<span class="string">"-l"</span>])</span><br><span class="line">Traceback (most recent call last):</span><br><span class="line"> File <span class="string">"&lt;stdin&gt;"</span>, line 1, <span class="keyword">in</span> &lt;module&gt;</span><br><span class="line"> File <span class="string">"/usr/lib64/python2.7/subprocess.py"</span>, line 537, <span class="keyword">in</span> check_call</span><br><span class="line">  retcode = call(*popenargs, **kwargs)</span><br><span class="line"> File <span class="string">"/usr/lib64/python2.7/subprocess.py"</span>, line 524, <span class="keyword">in</span> call</span><br><span class="line">  <span class="built_in">return</span> Popen(*popenargs, **kwargs).<span class="built_in">wait</span>()</span><br><span class="line"> File <span class="string">"/usr/lib64/python2.7/subprocess.py"</span>, line 711, <span class="keyword">in</span> __init__</span><br><span class="line">  errread, errwrite)</span><br><span class="line"> File <span class="string">"/usr/lib64/python2.7/subprocess.py"</span>, line 1327, <span class="keyword">in</span> _execute_child</span><br><span class="line">  raise child_exception</span><br><span class="line">OSError: [Errno 2] No such file or directory</span><br></pre></td></tr></table></figure>
+
+<h2 id="subprocess-getoutput"><a href="#subprocess-getoutput" class="headerlink" title="subprocess.getoutput()"></a><strong>subprocess.getoutput()</strong></h2><p>接受字符串形式的命令，放回执行结果</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">&gt;&gt;&gt; subprocess.getoutput(<span class="string">'pwd'</span>)</span><br><span class="line"><span class="string">'/root'</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="subprocess-getstatusoutput"><a href="#subprocess-getstatusoutput" class="headerlink" title="subprocess.getstatusoutput()"></a><strong>subprocess.getstatusoutput()</strong></h2><p>接受字符串形式的命令，返回 一个元组形式的结果，第一个元素是命令执行状态，第二个为执行结果</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#执行正确</span></span><br><span class="line">&gt;&gt;&gt; subprocess.getstatusoutput(<span class="string">'pwd'</span>)</span><br><span class="line">(0, <span class="string">'/root'</span>)</span><br><span class="line"><span class="comment">#执行错误</span></span><br><span class="line">&gt;&gt;&gt; subprocess.getstatusoutput(<span class="string">'pd'</span>)</span><br><span class="line">(127, <span class="string">'/bin/sh: pd: command not found'</span>)</span><br></pre></td></tr></table></figure>
+
+<h2 id="subprocess-check-output"><a href="#subprocess-check-output" class="headerlink" title="subprocess.check_output()"></a><strong>subprocess.check_output()</strong></h2><p>如果当返回值为0时，直接返回输出结果，如果返回值不为0，直接抛出异常</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">&gt;&gt;&gt; res = subprocess.check_output(<span class="string">"pwd"</span>)</span><br><span class="line">&gt;&gt;&gt; res</span><br><span class="line">b<span class="string">'/root\n'</span> <span class="comment"># 结果以字节形式返回</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="subprocess-Popen"><a href="#subprocess-Popen" class="headerlink" title="subprocess.Popen()"></a><strong>subprocess.Popen()</strong></h2><p>其实以上subprocess使用的方法，都是对subprocess.Popen的封装，下面我们就来看看这个Popen方法。</p>
+<h3 id="subprocess-Popen的构造函数"><a href="#subprocess-Popen的构造函数" class="headerlink" title="subprocess.Popen的构造函数"></a>subprocess.Popen的构造函数</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">subprocess</span>.<span class="title">Popen</span><span class="params">(args, bufsize=<span class="number">-1</span>, executable=None, stdin=None, stdout=None, stderr=None, </span></span></span><br><span class="line"><span class="class"><span class="params">    preexec_fn=None, close_fds=True, shell=False, cwd=None, env=None, universal_newlines=False,</span></span></span><br><span class="line"><span class="class"><span class="params">    startup_info=None, creationflags=<span class="number">0</span>, restore_signals=True, start_new_session=False, pass_fds=<span class="params">()</span>)</span></span></span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>参数说明：</p>
+<ul>
+<li><strong>args：</strong> 要执行的shell命令，可以是字符串，也可以是命令各个参数组成的序列。当该参数的值是一个字符串时，该命令的解释过程是与平台相关的，因此通常建议将args参数作为一个序列传递。</li>
+<li><strong>bufsize：</strong> 指定缓存策略，0表示不缓冲，1表示行缓冲，其他大于1的数字表示缓冲区大小，负数 表示使用系统默认缓冲策略。</li>
+<li><strong>stdin, stdout, stderr：</strong> 分别表示程序标准输入、输出、错误句柄。</li>
+<li><strong>preexec_fn：</strong> 用于指定一个将在子进程运行之前被调用的可执行对象，只在Unix平台下有效。</li>
+<li><strong>close_fds：</strong> 如果该参数的值为True，则除了0,1和2之外的所有文件描述符都将会在子进程执行之前被关闭。</li>
+<li><strong>shell：</strong> 该参数用于标识是否使用shell作为要执行的程序，如果shell值为True，则建议将args参数作为一个字符串传递而不要作为一个序列传递。</li>
+<li><strong>cwd：</strong> 如果该参数值不是None，则该函数将会在执行这个子进程之前改变当前工作目录。</li>
+<li><strong>env：</strong> 用于指定子进程的环境变量，如果env=None，那么子进程的环境变量将从父进程中继承。如果env!=None，它的值必须是一个映射对象。</li>
+<li><strong>universal_newlines：</strong> 如果该参数值为True，则该文件对象的stdin，stdout和stderr将会作为文本流被打开，否则他们将会被作为二进制流被打开。</li>
+<li><strong>startupinfo和creationflags：</strong> 这两个参数只在Windows下有效，它们将被传递给底层的CreateProcess()函数，用于设置子进程的一些属性，如主窗口的外观，进程优先级等。</li>
+</ul>
+</blockquote>
+<h3 id="stdout"><a href="#stdout" class="headerlink" title="stdout"></a>stdout</h3><p>标准输出</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">&gt;&gt;&gt; res = subprocess.Popen(<span class="string">"ls /tmp/yum.log"</span>, shell=True, stdout=subprocess.PIPE) <span class="comment"># 使用管道</span></span><br><span class="line">&gt;&gt;&gt; res.stdout.read()  <span class="comment"># 标准输出</span></span><br><span class="line">b<span class="string">'/tmp/yum.log\n'</span></span><br><span class="line">res.stdout.close()  <span class="comment"># 关闭</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="stderr"><a href="#stderr" class="headerlink" title="stderr"></a>stderr</h3><p>标准错误</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">&gt;&gt;&gt; import subprocess</span><br><span class="line">&gt;&gt;&gt; res = subprocess.Popen(<span class="string">"lm -l"</span>,shell=True,stdout=subprocess.PIPE,stderr=subprocess.PIPE)</span><br><span class="line"><span class="comment"># 标准输出为空</span></span><br><span class="line">&gt;&gt;&gt; res.stdout.read()</span><br><span class="line">b<span class="string">''</span></span><br><span class="line"><span class="comment">#标准错误中有错误信息</span></span><br><span class="line">&gt;&gt;&gt; res.stderr.read()</span><br><span class="line">b<span class="string">'/bin/sh: lm: command not found\n'</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="poll"><a href="#poll" class="headerlink" title="poll()"></a>poll()</h3><p>定时检查命令有没有执行完毕，执行完毕后返回执行结果的状态，没有执行完毕返回None</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">&gt;&gt;&gt; res = subprocess.Popen(<span class="string">"sleep 10;echo 'hello'"</span>,shell=True,stdout=subprocess.PIPE,stderr=subprocess.PIPE)</span><br><span class="line">&gt;&gt;&gt; <span class="built_in">print</span>(res.poll())</span><br><span class="line">None</span><br><span class="line">&gt;&gt;&gt; <span class="built_in">print</span>(res.poll())</span><br><span class="line">None</span><br><span class="line">&gt;&gt;&gt; <span class="built_in">print</span>(res.poll())</span><br><span class="line">0</span><br></pre></td></tr></table></figure>
+
+<h3 id="wait"><a href="#wait" class="headerlink" title="wait()"></a>wait()</h3><p>等待命令执行完成，并且返回结果状态</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">&gt;&gt;&gt; obj = subprocess.Popen(<span class="string">"sleep 10;echo 'hello'"</span>,shell=True,stdout=subprocess.PIPE,stderr=subprocess.PIPE)</span><br><span class="line">&gt;&gt;&gt; obj.wait()</span><br><span class="line"><span class="comment"># 中间会一直等待</span></span><br><span class="line">0</span><br></pre></td></tr></table></figure>
+
+<h3 id="terminate"><a href="#terminate" class="headerlink" title="terminate()"></a>terminate()</h3><p>结束进程</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">import subprocess</span><br><span class="line">&gt;&gt;&gt; res = subprocess.Popen(<span class="string">"sleep 20;echo 'hello'"</span>,shell=True,stdout=subprocess.PIPE,stderr=subprocess.PIPE)</span><br><span class="line">&gt;&gt;&gt; res.terminate() <span class="comment"># 结束进程</span></span><br><span class="line">&gt;&gt;&gt; res.stdout.read()</span><br><span class="line">b<span class="string">''</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="pid"><a href="#pid" class="headerlink" title="pid"></a>pid</h3><p>获取当前执行子shell的程序的进程号</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">import subprocess</span><br><span class="line">&gt;&gt;&gt; res = subprocess.Popen(<span class="string">"sleep 5;echo 'hello'"</span>,shell=True,stdout=subprocess.PIPE,stderr=subprocess.PIPE)</span><br><span class="line">&gt;&gt;&gt; res.pid <span class="comment"># 获取这个linux shell 的 进程号</span></span><br><span class="line">2778</span><br></pre></td></tr></table></figure>
+
+
+      
+    </div>
+    
+    
+    
+	
+	<div>
+	  
+		<div>
+    
+        <div style="text-align:center;color: #ccc;font-size:14px;">--------------------本文结束，感谢您的阅读--------------------</div>
+    
+</div>
+	  
+	</div>
+	
+	<div>
+      
+        
+      
+	</div>
+	
+
+
+    
+
+    
+      <div>
+        <div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center;">
+  <div></div>
+  <button id="rewardButton" disable="enable" onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}">
+    <span>Donate</span>
+  </button>
+  <div id="QR" style="display: none;">
+
+    
+      <div id="wechat" style="display: inline-block">
+        <img id="wechat_qr" src="/images/wechat.jpg" alt="弓昭 WeChat Pay">
+        <p>WeChat Pay</p>
+      </div>
+    
+
+    
+      <div id="alipay" style="display: inline-block">
+        <img id="alipay_qr" src="/images/ali.jpg" alt="弓昭 Alipay">
+        <p>Alipay</p>
+      </div>
+    
+
+    
+
+  </div>
+</div>
+
+      </div>
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/python/" rel="tag"><i class="fa fa-tag"></i>python</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/shadowsocks服务端搭建/" rel="next" title="shadowsocks服务端搭建">
+                <i class="fa fa-chevron-left"></i> shadowsocks服务端搭建
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/python之小技巧/" rel="prev" title="python之小技巧">
+                python之小技巧 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div id="lv-container" data-id="city" data-uid="MTAyMC80MTcyNy8xODI3Mw=="></div>
+    
+  </div>
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image" src="/uploads/panda.jpg" alt="弓昭">
+          <p class="site-author-name" itemprop="name">弓昭</p>
+           
+              <p class="site-description motion-element" itemprop="description">弓昭的个人主页，主要涉及网络、运维、前端、Python等等知识</p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives/">
+                <span class="site-state-item-count">83</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">25</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">72</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+          <div class="feed-link motion-element">
+            <a href="/atom.xml" rel="alternate">
+              <i class="fa fa-rss"></i>
+              RSS
+            </a>
+          </div>
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/gongzhao1" target="_blank" title="GitHub">
+                  
+                    <i class="fa fa-fw fa-github"></i>
+                  
+                    
+                      GitHub
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://blog.csdn.net/zhao12795969" target="_blank" title="csdn">
+                  
+                    <i class="fa fa-fw fa-crosshairs"></i>
+                  
+                    
+                      csdn
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://www.jianshu.com/u/1dbca13c6043" target="_blank" title="简书">
+                  
+                    <i class="fa fa-fw fa-heartbeat"></i>
+                  
+                    
+                      简书
+                    
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+          <div class="links-of-blogroll motion-element links-of-blogroll-inline">
+            <div class="links-of-blogroll-title">
+              <i class="fa  fa-fw fa-globe"></i>
+              Links
+            </div>
+            <ul class="links-of-blogroll-list">
+              
+                <li class="links-of-blogroll-item">
+                  <a href="http://ccieh3c.com/" title="网络之路" target="_blank">网络之路</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="http://jm.taobao.org/" title="阿里云中间件" target="_blank">阿里云中间件</a>
+                </li>
+              
+            </ul>
+          </div>
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#简介"><span class="nav-number">1.</span> <span class="nav-text">简介</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#subprocess模块"><span class="nav-number">2.</span> <span class="nav-text">subprocess模块</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#常用函数"><span class="nav-number">2.1.</span> <span class="nav-text">常用函数</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#subprocess-run"><span class="nav-number">2.2.</span> <span class="nav-text">subprocess.run()</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#subprocess-call"><span class="nav-number">2.3.</span> <span class="nav-text">subprocess.call()</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#subprocess-check-call"><span class="nav-number">2.4.</span> <span class="nav-text">subprocess.check_call()</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#subprocess-getoutput"><span class="nav-number">2.5.</span> <span class="nav-text">subprocess.getoutput()</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#subprocess-getstatusoutput"><span class="nav-number">2.6.</span> <span class="nav-text">subprocess.getstatusoutput()</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#subprocess-check-output"><span class="nav-number">2.7.</span> <span class="nav-text">subprocess.check_output()</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#subprocess-Popen"><span class="nav-number">2.8.</span> <span class="nav-text">subprocess.Popen()</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#subprocess-Popen的构造函数"><span class="nav-number">2.8.1.</span> <span class="nav-text">subprocess.Popen的构造函数</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#stdout"><span class="nav-number">2.8.2.</span> <span class="nav-text">stdout</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#stderr"><span class="nav-number">2.8.3.</span> <span class="nav-text">stderr</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#poll"><span class="nav-number">2.8.4.</span> <span class="nav-text">poll()</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#wait"><span class="nav-number">2.8.5.</span> <span class="nav-text">wait()</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#terminate"><span class="nav-number">2.8.6.</span> <span class="nav-text">terminate()</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#pid"><span class="nav-number">2.8.7.</span> <span class="nav-text">pid</span></a></li></ol></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+<div class="copyright">
+  
+  &copy;  2018 - 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">弓昭</span>
+</div>
+
+
+<div class="powered-by">
+	<i class="fa fa-user-md"></i><span id="busuanzi_container_site_uv">
+	  本站访客数:<span id="busuanzi_value_site_uv"></span>
+	</span>
+</div>
+
+
+<div class="theme-info">
+
+  <span class="post-count">博客全站共253.1k字</span>
+</div>
+
+
+
+        
+<div class="busuanzi-count">
+  <script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+
+  
+</div>
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.2"></script>
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.2"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+    <script type="text/javascript">
+      (function(d, s) {
+        var j, e = d.getElementsByTagName(s)[0];
+        if (typeof LivereTower === 'function') { return; }
+        j = d.createElement(s);
+        j.src = 'https://cdn-city.livere.com/js/embed.dist.js';
+        j.async = true;
+        e.parentNode.insertBefore(j, e);
+      })(document, 'script');
+    </script>
+  
+
+
+
+
+
+
+  
+
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url);
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

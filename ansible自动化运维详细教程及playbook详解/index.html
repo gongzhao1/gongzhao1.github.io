@@ -1,0 +1,1469 @@
+<!DOCTYPE html>
+
+
+
+
+<html class="theme-next muse" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.2" rel="stylesheet" type="text/css">
+
+
+  <meta name="keywords" content="ansible,playbook,自动化,">
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="GZ" type="application/atom+xml">
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.2">
+
+
+
+
+
+
+<meta name="description" content="前言 当下有许多的运维自动化工具( 配置管理 )，例如：Ansible、SaltStack、Puppet、Fabric 等。 Ansible 一种集成 IT 系统的配置管理、应用部署、执行特定任务的开源平台，是 AnsibleWorks 公司名下的项目，该公司由 Cobbler 及 Func 的作者于 2012 年创建成立。 Ansible 基于 Python 语言实现，由 Paramiko 和">
+<meta name="keywords" content="ansible,playbook,自动化">
+<meta property="og:type" content="article">
+<meta property="og:title" content="ansible自动化运维详细教程及playbook详解">
+<meta property="og:url" content="https://gongzhao1.coding.me/ansible自动化运维详细教程及playbook详解/index.html">
+<meta property="og:site_name" content="GZ">
+<meta property="og:description" content="前言 当下有许多的运维自动化工具( 配置管理 )，例如：Ansible、SaltStack、Puppet、Fabric 等。 Ansible 一种集成 IT 系统的配置管理、应用部署、执行特定任务的开源平台，是 AnsibleWorks 公司名下的项目，该公司由 Cobbler 及 Func 的作者于 2012 年创建成立。 Ansible 基于 Python 语言实现，由 Paramiko 和">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2020-04-08T14:20:25.868Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="ansible自动化运维详细教程及playbook详解">
+<meta name="twitter:description" content="前言 当下有许多的运维自动化工具( 配置管理 )，例如：Ansible、SaltStack、Puppet、Fabric 等。 Ansible 一种集成 IT 系统的配置管理、应用部署、执行特定任务的开源平台，是 AnsibleWorks 公司名下的项目，该公司由 Cobbler 及 Func 的作者于 2012 年创建成立。 Ansible 基于 Python 语言实现，由 Paramiko 和">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: false,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://gongzhao1.coding.me/ansible自动化运维详细教程及playbook详解/">
+
+
+
+
+
+  <title>ansible自动化运维详细教程及playbook详解 | GZ</title>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">GZ</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">痛苦是财富，这话是扯淡。少年，痛苦就是痛苦，对痛苦的思考才是财富</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br>
+            
+            关于
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br>
+            
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off" placeholder="搜索..." spellcheck="false" type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://gongzhao1.coding.me/ansible自动化运维详细教程及playbook详解/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="弓昭">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/uploads/panda.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="GZ">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">ansible自动化运维详细教程及playbook详解</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-12-21T20:01:53+08:00">
+                2018-12-21
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/运维自动化/" itemprop="url" rel="index">
+                    <span itemprop="name">运维自动化</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+            <span class="post-meta-divider">|</span>
+            <span class="page-pv"><i class="fa fa-file-o"></i>
+            <span class="busuanzi-value" id="busuanzi_value_page_pv"></span>次阅读
+            </span>
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><blockquote>
+<p>当下有许多的运维自动化工具( 配置管理 )，例如：Ansible、SaltStack、Puppet、Fabric 等。</p>
+<p>Ansible 一种集成 IT 系统的配置管理、应用部署、执行特定任务的开源平台，是 AnsibleWorks 公司名下的项目，该公司由 Cobbler 及 Func 的作者于 2012 年创建成立。</p>
+<p>Ansible 基于 Python 语言实现，由 Paramiko 和 PyYAML 两个关键模块构建。</p>
+</blockquote>
+<a id="more"></a>
+
+<p>Ansible 特点：</p>
+<ul>
+<li>部署简单，只需在主控端部署 Ansible 环境，被控端无需做任何操作。</li>
+<li>默认使用 SSH（Secure Shell）协议对设备进行管理。</li>
+<li>主从集中化管理。</li>
+<li>配置简单、功能强大、扩展性强。</li>
+<li>支持 API 及自定义模块，可通过 Python 轻松扩展。</li>
+<li>通过 Playbooks 来定制强大的配置、状态管理。</li>
+<li>对云计算平台、大数据都有很好的支持。</li>
+<li>提供一个功能强大、操作性强的 Web 管理界面和 REST API 接口 —- AWX 平台。</li>
+</ul>
+<p>Ansible 与 SaltStack：</p>
+<ul>
+<li>最大的区别是 Ansible 无需在被监控主机部署任何客户端代理，默认通过 SSH 通道进行远程命令执行或下发配置。</li>
+<li>相同点是都具备功能强大、灵活的系统管理、状态配置，都使用 YAML 格式来描述配置，两者都提供丰富的模板及 API，对云计算平台、大数据都有很好的支持。</li>
+</ul>
+<h2 id="安装ansible"><a href="#安装ansible" class="headerlink" title="安装ansible"></a>安装ansible</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">yum -y install ansible</span><br></pre></td></tr></table></figure>
+
+<h2 id="配置ansible"><a href="#配置ansible" class="headerlink" title="配置ansible"></a>配置ansible</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">ls /etc/ansible</span><br><span class="line">ansible.cfg hosts roles</span><br><span class="line"></span><br><span class="line"># ansible.cfg 是 Ansible 工具的配置文件；hosts 用来配置被管理的机器；roles 是一个目录，playbook 将使用它</span><br></pre></td></tr></table></figure>
+
+<h3 id="SSH秘钥认证"><a href="#SSH秘钥认证" class="headerlink" title="SSH秘钥认证"></a>SSH秘钥认证</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">ssh-keygen -t rsa</span><br><span class="line">ssh-copy-id root@agent_host_ip</span><br></pre></td></tr></table></figure>
+
+<h3 id="添加被管理主机"><a href="#添加被管理主机" class="headerlink" title="添加被管理主机"></a>添加被管理主机</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">vim /etc/ansible/hosts</span><br><span class="line"></span><br><span class="line">[Client]</span><br><span class="line">angent_host_ip_1</span><br><span class="line">angent_host_ip_2</span><br></pre></td></tr></table></figure>
+
+<h3 id="测试ansible"><a href="#测试ansible" class="headerlink" title="测试ansible"></a>测试ansible</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">shell &gt; ansible Client -m ping     # 操作 Client 组 ( all 为操作 hosts 文件中所有主机 )，-m 指定执行 ping 模块，下面是返回结果</span><br><span class="line">192.168.12.129 | SUCCESS =&gt; &#123;</span><br><span class="line">&quot;changed&quot;: false, </span><br><span class="line">&quot;ping&quot;: &quot;pong&quot;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"># -i          指定 hosts 文件位置</span><br><span class="line"># -u username 指定 SSH 连接的用户名</span><br><span class="line"># -k          指定远程用户密码</span><br><span class="line"># -f          指定并发数</span><br><span class="line"># -s          如需要 root 权限执行时使用 ( 连接用户不是 root 时 )</span><br><span class="line"># -K          -s 时，-K 输入 root 密码</span><br></pre></td></tr></table></figure>
+
+<h2 id="hosts主机文件"><a href="#hosts主机文件" class="headerlink" title="hosts主机文件"></a>hosts主机文件</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br></pre></td><td class="code"><pre><span class="line">shell &gt; vim /etc/ansible/hosts</span><br><span class="line"></span><br><span class="line">www.abc.com     # 定义域名</span><br><span class="line"></span><br><span class="line">192.168.1.100   # 定义 IP</span><br><span class="line"></span><br><span class="line">192.168.1.150:37268   # 指定端口号</span><br><span class="line"></span><br><span class="line">[WebServer]           # 定义分组</span><br><span class="line"></span><br><span class="line">192.168.1.10</span><br><span class="line">192.168.1.20</span><br><span class="line">192.168.1.30</span><br><span class="line"></span><br><span class="line">[DBServer]            # 定义多个分组</span><br><span class="line"></span><br><span class="line">192.168.1.50</span><br><span class="line">192.168.1.60</span><br><span class="line"></span><br><span class="line">Monitor ansible_ssh_port=12378 ansible_ssh_host=192.168.1.200   # 定义别名</span><br><span class="line"></span><br><span class="line"># ansible_ssh_host 连接目标主机的地址</span><br><span class="line"></span><br><span class="line"># ansible_ssh_port 连接目标主机的端口，默认 22 时无需指定</span><br><span class="line"></span><br><span class="line"># ansible_ssh_user 连接目标主机默认用户</span><br><span class="line"></span><br><span class="line"># ansible_ssh_pass 连接目标主机默认用户密码</span><br><span class="line"></span><br><span class="line"># ansible_ssh_connection 目标主机连接类型，可以是 local 、ssh 或 paramiko</span><br><span class="line"></span><br><span class="line"># ansible_ssh_private_key_file 连接目标主机的 ssh 私钥</span><br><span class="line"></span><br><span class="line"># ansible_*_interpreter 指定采用非 Python 的其他脚本语言，如 Ruby 、Perl 或其他类似 ansible_python_interpreter 解释器</span><br><span class="line"></span><br><span class="line">[webservers]         # 主机名支持正则描述</span><br><span class="line"></span><br><span class="line">www[01:50].example.com</span><br><span class="line"></span><br><span class="line">[dbservers]</span><br><span class="line"></span><br><span class="line">db-[a:f].example.com</span><br></pre></td></tr></table></figure>
+
+<h2 id="ansible常用模块"><a href="#ansible常用模块" class="headerlink" title="ansible常用模块"></a>ansible常用模块</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">shell &gt; ansible-doc -l    # 列出 Ansible 支持的模块</span><br><span class="line"></span><br><span class="line">shell &gt; ansible-doc ping  # 查看该模块帮助信息</span><br></pre></td></tr></table></figure>
+
+<h3 id="远程命令模块（command-script-shell）"><a href="#远程命令模块（command-script-shell）" class="headerlink" title="远程命令模块（command / script / shell）"></a>远程命令模块（command / script / shell）</h3><h4 id="command"><a href="#command" class="headerlink" title="command"></a>command</h4><p>command 作为 Ansible 的默认模块，可以运行远程权限范围所有的 shell 命令，不支持管道符。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">shell &gt; ansible Client -m command -a &quot;free -m&quot;               # 查看 Client 分组主机内存使用情况</span><br></pre></td></tr></table></figure>
+
+<h4 id="script"><a href="#script" class="headerlink" title="script"></a>script</h4><p>script 的功能是在远程主机执行主控端存储的 shell 脚本文件，相当于 scp + shell 组合。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">shell &gt; ansible Client -m script -a &quot;/home/test.sh 12 34&quot;    # 远程执行本地脚本</span><br></pre></td></tr></table></figure>
+
+<h4 id="shell"><a href="#shell" class="headerlink" title="shell"></a>shell</h4><p>shell模块基本和command相同，但是shell支持管道符</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">shell &gt; ansible Client -m shell -a &quot;/home/test.sh&quot;           # 执行远程脚本</span><br></pre></td></tr></table></figure>
+
+<h3 id="copy模块"><a href="#copy模块" class="headerlink" title="copy模块"></a>copy模块</h3><p>实现主控端向目标主机拷贝文件，类似于 scp 功能</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">shell &gt; ansible Client -m copy -a &quot;src=/home/test.sh dest=/tmp/ owner=root group=root mode=0755&quot;   # 向 Client 组中主机拷贝 test.sh 到 /tmp 下，属主、组为 root ，权限为 0755</span><br></pre></td></tr></table></figure>
+
+<h3 id="file模块"><a href="#file模块" class="headerlink" title="file模块"></a>file模块</h3><p>file模块可以帮助我们完成一些对文件的基本操作，比如，创建文件或目录、删除文件或目录、修改文件权限等</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line">在test70主机上创建一个名为testfile的文件，如果testfile文件已经存在，则会更新文件的时间戳，与touch命令的作用相同。</span><br><span class="line">ansible test70 -m file -a &quot;path=/testdir/testfile state=touch&quot;</span><br><span class="line"></span><br><span class="line">在test70主机上创建一个名为testdir的目录，如果testdir目录已经存在，则不进行任何操作。</span><br><span class="line">ansible test70 -m file -a &quot;path=/testdir/testdir state=directory&quot;</span><br><span class="line"></span><br><span class="line">在test70上为testfile文件创建软链接文件，软链接名为linkfile，执行下面命令的时候，testfile已经存在。</span><br><span class="line">ansible test70 -m file -a &quot;path=/testdir/linkfile state=link src=/testdir/testfile&quot;</span><br><span class="line"></span><br><span class="line">在test70上为testfile文件创建硬链接文件，硬链接名为hardfile，执行下面命令的时候，testfile已经存在。</span><br><span class="line">ansible test70 -m file -a &quot;path=/testdir/hardfile state=hard src=/testdir/testfile&quot;</span><br><span class="line"></span><br><span class="line">在创建链接文件时，如果源文件不存在，或者链接文件与其他文件同名时，强制覆盖同名文件或者创建链接文件，参考上述force参数的解释。</span><br><span class="line">ansible test70 -m file -a &quot;path=/testdir/linkfile state=link src=sourcefile force=yes&quot;</span><br><span class="line"></span><br><span class="line">删除远程机器上的指定文件或目录</span><br><span class="line">ansible test70 -m file -a &quot;path=/testdir/testdir state=absent&quot;</span><br><span class="line"></span><br><span class="line">在创建文件或目录的时候指定属主，或者修改远程主机上的文件或目录的属主。</span><br><span class="line">ansible test70 -m file -a &quot;path=/testdir/abc state=touch owner=zsy&quot;</span><br><span class="line">ansible test70 -m file -a &quot;path=/testdir/abc owner=zsy&quot;</span><br><span class="line">ansible test70 -m file -a &quot;path=/testdir/abc state=directory owner=zsy&quot;</span><br><span class="line"></span><br><span class="line">在创建文件或目录的时候指定属组，或者修改远程主机上的文件或目录的属组。</span><br><span class="line">ansible test70 -m file -a &quot;path=/testdir/abb state=touch group=zsy&quot;</span><br><span class="line">ansible test70 -m file -a &quot;path=/testdir/abb group=zsy&quot;</span><br><span class="line">ansible test70 -m file -a &quot;path=/testdir/abb state=directory group=zsy&quot;</span><br><span class="line"></span><br><span class="line">在创建文件或目录的时候指定权限，或者修改远程主机上的文件或目录的权限。</span><br><span class="line">ansible test70 -m file -a &quot;path=/testdir/abb state=touch mode=0644&quot;</span><br><span class="line">ansible test70 -m file -a &quot;path=/testdir/abb mode=0644&quot;</span><br><span class="line">ansible test70 -m file -a &quot;path=/testdir/binfile mode=4700&quot;</span><br><span class="line">ansible test70 -m file -a &quot;path=/testdir/abb state=directory mode=0644&quot;</span><br><span class="line"></span><br><span class="line">当操作远程主机中的目录时，同时递归的将目录中的文件的属主属组都设置为zsy。</span><br><span class="line">ansible test70 -m file -a &quot;path=/testdir/abd state=directory owner=zsy group=zsy recurse=yes&quot;</span><br></pre></td></tr></table></figure>
+
+<h3 id="unarchive"><a href="#unarchive" class="headerlink" title="unarchive"></a>unarchive</h3><p>作用：</p>
+<ul>
+<li>将ansible主机上的压缩包在本地解压缩后传到远程主机上,默认设置为copy=yes,</li>
+<li>将远程主机上的某个压缩包解压缩到指定路径下,需设置copy=no</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">#解压远程主机src路径下的包，解压至/opt/下，并将解压出来的文件属组和属主改为jiii</span><br><span class="line">[root@ljc project1]#  ansible web  -m unarchive -a &apos;src=/usr/share/nginx/html/WeCenter_3-2-1.zip copy=no dest=/opt/ group=jiii owner=jiii&apos;</span><br><span class="line"></span><br><span class="line">#解压本地管理机src路径下的包，解压至/opt/t下，并将解压出来的文件属组和属主改为jiii</span><br><span class="line">[root@ljc project1]#  ansible web  -m unarchive -a &apos;src=/root/project1/phpMyAdmin-4.8.4-all-languages.zip  dest=/opt/t group=jiii owner=jiii&apos;</span><br></pre></td></tr></table></figure>
+
+<h3 id="stat模块"><a href="#stat模块" class="headerlink" title="stat模块"></a>stat模块</h3><p>获取远程文件状态信息，atime/ctime/mtime/md5/uid/gid 等信息</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">shell &gt; ansible Client -m stat -a &quot;path=/etc/syctl.conf&quot;</span><br></pre></td></tr></table></figure>
+
+<h3 id="get-url"><a href="#get-url" class="headerlink" title="get_url"></a>get_url</h3><p>实现在远程主机下载指定 URL 到本地，支持 sha256sum 文件校验</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">shell &gt; ansible Client -m get_url -a &quot;url=http://www.baidu.com dest=/tmp/index.html mode=0440 force=yes&quot;</span><br></pre></td></tr></table></figure>
+
+<h3 id="yum"><a href="#yum" class="headerlink" title="yum"></a>yum</h3><p>软件包管理</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">shell &gt; ansible Client -m yum -a &quot;name=curl state=latest&quot;</span><br></pre></td></tr></table></figure>
+
+<h3 id="corn"><a href="#corn" class="headerlink" title="corn"></a>corn</h3><p>远程主机 crontab 配置</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">shell &gt; ansible Client -m cron -a &quot;name=&apos;check dirs&apos; hour=&apos;5,2&apos; job=&apos;ls -alh &gt; /dev/null&apos;&quot;</span><br><span class="line"></span><br><span class="line">效果：</span><br><span class="line">* 5,2 * * * ls -alh &gt; /dev/null</span><br></pre></td></tr></table></figure>
+
+<h3 id="mount"><a href="#mount" class="headerlink" title="mount"></a>mount</h3><p>远程主机分区挂载</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">shell &gt; ansible Client -m mount -a &quot;name=/mnt/data src=/dev/sd0 fstype=ext4 opts=ro state=present&quot;</span><br></pre></td></tr></table></figure>
+
+<h3 id="service"><a href="#service" class="headerlink" title="service"></a>service</h3><p>远程主机系统服务管理</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">shell &gt; ansible Client -m service -a &quot;name=nginx state=stoped&quot;</span><br><span class="line">shell &gt; ansible Client -m service -a &quot;name=nginx state=restarted&quot;</span><br><span class="line">shell &gt; ansible Client -m service -a &quot;name=nginx state=reloaded&quot;</span><br></pre></td></tr></table></figure>
+
+<h3 id="user"><a href="#user" class="headerlink" title="user"></a>user</h3><p>远程主机用户管理</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">shell &gt; ansible Client -m user -a &quot;name=wang comment=&apos;user wang&apos;&quot;</span><br><span class="line"></span><br><span class="line">shell &gt; ansible Client -m user -a &quot;name=wang state=absent remove=yes&quot;    # 添加删除用户</span><br></pre></td></tr></table></figure>
+
+<h2 id="ansible-playbook-详解"><a href="#ansible-playbook-详解" class="headerlink" title="ansible-playbook 详解"></a>ansible-playbook 详解</h2><h3 id="命令详解"><a href="#命令详解" class="headerlink" title="命令详解"></a>命令详解</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line">ansible-playbook playbook.yml [options]</span><br><span class="line"></span><br><span class="line">-u REMOTE_USER, --user=REMOTE_USER </span><br><span class="line">＃ ssh 连接的用户名 </span><br><span class="line">-k, --ask-pass </span><br><span class="line">＃ssh登录认证密码 </span><br><span class="line">-s, --sudo </span><br><span class="line">＃sudo 到root用户，相当于Linux系统下的sudo命令</span><br><span class="line">-U SUDO_USER, --sudo-user=SUDO_USER </span><br><span class="line">＃sudo 到对应的用户 </span><br><span class="line">-K, --ask-sudo-pass ＃用户的密码（—sudo时使用） </span><br><span class="line">-T TIMEOUT, --timeout=TIMEOUT </span><br><span class="line">＃ ssh 连接超时，默认 10 秒 </span><br><span class="line">-C, --check ＃ 指定该参数后，执行 playbook 文件不会真正去执行，而是模拟执行一遍，然后输出本次执行会对远程主机造成的修改 </span><br><span class="line">-e EXTRA_VARS, --extra-vars=EXTRA_VARS </span><br><span class="line">＃ 设置额外的变量如：key=value 形式 或者 YAML or JSON，以空格分隔变量，或用多个-e </span><br><span class="line">-f FORKS, --forks=FORKS ＃ 进程并发处理，默认 5 </span><br><span class="line">-i INVENTORY, --inventory-file=INVENTORY </span><br><span class="line">＃ 指定 hosts 文件路径，默认 default=/etc/ansible/hosts </span><br><span class="line">-l SUBSET, --limit=SUBSET </span><br><span class="line">＃ 指定一个 pattern，对- hosts:匹配到的主机再过滤一次 </span><br><span class="line">--list-hosts ＃ 只打印有哪些主机会执行这个 playbook 文件，不是实际执行该 playbook </span><br><span class="line">--list-tasks ＃ 列出该 playbook 中会被执行的 task </span><br><span class="line">--private-key=PRIVATE_KEY_FILE ＃ 私钥路径 </span><br><span class="line">--step ＃ 同一时间只执行一个 task，每个 task 执行前都会提示确认一遍 </span><br><span class="line">--syntax-check ＃ 只检测 playbook 文件语法是否有问题，不会执行该 playbook </span><br><span class="line">-t TAGS, --tags=TAGS ＃当 play 和 task 的 tag 为该参数指定的值时才执行，多个 tag 以逗号分隔 </span><br><span class="line">--skip-tags=SKIP_TAGS ＃ 当 play 和 task 的 tag 不匹配该参数指定的值时，才执行 </span><br><span class="line">-v, --verbose ＃输出更详细的执行过程信息，-vvv可得到所有执行过程信息。</span><br></pre></td></tr></table></figure>
+
+<h3 id="YAML语法"><a href="#YAML语法" class="headerlink" title="YAML语法"></a>YAML语法</h3><ol>
+<li>YAML的语法和其他高阶语言类似并且可以简单表达清单、散列表、标量等数据结构。（列表用横杆表示，键值对用冒号分割，键值对里又可以嵌套另外的键值对）</li>
+<li>YAML文件扩展名通常为.yaml或者.yml。下面为示例</li>
+<li>一定要对齐，只能使用空格</li>
+</ol>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">name: tom</span><br><span class="line">age: 21</span><br><span class="line">gender: male</span><br><span class="line">spourse:</span><br><span class="line">    name: lily</span><br><span class="line">    gender: female</span><br><span class="line">children:</span><br><span class="line">    - name: susan</span><br><span class="line">      age: 2</span><br><span class="line">      gender: feamle</span><br><span class="line">    - name: sunny</span><br><span class="line">      age: 10</span><br><span class="line">      gender: male</span><br></pre></td></tr></table></figure>
+
+<h3 id="Playbook目录结构"><a href="#Playbook目录结构" class="headerlink" title="Playbook目录结构"></a>Playbook目录结构</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br></pre></td><td class="code"><pre><span class="line">[root@localhost project]# tree</span><br><span class="line">.</span><br><span class="line">├── group_vars                                &lt;- 所有主机的公共变量存放位置</span><br><span class="line">│   └── all                                   &lt;- all对应公共变量</span><br><span class="line">│   │__ group_name                            &lt;- 必须对应主机组名称</span><br><span class="line">├──inventory</span><br><span class="line">│   └── hosts                                 &lt;- 需要管理的主机的列表信息</span><br><span class="line">├── roles                                     &lt;- roles 存放模块, 当前有 etcd, initial, loop 三个模块</span><br><span class="line">│   ├── etcd</span><br><span class="line">│   │   ├── files                            &lt;- 需要直接复制到 client 的文件存放位置</span><br><span class="line">│   │   │   └── etcd-proxy.service               &lt;--即每个主机配置一样</span><br><span class="line">│   │   ├── handlers                         &lt;- 用于服务管理用的控制文件</span><br><span class="line">│   │   │   └── main.yml</span><br><span class="line">│   │   ├── tasks                            &lt;- ansible 任务文件</span><br><span class="line">│   │   │   ├── config.yml</span><br><span class="line">│   │   │   ├── main.yml</span><br><span class="line">│   │   │   ├── package.yml</span><br><span class="line">│   │   │   └── service.yml</span><br><span class="line">│   │   └── templates                     &lt;- 需要复制到 client 中的模板文件, 会配合变量进行配置变换</span><br><span class="line">│   │   │    └── etcd-proxy.conf             &lt;-- 即每个主机配置可能不一样</span><br><span class="line">│   │   │___vars</span><br><span class="line">│   │        └──main.yml                     &lt;-- roles变量文件</span><br><span class="line">│   ├── initial</span><br><span class="line">│   │   ├── files</span><br><span class="line">│   │   │   ├── hosts</span><br><span class="line">│   │   │   ├── resolv.conf</span><br><span class="line">│   │   │   └── updatedb.conf</span><br><span class="line">│   │   ├── handlers</span><br><span class="line">│   │   ├── tasks</span><br><span class="line">│   │   │   ├── main.yml</span><br><span class="line">│   │   │   ├── mlocate.yml</span><br><span class="line">│   │   │   ├── package.yml</span><br><span class="line">│   │   │   ├── sysctl.yml</span><br><span class="line">│   │   │   └── yumrepo.yml</span><br><span class="line">│   │   └── templates</span><br><span class="line">│   │       ├── centos7.repo</span><br><span class="line">│   │       └── docker.repo</span><br><span class="line">│   └── loop</span><br><span class="line">│       ├── files</span><br><span class="line">│       ├── handlers</span><br><span class="line">│       ├── tasks</span><br><span class="line">│       │   ├── main.yml</span><br><span class="line">│       │   └── t1.yml</span><br><span class="line">│       └── templates</span><br><span class="line">└── site.yml                                    &lt;- 主控制入口文件</span><br></pre></td></tr></table></figure>
+
+<h3 id="核心组件"><a href="#核心组件" class="headerlink" title="核心组件"></a>核心组件</h3><ul>
+<li>tasks：任务</li>
+<li>variables：变量</li>
+<li>templates：模板</li>
+<li>handlers：处理器</li>
+<li>roles：角色</li>
+</ul>
+<h3 id="标签处理"><a href="#标签处理" class="headerlink" title="标签处理"></a>标签处理</h3><p>意义：通过tags和任务对象进行捆绑，控制部分或者指定的task执行</p>
+<ul>
+<li>打标签</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">对一个对象打一个标签</span><br><span class="line">对一个对象打多个标签</span><br><span class="line">打标签的对象包括：单个task任务、include对象、roles对象等</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>标签使用</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br></pre></td><td class="code"><pre><span class="line">-t : 执行指定的tag标签任务</span><br><span class="line">--skip-tags : 执行--skip-tags之外的标签任务</span><br><span class="line"></span><br><span class="line"># 示例</span><br><span class="line">devops@devops-virtual-machine:/etc/ansible$ cat f14.yml</span><br><span class="line">---</span><br><span class="line">- hosts : 192.168.56.11</span><br><span class="line">  remote_user : root</span><br><span class="line">  tasks :</span><br><span class="line">      - name: create file 1</span><br><span class="line">        shell: touch /tmp/file1.txt</span><br><span class="line">        tags:</span><br><span class="line">            - cfile1</span><br><span class="line">            - cfile3</span><br><span class="line">      - name: create file 2</span><br><span class="line">        shell : touch /tmp/file2.txt</span><br><span class="line">        tags:</span><br><span class="line">            - cfile2</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"># 执行剧本</span><br><span class="line"># 执行剧本，只执行tags为cfile1的任务</span><br><span class="line">devops@devops-virtual-machine:/etc/ansible$ ansible-playbook ./f14.yml -t cfile1</span><br><span class="line"></span><br><span class="line">PLAY [192.168.56.11] ************************************************************************************</span><br><span class="line"></span><br><span class="line">TASK [Gathering Facts] **********************************************************************************</span><br><span class="line">ok: [192.168.56.11]</span><br><span class="line"></span><br><span class="line">TASK [create file 1]  ************************************************************************************</span><br><span class="line"> [WARNING]: Consider using file module with state=touch rather than running touch</span><br><span class="line"></span><br><span class="line">changed: [192.168.56.11]</span><br><span class="line"></span><br><span class="line">PLAY RECAP **********************************************************************************************</span><br><span class="line">192.168.56.11              : ok=2    changed=1    unreachable=0    failed=0</span><br><span class="line"></span><br><span class="line"># 执行剧本不包含tags为cfile1的任务</span><br><span class="line">devops@devops-virtual-machine:/etc/ansible$ ansible-playbook ./f14.yml --skip-tags cfile1</span><br><span class="line"></span><br><span class="line">PLAY [192.168.56.11] ************************************************************************************</span><br><span class="line"></span><br><span class="line">TASK [Gathering Facts] **********************************************************************************</span><br><span class="line">ok: [192.168.56.11]</span><br><span class="line"></span><br><span class="line">TASK [create file 2] ************************************************************************************</span><br><span class="line"> [WARNING]: Consider using file module with state=touch rather than running touch</span><br><span class="line"></span><br><span class="line">changed: [192.168.56.11]</span><br><span class="line"></span><br><span class="line">PLAY RECAP **********************************************************************************************</span><br><span class="line">192.168.56.11              : ok=2    changed=1    unreachable=0    failed=0</span><br></pre></td></tr></table></figure>
+
+<h3 id="playbook简单示例"><a href="#playbook简单示例" class="headerlink" title="playbook简单示例"></a>playbook简单示例</h3><h4 id="第一个示例"><a href="#第一个示例" class="headerlink" title="第一个示例"></a>第一个示例</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">vim /root/first.yml</span><br><span class="line"></span><br><span class="line">- hosts: all</span><br><span class="line">  remote_user: root</span><br><span class="line">  vars: httpd_port=80</span><br><span class="line">  </span><br><span class="line">  tasks:</span><br><span class="line">  - name: install httpd</span><br><span class="line">    yum: name=httpd state=present</span><br><span class="line">  - name: install php</span><br><span class="line">    yum: name=php state=present</span><br><span class="line">  - name: start httpd</span><br><span class="line">    service: name=httpd state=started enabled=true</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>hosts 定义单个主机或组，vars定义变量，remote_user定义执行命令的远程用户，tasks定义执行哪些命令，handlers定义调用哪些处理器</p>
+<p><strong>vars</strong>(变量)： </p>
+<ul>
+<li><p>变量命名： 字母数字下划线组成，只能以字母开头</p>
+</li>
+<li><p>变量种类：</p>
+<ol>
+<li><p>facts（内置变量）</p>
+<p>由远程主机发回的主机属性信息，这些信息被保存在ansible变量当中</p>
+<p>例如：ansible 192.168.238.170 -m setup  来获取远程主机上的属性信息，这些属性信息保存在facts中</p>
+</li>
+<li><p>通过命令行传递</p>
+<p>通过命令行传递：ansible-playbook test.yml –extra-vars “host=www user=tom“（如果剧本中已有此处定义的变量则会被覆盖）</p>
+</li>
+<li><p>通过roles传递</p>
+</li>
+<li><p>主机变量</p>
+<p>在/etc/ansible/hosts中定义</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">&gt;      [web1]</span><br><span class="line">&gt;      192.168.1.1 name=haha</span><br><span class="line">&gt;</span><br></pre></td></tr></table></figure>
+</li>
+</ol>
+</li>
+</ul>
+</blockquote>
+<blockquote>
+<ol start="5">
+<li><p>组变量</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">&gt;      [group_name:vars]</span><br><span class="line">&gt;      foo=bar</span><br><span class="line">&gt;</span><br></pre></td></tr></table></figure>
+</li>
+</ol>
+</blockquote>
+<blockquote>
+<p><strong>hosts</strong> :</p>
+<p>/etc/abible/hosts 中指定的远程主机，并用指定的属性进行连接</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">&gt; ansible_ssh_port 连接远程主机使用的端口</span><br><span class="line">&gt;</span><br><span class="line">&gt; ansible_ssh_user 连接远程主机使用的用户</span><br><span class="line">&gt;</span><br><span class="line">&gt; ansible_ssh_pass 连接远程主机使用的密码</span><br><span class="line">&gt;</span><br></pre></td></tr></table></figure>
+</blockquote>
+<blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">&gt; cat /etc/ansible/hosts</span><br><span class="line">&gt;</span><br><span class="line">&gt; [web1]</span><br><span class="line">&gt; web1.hostname ansible_ssh_port=22 ansible_ssh_user=root ansible_ssh_pass=123</span><br><span class="line">&gt; web2.hostname</span><br><span class="line">&gt;</span><br></pre></td></tr></table></figure>
+</blockquote>
+<h4 id="第二个示例"><a href="#第二个示例" class="headerlink" title="第二个示例"></a>第二个示例</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">vim /root/second.yml</span><br><span class="line"></span><br><span class="line">- hosts: web1</span><br><span class="line">  remote_user: root</span><br><span class="line">  vars:</span><br><span class="line">    username: bob</span><br><span class="line">    password: 123</span><br><span class="line">    </span><br><span class="line">  tasks:</span><br><span class="line">  - name: add user</span><br><span class="line">    user: name=&#123;&#123; username &#125;&#125; state=present</span><br><span class="line">    when: ansible_os_family == &quot;Debian&quot;</span><br><span class="line">  - name: set password</span><br><span class="line">    shell: echo &#123;&#123; password &#125;&#125; |passwd --stdin &#123;&#123; username &#125;&#125;</span><br><span class="line">  - name: install httpd php</span><br><span class="line">    yum: name=&#123;&#123; item &#125;&#125; state=present</span><br><span class="line">    with_items:</span><br><span class="line">      - httpd</span><br><span class="line">      - php</span><br><span class="line">  - name: add two users</span><br><span class="line">    user: name=&#123;&#123; item &#125;&#125; state=present groups=&#123;&#123; item.groups &#125;&#125;</span><br><span class="line">    with_items:</span><br><span class="line">    - &#123; name: &apos;user1&apos;, groups: &apos;group1&apos;&#125;</span><br><span class="line">    - &#123; name: &apos;user2&apos;, groups: &apos;group2&apos;&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+- 在playbook中调用变量的方式为{{ variable }}
+- when语句用来条件测试
+- ansible_os_family 是facts中内置的属性信息   ansible_os_family的信息可以使用ansible all -m setup | grep ansible_os_family 查看
+- 在task中调用内置的item变量；在某task后面使用with_items语句来定义元素列表
+
+
+
+<h4 id="第三个示例"><a href="#第三个示例" class="headerlink" title="第三个示例"></a>第三个示例</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">vim /root/third.yml</span><br><span class="line"></span><br><span class="line">- hosts: web1</span><br><span class="line">  remote_user: root</span><br><span class="line">  vars: </span><br><span class="line">    httpd_port=80</span><br><span class="line">  </span><br><span class="line">  tasks:</span><br><span class="line">  - name: install httpd</span><br><span class="line">    yum: name=httpd state=present</span><br><span class="line">  - name: install php</span><br><span class="line">    yum: name=php state=present</span><br><span class="line">  - name: copy config file</span><br><span class="line">    copy: src=/root/httpd.conf dest=/etc/httpd/conf/httpd.conf</span><br><span class="line">    notify: restart httpd</span><br><span class="line">  - name: start httpd</span><br><span class="line">    service: name=httpd state=started enabled=true</span><br><span class="line">    </span><br><span class="line">  handlers:</span><br><span class="line">  - name: restart httpd</span><br><span class="line">    service: name=httpd state=restarted</span><br></pre></td></tr></table></figure>
+
+<p>上面的意思是copy中复制过去的文件跟远程主机上的文件不同，就通过notify调用handlers，即重启httpd服务。</p>
+<p>handler是重启服务是最通用的用法</p>
+<h4 id="第四个示例"><a href="#第四个示例" class="headerlink" title="第四个示例"></a>第四个示例</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">vim /etc/ansible/hosts</span><br><span class="line">[web1]</span><br><span class="line">192.168.1.1 http_port=80</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">vim /root/httpd.conf</span><br><span class="line">……</span><br><span class="line">Listen &#123;&#123; http_port &#125;&#125;</span><br><span class="line">……</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">vim /root/fourth.yml</span><br><span class="line"></span><br><span class="line">- hosts: web1</span><br><span class="line">  remote_user: root</span><br><span class="line">  vars: </span><br><span class="line">    httpd_port=80</span><br><span class="line">  </span><br><span class="line">  tasks:</span><br><span class="line">  - name: install httpd</span><br><span class="line">    yum: name=httpd state=present</span><br><span class="line">  - name: copy config file</span><br><span class="line">    template: src=/root/httpd.conf dest=/etc/httpd/conf/httpd.conf</span><br><span class="line">    notify: restart httpd</span><br><span class="line">  - name: start httpd</span><br><span class="line">    service: name=httpd state=started enabled=true</span><br><span class="line">    </span><br><span class="line">  handlers:</span><br><span class="line">  - name: restart httpd</span><br><span class="line">    service: name=httpd state=restarted</span><br></pre></td></tr></table></figure>
+
+
+
+> templates：用于生成文本文件（配置文件）
+>
+> 模板文件中可使用jinja2表达式，表达式要定义在{{ }}，也可以简单地仅执行变量替换
+
+
+
+<h4 id="第五个示例"><a href="#第五个示例" class="headerlink" title="第五个示例"></a>第五个示例</h4><p>roles：roles用于实现“<strong>代码复用</strong>”，roles以特定的层次型格式组织起来的playbook元素（variables, tasks, templates,handlers）；可被playbook以role的名字直接进行调用</p>
+<p>roles的文件结构：</p>
+<ul>
+<li>files/：此角色中用到的所有文件均放置于此目录中</li>
+<li>templates/： Jinja2模板文件存放位置</li>
+<li>tasks/：任务列表文件；可以有多个，但至少有一个叫做main.yml的文件</li>
+<li>handlers/：处理器列表文件；可以有多个，但至少有一个叫做main.yml的文件</li>
+<li>vars/：变量字典文件；可以有多个，但至少有一个叫做main.yml的文件</li>
+<li>meta/：此角色的特殊设定及依赖关系</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">mkdir /root/roles</span><br><span class="line">cd /root/roles</span><br><span class="line">mkdir -p web1/&#123;files, templayes, tasks, handlers, vars, meta&#125;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">vim web1/vars/main.yml</span><br><span class="line">user: tom</span><br><span class="line">group: tom</span><br><span class="line">http_port: 8080</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">vim web1/tasks/main.yml</span><br><span class="line"></span><br><span class="line">- name: install httpd</span><br><span class="line">  yum: name=httpd state=present</span><br><span class="line">- name: copy config file</span><br><span class="line">  template: src=httpd.conf dest=/etc/httpd/conf/httpd.conf</span><br><span class="line">  notify: restart httpd</span><br><span class="line">  tags: conf</span><br><span class="line">- name: start httpd</span><br><span class="line">  service: name=httpd state=started enabled=true</span><br><span class="line"> </span><br><span class="line">这里的template指的是相对路径--&gt;web1/templates</span><br><span class="line">tags可以在运行时指定标签任务</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">vim web1/handlers/main.yml</span><br><span class="line"></span><br><span class="line">handlers:</span><br><span class="line">- name: restart httpd</span><br><span class="line">  service: name=httpd state=restarted</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">vim web1/templates/httpd.conf</span><br><span class="line"></span><br><span class="line">……</span><br><span class="line">Listen &#123;&#123; http_port &#125;&#125;</span><br><span class="line">……</span><br></pre></td></tr></table></figure>
+
+<p>定义一个调用roles文件</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">vim /root/web1.yml</span><br><span class="line"></span><br><span class="line">- hosts: web1</span><br><span class="line">  remote_user: root</span><br><span class="line">  roles:</span><br><span class="line">    - web1</span><br><span class="line">    - &#123; role:web2, http_port:8080 &#125;</span><br><span class="line">    </span><br><span class="line">hosts：web1 指在/etc/ansible/hosts中定义的组，上面有定义</span><br><span class="line">roles: web1 指的是当前目录下的web1目录，也可通过role传递变量， 也可调用多个role</span><br><span class="line">这样只需更改hosts的主机就可以实现不同主机的代码重用了</span><br></pre></td></tr></table></figure>
+
+<p>运行</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">ansible-playbook web1.yml</span><br><span class="line">指定运行任务：</span><br><span class="line">ansible-playbook -t conf web1.yml</span><br></pre></td></tr></table></figure>
+
+<h3 id="使用ansible-playbook安装zabbix"><a href="#使用ansible-playbook安装zabbix" class="headerlink" title="使用ansible-playbook安装zabbix"></a>使用ansible-playbook安装zabbix</h3><h4 id="定义hosts"><a href="#定义hosts" class="headerlink" title="定义hosts"></a>定义hosts</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">shell &gt; vim /etc/ansible/hosts</span><br><span class="line"></span><br><span class="line">[mini]</span><br><span class="line"></span><br><span class="line">129.139.153.78:16283</span><br><span class="line">155.139.190.94:12573</span><br></pre></td></tr></table></figure>
+
+<h4 id="定义入口文件install-zabbix-agent-yml"><a href="#定义入口文件install-zabbix-agent-yml" class="headerlink" title="定义入口文件install_zabbix_agent.yml"></a>定义入口文件install_zabbix_agent.yml</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">shell &gt; vim /etc/ansible/install_zabbix_agent.yml</span><br><span class="line"></span><br><span class="line">---</span><br><span class="line">- hosts: mini</span><br><span class="line">  roles:</span><br><span class="line">  - install_zabbix_agent</span><br><span class="line"></span><br><span class="line">## 可以看到将要安装的主机组为 mini 组，角色为 install_zabbix_agent</span><br></pre></td></tr></table></figure>
+
+<h4 id="定义角色-install-zabbix-agent"><a href="#定义角色-install-zabbix-agent" class="headerlink" title="定义角色 install_zabbix_agent"></a>定义角色 install_zabbix_agent</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">shell &gt; tree /etc/ansible/roles/install_zabbix_agent/</span><br><span class="line"></span><br><span class="line">├── files</span><br><span class="line">│    └── zabbix-2.4.5.tar.gz</span><br><span class="line">├── tasks</span><br><span class="line">│    └── main.yml</span><br><span class="line">├── templates</span><br><span class="line">│    ├── zabbix_agentd</span><br><span class="line">│    └── zabbix_agentd.conf</span><br><span class="line">└── vars</span><br><span class="line">      └── main.yml</span><br><span class="line"></span><br><span class="line">## 建立 files     目录，存放编译安装过的 zabbix_agent 目录的压缩文件，用于拷贝到远程主机</span><br><span class="line">## 建立 tasks     目录，用于编写将要执行的任务</span><br><span class="line">## 建立 templates 目录，用于存放可变的模板文件</span><br><span class="line">## 建立 vars      目录，用于存放变量信息</span><br></pre></td></tr></table></figure>
+
+<h4 id="建立tasks主文件"><a href="#建立tasks主文件" class="headerlink" title="建立tasks主文件"></a>建立tasks主文件</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">shell &gt; cat /etc/ansible/roles/install_zabbix_agent/tasks/main.yml</span><br><span class="line"></span><br><span class="line">---</span><br><span class="line">  - name: Install Software</span><br><span class="line">    yum: name=&#123;&#123; item &#125;&#125; state=latest</span><br><span class="line">    with_items:</span><br><span class="line">      - libcurl-devel</span><br><span class="line">  - name: Create Zabbix User</span><br><span class="line">    user: name=&#123;&#123; zabbix_user &#125;&#125; state=present createhome=no shell=/sbin/nologin</span><br><span class="line">  - name: Copy Zabbix.tar.gz</span><br><span class="line">    copy: src=zabbix-&#123;&#123; zabbix_version &#125;&#125;.tar.gz dest=&#123;&#123; zabbix_dir &#125;&#125;/src/zabbix-&#123;&#123; zabbix_version &#125;&#125;.tar.gz owner=root group=root</span><br><span class="line">  - name: Uncompression Zabbix.tar.gz</span><br><span class="line">    shell: tar zxf &#123;&#123; zabbix_dir &#125;&#125;/src/zabbix-&#123;&#123; zabbix_version &#125;&#125;.tar.gz -C &#123;&#123; zabbix_dir &#125;&#125;/</span><br><span class="line">  - name: Copy Zabbix Start Script</span><br><span class="line">    template: src=zabbix_agentd dest=/etc/init.d/zabbix_agentd owner=root group=root mode=0755</span><br><span class="line">  - name: Copy Zabbix Config File</span><br><span class="line">    template: src=zabbix_agentd.conf dest=&#123;&#123; zabbix_dir &#125;&#125;/zabbix/etc/zabbix_agentd.conf owner=&#123;&#123; zabbix_user &#125;&#125; group=&#123;&#123; zabbix_user &#125;&#125; mode=0644</span><br><span class="line">  - name: Modify Zabbix Dir Permisson</span><br><span class="line">    file: path=&#123;&#123; zabbix_dir &#125;&#125;/zabbix owner=&#123;&#123; zabbix_user &#125;&#125; group=&#123;&#123; zabbix_user &#125;&#125; mode=0755 recurse=yes</span><br><span class="line">  - name: Start Zabbix Service</span><br><span class="line">    shell: /etc/init.d/zabbix_agentd start</span><br><span class="line">  - name: Add Boot Start Zabbix Service</span><br><span class="line">    shell: chkconfig --level 35 zabbix_agentd on</span><br></pre></td></tr></table></figure>
+
+<h4 id="建立主变量文件"><a href="#建立主变量文件" class="headerlink" title="建立主变量文件"></a>建立主变量文件</h4><blockquote>
+<p><a href="https://www.cnblogs.com/shuiyelifang/p/8420932.html" target="_blank" rel="noopener">变量使用说明</a></p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">shell &gt; cat /etc/ansible/roles/install_zabbix_agent/vars/main.yml</span><br><span class="line"></span><br><span class="line">zabbix_dir: /usr/local</span><br><span class="line">zabbix_version: 2.4.5</span><br><span class="line">zabbix_user: zabbix</span><br><span class="line">zabbix_port: 10050</span><br><span class="line">zabbix_server_ip: 131.142.101.120</span><br></pre></td></tr></table></figure>
+
+<h4 id="建立模板文件"><a href="#建立模板文件" class="headerlink" title="建立模板文件"></a>建立模板文件</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br></pre></td><td class="code"><pre><span class="line">shell &gt; cat /etc/ansible/roles/install_zabbix_agent/templates/zabbix_agentd</span><br><span class="line"></span><br><span class="line">#!/bin/bash</span><br><span class="line">#</span><br><span class="line"># chkconfig: - 90 10</span><br><span class="line"># description:  Starts and stops Zabbix Agent using chkconfig</span><br><span class="line">#                               Tested on Fedora Core 2 - 5</span><br><span class="line">#                               Should work on all Fedora Core versions</span><br><span class="line">#</span><br><span class="line"># @name:        zabbix_agentd</span><br><span class="line"># @author:      Alexander Hagenah &lt;hagenah@topconcepts.com&gt;</span><br><span class="line"># @created:     18.04.2006</span><br><span class="line">#</span><br><span class="line"># Modified for Zabbix 2.0.0</span><br><span class="line"># May 2012, Zabbix SIA</span><br><span class="line">#</span><br><span class="line"># Source function library.</span><br><span class="line">. /etc/init.d/functions</span><br><span class="line"></span><br><span class="line"># Variables</span><br><span class="line"># Edit these to match your system settings</span><br><span class="line"></span><br><span class="line">        # Zabbix-Directory</span><br><span class="line">        BASEDIR=&#123;&#123; zabbix_dir &#125;&#125;/zabbix</span><br><span class="line"></span><br><span class="line">        # Binary File</span><br><span class="line">        BINARY_NAME=zabbix_agentd</span><br><span class="line"></span><br><span class="line">        # Full Binary File Call</span><br><span class="line">        FULLPATH=$BASEDIR/sbin/$BINARY_NAME</span><br><span class="line"></span><br><span class="line">        # PID file</span><br><span class="line">        PIDFILE=/tmp/$BINARY_NAME.pid</span><br><span class="line"></span><br><span class="line">        # Establish args</span><br><span class="line">        ERROR=0</span><br><span class="line">        STOPPING=0</span><br><span class="line"></span><br><span class="line">#</span><br><span class="line"># No need to edit the things below</span><br><span class="line">#</span><br><span class="line"></span><br><span class="line"># application checking status</span><br><span class="line">if [ -f $PIDFILE  ] &amp;&amp; [ -s $PIDFILE ]</span><br><span class="line">        then</span><br><span class="line">        PID=`cat $PIDFILE`</span><br><span class="line"></span><br><span class="line">        if [ &quot;x$PID&quot; != &quot;x&quot; ] &amp;&amp; kill -0 $PID 2&gt;/dev/null &amp;&amp; [ $BINARY_NAME == `ps -e | grep $PID | awk &apos;&#123;print $4&#125;&apos;` ]</span><br><span class="line">        then</span><br><span class="line">                STATUS=&quot;$BINARY_NAME (pid `pidof $APP`) running..&quot;</span><br><span class="line">                RUNNING=1</span><br><span class="line">        else</span><br><span class="line">                rm -f $PIDFILE</span><br><span class="line">                STATUS=&quot;$BINARY_NAME (pid file existed ($PID) and now removed) not running..&quot;</span><br><span class="line">                RUNNING=0</span><br><span class="line">        fi</span><br><span class="line">else</span><br><span class="line">        if [ `ps -e | grep $BINARY_NAME | head -1 | awk &apos;&#123; print $1 &#125;&apos;` ]</span><br><span class="line">                then</span><br><span class="line">                STATUS=&quot;$BINARY_NAME (pid `pidof $APP`, but no pid file) running..&quot;</span><br><span class="line">        else</span><br><span class="line">                STATUS=&quot;$BINARY_NAME (no pid file) not running&quot;</span><br><span class="line">        fi</span><br><span class="line">        RUNNING=0</span><br><span class="line">fi</span><br><span class="line"></span><br><span class="line"># functions</span><br><span class="line">start() &#123;</span><br><span class="line">        if [ $RUNNING -eq 1 ]</span><br><span class="line">                then</span><br><span class="line">                echo &quot;$0 $ARG: $BINARY_NAME (pid $PID) already running&quot;</span><br><span class="line">        else</span><br><span class="line">                action $&quot;Starting $BINARY_NAME: &quot; $FULLPATH</span><br><span class="line">                touch /var/lock/subsys/$BINARY_NAME</span><br><span class="line">        fi</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">stop() &#123;</span><br><span class="line">        echo -n $&quot;Shutting down $BINARY_NAME: &quot;</span><br><span class="line">        killproc $BINARY_NAME</span><br><span class="line">        RETVAL=$?</span><br><span class="line">        echo</span><br><span class="line">        [ $RETVAL -eq 0 ] &amp;&amp; rm -f /var/lock/subsys/$BINARY_NAME</span><br><span class="line">        RUNNING=0</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"># logic</span><br><span class="line">case &quot;$1&quot; in</span><br><span class="line">        start)</span><br><span class="line">                start</span><br><span class="line">                ;;</span><br><span class="line">        stop)</span><br><span class="line">                stop</span><br><span class="line">                ;;</span><br><span class="line">        status)</span><br><span class="line">                status $BINARY_NAME</span><br><span class="line">                ;;</span><br><span class="line">        restart)</span><br><span class="line">                stop</span><br><span class="line">                sleep 10</span><br><span class="line">                start</span><br><span class="line">                ;;</span><br><span class="line">        help|*)</span><br><span class="line">                echo $&quot;Usage: $0 &#123;start|stop|status|restart|help&#125;&quot;</span><br><span class="line">                cat &lt;&lt;EOF</span><br><span class="line"></span><br><span class="line">                        start           - start $BINARY_NAME</span><br><span class="line">                        stop            - stop $BINARY_NAME</span><br><span class="line">                        status          - show current status of $BINARY_NAME</span><br><span class="line">                        restart         - restart $BINARY_NAME if running by sending a SIGHUP or start if not running</span><br><span class="line">                        help            - this screen</span><br><span class="line"></span><br><span class="line">EOF</span><br><span class="line">        exit 1</span><br><span class="line">        ;;</span><br><span class="line">esac</span><br><span class="line"></span><br><span class="line">exit 0</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br><span class="line">164</span><br><span class="line">165</span><br><span class="line">166</span><br><span class="line">167</span><br><span class="line">168</span><br><span class="line">169</span><br><span class="line">170</span><br><span class="line">171</span><br><span class="line">172</span><br><span class="line">173</span><br><span class="line">174</span><br><span class="line">175</span><br><span class="line">176</span><br><span class="line">177</span><br><span class="line">178</span><br><span class="line">179</span><br><span class="line">180</span><br><span class="line">181</span><br><span class="line">182</span><br><span class="line">183</span><br><span class="line">184</span><br><span class="line">185</span><br><span class="line">186</span><br><span class="line">187</span><br><span class="line">188</span><br><span class="line">189</span><br><span class="line">190</span><br><span class="line">191</span><br><span class="line">192</span><br><span class="line">193</span><br><span class="line">194</span><br><span class="line">195</span><br><span class="line">196</span><br><span class="line">197</span><br><span class="line">198</span><br><span class="line">199</span><br><span class="line">200</span><br><span class="line">201</span><br><span class="line">202</span><br><span class="line">203</span><br><span class="line">204</span><br><span class="line">205</span><br><span class="line">206</span><br><span class="line">207</span><br><span class="line">208</span><br><span class="line">209</span><br><span class="line">210</span><br><span class="line">211</span><br><span class="line">212</span><br><span class="line">213</span><br><span class="line">214</span><br><span class="line">215</span><br><span class="line">216</span><br><span class="line">217</span><br><span class="line">218</span><br><span class="line">219</span><br><span class="line">220</span><br><span class="line">221</span><br><span class="line">222</span><br><span class="line">223</span><br><span class="line">224</span><br><span class="line">225</span><br><span class="line">226</span><br><span class="line">227</span><br><span class="line">228</span><br><span class="line">229</span><br><span class="line">230</span><br><span class="line">231</span><br><span class="line">232</span><br><span class="line">233</span><br><span class="line">234</span><br><span class="line">235</span><br><span class="line">236</span><br><span class="line">237</span><br><span class="line">238</span><br><span class="line">239</span><br><span class="line">240</span><br><span class="line">241</span><br><span class="line">242</span><br><span class="line">243</span><br><span class="line">244</span><br><span class="line">245</span><br><span class="line">246</span><br><span class="line">247</span><br><span class="line">248</span><br><span class="line">249</span><br><span class="line">250</span><br><span class="line">251</span><br><span class="line">252</span><br><span class="line">253</span><br><span class="line">254</span><br><span class="line">255</span><br><span class="line">256</span><br><span class="line">257</span><br><span class="line">258</span><br><span class="line">259</span><br><span class="line">260</span><br><span class="line">261</span><br><span class="line">262</span><br><span class="line">263</span><br><span class="line">264</span><br><span class="line">265</span><br><span class="line">266</span><br><span class="line">267</span><br><span class="line">268</span><br><span class="line">269</span><br><span class="line">270</span><br><span class="line">271</span><br><span class="line">272</span><br><span class="line">273</span><br><span class="line">274</span><br><span class="line">275</span><br><span class="line">276</span><br><span class="line">277</span><br><span class="line">278</span><br><span class="line">279</span><br><span class="line">280</span><br><span class="line">281</span><br><span class="line">282</span><br><span class="line">283</span><br><span class="line">284</span><br><span class="line">285</span><br><span class="line">286</span><br><span class="line">287</span><br><span class="line">288</span><br><span class="line">289</span><br><span class="line">290</span><br><span class="line">291</span><br><span class="line">292</span><br><span class="line">293</span><br><span class="line">294</span><br><span class="line">295</span><br><span class="line">296</span><br><span class="line">297</span><br></pre></td><td class="code"><pre><span class="line">shell &gt; cat /etc/ansible/roles/install_zabbix_agent/templates/zabbix_agentd.conf</span><br><span class="line"></span><br><span class="line"># This is a config file for the Zabbix agent daemon (Unix)</span><br><span class="line"># To get more information about Zabbix, visit http://www.zabbix.com</span><br><span class="line"></span><br><span class="line">############ GENERAL PARAMETERS #################</span><br><span class="line"></span><br><span class="line">### Option: PidFile</span><br><span class="line">#       Name of PID file.</span><br><span class="line">#</span><br><span class="line"># Mandatory: no</span><br><span class="line"># Default:</span><br><span class="line"># PidFile=/tmp/zabbix_agentd.pid</span><br><span class="line"></span><br><span class="line">### Option: LogFile</span><br><span class="line">#       Name of log file.</span><br><span class="line">#       If not set, syslog is used.</span><br><span class="line">#</span><br><span class="line"># Mandatory: no</span><br><span class="line"># Default:</span><br><span class="line"># LogFile=</span><br><span class="line"></span><br><span class="line">LogFile=/tmp/zabbix_agentd.log</span><br><span class="line"></span><br><span class="line">### Option: LogFileSize</span><br><span class="line">#       Maximum size of log file in MB.</span><br><span class="line">#       0 - disable automatic log rotation.</span><br><span class="line">#</span><br><span class="line"># Mandatory: no</span><br><span class="line"># Range: 0-1024</span><br><span class="line"># Default:</span><br><span class="line"># LogFileSize=1</span><br><span class="line"></span><br><span class="line">### Option: DebugLevel</span><br><span class="line">#       Specifies debug level</span><br><span class="line">#       0 - basic information about starting and stopping of Zabbix processes</span><br><span class="line">#       1 - critical information</span><br><span class="line">#       2 - error information</span><br><span class="line">#       3 - warnings</span><br><span class="line">#       4 - for debugging (produces lots of information)</span><br><span class="line">#</span><br><span class="line"># Mandatory: no</span><br><span class="line"># Range: 0-4</span><br><span class="line"># Default:</span><br><span class="line"># DebugLevel=3</span><br><span class="line"></span><br><span class="line">### Option: SourceIP</span><br><span class="line">#       Source IP address for outgoing connections.</span><br><span class="line">#</span><br><span class="line"># Mandatory: no</span><br><span class="line"># Default:</span><br><span class="line"># SourceIP=</span><br><span class="line"></span><br><span class="line">### Option: EnableRemoteCommands</span><br><span class="line">#       Whether remote commands from Zabbix server are allowed.</span><br><span class="line">#       0 - not allowed</span><br><span class="line">#       1 - allowed</span><br><span class="line">#</span><br><span class="line"># Mandatory: no</span><br><span class="line"># Default:</span><br><span class="line"># EnableRemoteCommands=0</span><br><span class="line"></span><br><span class="line">### Option: LogRemoteCommands</span><br><span class="line">#       Enable logging of executed shell commands as warnings.</span><br><span class="line">#       0 - disabled</span><br><span class="line">#       1 - enabled</span><br><span class="line">#</span><br><span class="line"># Mandatory: no</span><br><span class="line"># Default:</span><br><span class="line"># LogRemoteCommands=0</span><br><span class="line"></span><br><span class="line">##### Passive checks related</span><br><span class="line"></span><br><span class="line">### Option: Server</span><br><span class="line">#       List of comma delimited IP addresses (or hostnames) of Zabbix servers.</span><br><span class="line">#       Incoming connections will be accepted only from the hosts listed here.</span><br><span class="line">#       If IPv6 support is enabled then &apos;127.0.0.1&apos;, &apos;::127.0.0.1&apos;, &apos;::ffff:127.0.0.1&apos; are treated equally.</span><br><span class="line">#</span><br><span class="line"># Mandatory: no</span><br><span class="line"># Default:</span><br><span class="line"># Server=</span><br><span class="line"></span><br><span class="line">Server=&#123;&#123; zabbix_server_ip &#125;&#125;</span><br><span class="line"></span><br><span class="line">### Option: ListenPort</span><br><span class="line">#       Agent will listen on this port for connections from the server.</span><br><span class="line">#</span><br><span class="line"># Mandatory: no</span><br><span class="line"># Range: 1024-32767</span><br><span class="line"># Default:</span><br><span class="line"># ListenPort=10050</span><br><span class="line">ListenPort=&#123;&#123; zabbix_port &#125;&#125;</span><br><span class="line"></span><br><span class="line">### Option: ListenIP</span><br><span class="line">#       List of comma delimited IP addresses that the agent should listen on.</span><br><span class="line">#       First IP address is sent to Zabbix server if connecting to it to retrieve list of active checks.</span><br><span class="line">#</span><br><span class="line"># Mandatory: no</span><br><span class="line"># Default:</span><br><span class="line"># ListenIP=0.0.0.0</span><br><span class="line"></span><br><span class="line">### Option: StartAgents</span><br><span class="line">#       Number of pre-forked instances of zabbix_agentd that process passive checks.</span><br><span class="line">#       If set to 0, disables passive checks and the agent will not listen on any TCP port.</span><br><span class="line">#</span><br><span class="line"># Mandatory: no</span><br><span class="line"># Range: 0-100</span><br><span class="line"># Default:</span><br><span class="line"># StartAgents=3</span><br><span class="line"></span><br><span class="line">##### Active checks related</span><br><span class="line"></span><br><span class="line">### Option: ServerActive</span><br><span class="line">#       List of comma delimited IP:port (or hostname:port) pairs of Zabbix servers for active checks.</span><br><span class="line">#       If port is not specified, default port is used.</span><br><span class="line">#       IPv6 addresses must be enclosed in square brackets if port for that host is specified.</span><br><span class="line">#       If port is not specified, square brackets for IPv6 addresses are optional.</span><br><span class="line">#       If this parameter is not specified, active checks are disabled.</span><br><span class="line">#       Example: ServerActive=127.0.0.1:20051,zabbix.domain,[::1]:30051,::1,[12fc::1]</span><br><span class="line">#</span><br><span class="line"># Mandatory: no</span><br><span class="line"># Default:</span><br><span class="line"># ServerActive=</span><br><span class="line"></span><br><span class="line">#ServerActive=127.0.0.1:10051</span><br><span class="line"></span><br><span class="line">### Option: Hostname</span><br><span class="line">#       Unique, case sensitive hostname.</span><br><span class="line">#       Required for active checks and must match hostname as configured on the server.</span><br><span class="line">#       Value is acquired from HostnameItem if undefined.</span><br><span class="line">#</span><br><span class="line"># Mandatory: no</span><br><span class="line"># Default:</span><br><span class="line"># Hostname=</span><br><span class="line"></span><br><span class="line">Hostname=&#123;&#123; ansible_all_ipv4_addresses[1] &#125;&#125;</span><br><span class="line"></span><br><span class="line">### Option: HostnameItem</span><br><span class="line">#       Item used for generating Hostname if it is undefined. Ignored if Hostname is defined.</span><br><span class="line">#       Does not support UserParameters or aliases.</span><br><span class="line">#</span><br><span class="line"># Mandatory: no</span><br><span class="line"># Default:</span><br><span class="line"># HostnameItem=system.hostname</span><br><span class="line"></span><br><span class="line">### Option: HostMetadata</span><br><span class="line">#       Optional parameter that defines host metadata.</span><br><span class="line">#       Host metadata is used at host auto-registration process.</span><br><span class="line">#       An agent will issue an error and not start if the value is over limit of 255 characters.</span><br><span class="line">#       If not defined, value will be acquired from HostMetadataItem.</span><br><span class="line">#</span><br><span class="line"># Mandatory: no</span><br><span class="line"># Range: 0-255 characters</span><br><span class="line"># Default:</span><br><span class="line"># HostMetadata=</span><br><span class="line"></span><br><span class="line">### Option: HostMetadataItem</span><br><span class="line">#       Optional parameter that defines an item used for getting host metadata.</span><br><span class="line">#       Host metadata is used at host auto-registration process.</span><br><span class="line">#       During an auto-registration request an agent will log a warning message if</span><br><span class="line">#       the value returned by specified item is over limit of 255 characters.</span><br><span class="line">#       This option is only used when HostMetadata is not defined.</span><br><span class="line">#</span><br><span class="line"># Mandatory: no</span><br><span class="line"># Default:</span><br><span class="line"># HostMetadataItem=</span><br><span class="line"></span><br><span class="line">### Option: RefreshActiveChecks</span><br><span class="line">#       How often list of active checks is refreshed, in seconds.</span><br><span class="line">#</span><br><span class="line"># Mandatory: no</span><br><span class="line"># Range: 60-3600</span><br><span class="line"># Default:</span><br><span class="line"># RefreshActiveChecks=120</span><br><span class="line"></span><br><span class="line">### Option: BufferSend</span><br><span class="line">#       Do not keep data longer than N seconds in buffer.</span><br><span class="line">#</span><br><span class="line"># Mandatory: no</span><br><span class="line"># Range: 1-3600</span><br><span class="line"># Default:</span><br><span class="line"># BufferSend=5</span><br><span class="line"></span><br><span class="line">### Option: BufferSize</span><br><span class="line">#       Maximum number of values in a memory buffer. The agent will send</span><br><span class="line">#       all collected data to Zabbix Server or Proxy if the buffer is full.</span><br><span class="line">#</span><br><span class="line"># Mandatory: no</span><br><span class="line"># Range: 2-65535</span><br><span class="line"># Default:</span><br><span class="line"># BufferSize=100</span><br><span class="line"></span><br><span class="line">### Option: MaxLinesPerSecond</span><br><span class="line">#       Maximum number of new lines the agent will send per second to Zabbix Server</span><br><span class="line">#       or Proxy processing &apos;log&apos; and &apos;logrt&apos; active checks.</span><br><span class="line">#       The provided value will be overridden by the parameter &apos;maxlines&apos;,</span><br><span class="line">#       provided in &apos;log&apos; or &apos;logrt&apos; item keys.</span><br><span class="line">#</span><br><span class="line"># Mandatory: no</span><br><span class="line"># Range: 1-1000</span><br><span class="line"># Default:</span><br><span class="line"># MaxLinesPerSecond=100</span><br><span class="line"></span><br><span class="line">############ ADVANCED PARAMETERS #################</span><br><span class="line"></span><br><span class="line">### Option: Alias</span><br><span class="line">#       Sets an alias for an item key. It can be used to substitute long and complex item key with a smaller and simpler one.</span><br><span class="line">#       Multiple Alias parameters may be present. Multiple parameters with the same Alias key are not allowed.</span><br><span class="line">#       Different Alias keys may reference the same item key.</span><br><span class="line">#       For example, to retrieve the ID of user &apos;zabbix&apos;:</span><br><span class="line">#       Alias=zabbix.userid:vfs.file.regexp[/etc/passwd,^zabbix:.:([0-9]+),,,,\1]</span><br><span class="line">#       Now shorthand key zabbix.userid may be used to retrieve data.</span><br><span class="line">#       Aliases can be used in HostMetadataItem but not in HostnameItem parameters.</span><br><span class="line">#</span><br><span class="line"># Mandatory: no</span><br><span class="line"># Range:</span><br><span class="line"># Default:</span><br><span class="line"></span><br><span class="line">### Option: Timeout</span><br><span class="line">#       Spend no more than Timeout seconds on processing</span><br><span class="line">#</span><br><span class="line"># Mandatory: no</span><br><span class="line"># Range: 1-30</span><br><span class="line"># Default:</span><br><span class="line">Timeout=20</span><br><span class="line"></span><br><span class="line">### Option: AllowRoot</span><br><span class="line">#       Allow the agent to run as &apos;root&apos;. If disabled and the agent is started by &apos;root&apos;, the agent</span><br><span class="line">#       will try to switch to the user specified by the User configuration option instead.</span><br><span class="line">#       Has no effect if started under a regular user.</span><br><span class="line">#       0 - do not allow</span><br><span class="line">#       1 - allow</span><br><span class="line">#</span><br><span class="line"># Mandatory: no</span><br><span class="line"># Default:</span><br><span class="line"># AllowRoot=0</span><br><span class="line"></span><br><span class="line">### Option: User</span><br><span class="line">#       Drop privileges to a specific, existing user on the system.</span><br><span class="line">#       Only has effect if run as &apos;root&apos; and AllowRoot is disabled.</span><br><span class="line">#</span><br><span class="line"># Mandatory: no</span><br><span class="line"># Default:</span><br><span class="line"># User=zabbix</span><br><span class="line"></span><br><span class="line">### Option: Include</span><br><span class="line">#       You may include individual files or all files in a directory in the configuration file.</span><br><span class="line">#       Installing Zabbix will create include directory in /usr/local/etc, unless modified during the compile time.</span><br><span class="line">#</span><br><span class="line"># Mandatory: no</span><br><span class="line"># Default:</span><br><span class="line"># Include=</span><br><span class="line"></span><br><span class="line"># Include=/usr/local/etc/zabbix_agentd.userparams.conf</span><br><span class="line"># Include=/usr/local/etc/zabbix_agentd.conf.d/</span><br><span class="line"># Include=/usr/local/etc/zabbix_agentd.conf.d/*.conf</span><br><span class="line"></span><br><span class="line">####### USER-DEFINED MONITORED PARAMETERS #######</span><br><span class="line"></span><br><span class="line">### Option: UnsafeUserParameters</span><br><span class="line">#       Allow all characters to be passed in arguments to user-defined parameters.</span><br><span class="line">#       0 - do not allow</span><br><span class="line">#       1 - allow</span><br><span class="line">#</span><br><span class="line"># Mandatory: no</span><br><span class="line"># Range: 0-1</span><br><span class="line"># Default:</span><br><span class="line">UnsafeUserParameters=1</span><br><span class="line"></span><br><span class="line">### Option: UserParameter</span><br><span class="line">#       User-defined parameter to monitor. There can be several user-defined parameters.</span><br><span class="line">#       Format: UserParameter=&lt;key&gt;,&lt;shell command&gt;</span><br><span class="line">#       See &apos;zabbix_agentd&apos; directory for examples.</span><br><span class="line">#</span><br><span class="line"># Mandatory: no</span><br><span class="line"># Default:</span><br><span class="line"># UserParameter=</span><br><span class="line"></span><br><span class="line">####### LOADABLE MODULES #######</span><br><span class="line"></span><br><span class="line">### Option: LoadModulePath</span><br><span class="line">#       Full path to location of agent modules.</span><br><span class="line">#       Default depends on compilation options.</span><br><span class="line">#</span><br><span class="line"># Mandatory: no</span><br><span class="line"># Default:</span><br><span class="line"># LoadModulePath=$&#123;libdir&#125;/modules</span><br><span class="line"></span><br><span class="line">### Option: LoadModule</span><br><span class="line">#       Module to load at agent startup. Modules are used to extend functionality of the agent.</span><br><span class="line">#       Format: LoadModule=&lt;module.so&gt;</span><br><span class="line">#       The modules must be located in directory specified by LoadModulePath.</span><br><span class="line">#       It is allowed to include multiple LoadModule parameters.</span><br><span class="line">#</span><br><span class="line"># Mandatory: no</span><br><span class="line"># Default:</span><br><span class="line"># LoadModule=</span><br></pre></td></tr></table></figure>
+
+<h4 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br></pre></td><td class="code"><pre><span class="line">shell &gt; ansible-playbook /etc/ansible/install_zabbix_agent.yml</span><br><span class="line"></span><br><span class="line">PLAY [mini] *******************************************************************</span><br><span class="line"></span><br><span class="line">GATHERING FACTS ***************************************************************</span><br><span class="line">ok: [129.139.153.78]</span><br><span class="line">ok: [155.139.190.94]</span><br><span class="line"></span><br><span class="line">TASK: [install_zabbix_agent | Install Software] *******************************</span><br><span class="line">changed: [155.139.190.94] =&gt; (item=libcurl-devel)</span><br><span class="line">changed: [129.139.153.78] =&gt; (item=libcurl-devel)</span><br><span class="line"></span><br><span class="line">TASK: [install_zabbix_agent | Create Zabbix User] *****************************</span><br><span class="line">changed: [129.139.153.78]</span><br><span class="line">changed: [155.139.190.94]</span><br><span class="line"></span><br><span class="line">TASK: [install_zabbix_agent | Copy Zabbix.tar.gz] *****************************</span><br><span class="line">changed: [129.139.153.78]</span><br><span class="line">changed: [155.139.190.94]</span><br><span class="line"></span><br><span class="line">TASK: [install_zabbix_agent | Uncompression Zabbix.tar.gz] ********************</span><br><span class="line">changed: [129.139.153.78]</span><br><span class="line">changed: [155.139.190.94]</span><br><span class="line"></span><br><span class="line">TASK: [install_zabbix_agent | Copy Zabbix Start Script] ***********************</span><br><span class="line">changed: [155.139.190.94]</span><br><span class="line">changed: [129.139.153.78]</span><br><span class="line"></span><br><span class="line">TASK: [install_zabbix_agent | Copy Zabbix Config File] ************************</span><br><span class="line">changed: [129.139.153.78]</span><br><span class="line">changed: [155.139.190.94]</span><br><span class="line"></span><br><span class="line">TASK: [install_zabbix_agent | Modify Zabbix Dir Permisson] ********************</span><br><span class="line">changed: [155.139.190.94]</span><br><span class="line">changed: [129.139.153.78]</span><br><span class="line"></span><br><span class="line">TASK: [install_zabbix_agent | Start Zabbix Service] ***************************</span><br><span class="line">changed: [129.139.153.78]</span><br><span class="line">changed: [155.139.190.94]</span><br><span class="line"></span><br><span class="line">TASK: [install_zabbix_agent | Add Boot Start Zabbix Service] ******************</span><br><span class="line">changed: [129.139.153.78]</span><br><span class="line">changed: [155.139.190.94]</span><br><span class="line"></span><br><span class="line">PLAY RECAP ********************************************************************</span><br><span class="line">155.139.190.94               : ok=10   changed=9    unreachable=0    failed=0</span><br><span class="line">129.139.153.78               : ok=10   changed=9    unreachable=0    failed=0</span><br><span class="line"></span><br><span class="line">## 关注一下，启动脚本跟配置文件中变量的引用。</span><br><span class="line">## 完成安装，可以去客户机检查效果了 ！</span><br></pre></td></tr></table></figure>
+
+
+      
+    </div>
+    
+    
+    
+	
+	<div>
+	  
+		<div>
+    
+        <div style="text-align:center;color: #ccc;font-size:14px;">--------------------本文结束，感谢您的阅读--------------------</div>
+    
+</div>
+	  
+	</div>
+	
+	<div>
+      
+        
+<div class="my_post_copyright">
+  <script src="//cdn.bootcss.com/clipboard.js/1.5.10/clipboard.min.js"></script>
+  
+  <!-- JS库 sweetalert 可修改路径 -->
+  <script src="https://cdn.bootcss.com/jquery/2.0.0/jquery.min.js"></script>
+  <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+  <p><span>本文标题:</span><a href="/ansible自动化运维详细教程及playbook详解/">ansible自动化运维详细教程及playbook详解</a></p>
+  <p><span>文章作者:</span><a href="/" title="访问 弓昭 的个人博客">弓昭</a></p>
+  <p><span>发布时间:</span>2018年12月21日 - 20:01</p>
+  <p><span>最后更新:</span>2020年04月08日 - 22:20</p>
+  <p><span>原始链接:</span><a href="/ansible自动化运维详细教程及playbook详解/" title="ansible自动化运维详细教程及playbook详解">https://gongzhao1.coding.me/ansible自动化运维详细教程及playbook详解/</a>
+    <span class="copy-path" title="点击复制文章链接"><i class="fa fa-clipboard" data-clipboard-text="https://gongzhao1.coding.me/ansible自动化运维详细教程及playbook详解/" aria-label="复制成功！"></i></span>
+  </p>
+  <p><span>联系邮箱:</span>gongzhao1@foxmail.com</p>  
+</div>
+<script> 
+    var clipboard = new Clipboard('.fa-clipboard');
+    $(".fa-clipboard").click(function(){
+      clipboard.on('success', function(){
+        swal({   
+          title: "",   
+          text: '复制成功',
+          icon: "success", 
+          showConfirmButton: true
+          });
+	});
+    });  
+</script>
+
+      
+	</div>
+	
+
+
+    
+
+    
+      <div>
+        <div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center;">
+  <div></div>
+  <button id="rewardButton" disable="enable" onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}">
+    <span>Donate</span>
+  </button>
+  <div id="QR" style="display: none;">
+
+    
+      <div id="wechat" style="display: inline-block">
+        <img id="wechat_qr" src="/images/wechat.jpg" alt="弓昭 WeChat Pay">
+        <p>WeChat Pay</p>
+      </div>
+    
+
+    
+      <div id="alipay" style="display: inline-block">
+        <img id="alipay_qr" src="/images/ali.jpg" alt="弓昭 Alipay">
+        <p>Alipay</p>
+      </div>
+    
+
+    
+
+  </div>
+</div>
+
+      </div>
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/ansible/" rel="tag"><i class="fa fa-tag"></i>ansible</a>
+          
+            <a href="/tags/playbook/" rel="tag"><i class="fa fa-tag"></i>playbook</a>
+          
+            <a href="/tags/自动化/" rel="tag"><i class="fa fa-tag"></i>自动化</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/CentOS7和Ubuntu16.04 破解Linux文件数、进程数限制/" rel="next" title="CentOS7和Ubuntu16.04 破解Linux文件数、进程数限制">
+                <i class="fa fa-chevron-left"></i> CentOS7和Ubuntu16.04 破解Linux文件数、进程数限制
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/elasticsearch安装配置/" rel="prev" title="elasticsearch安装配置">
+                elasticsearch安装配置 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div id="lv-container" data-id="city" data-uid="MTAyMC80MTcyNy8xODI3Mw=="></div>
+    
+  </div>
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image" src="/uploads/panda.jpg" alt="弓昭">
+          <p class="site-author-name" itemprop="name">弓昭</p>
+           
+              <p class="site-description motion-element" itemprop="description">弓昭的个人主页，主要涉及网络、运维、前端、Python等等知识</p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives/">
+                <span class="site-state-item-count">83</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">25</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">72</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+          <div class="feed-link motion-element">
+            <a href="/atom.xml" rel="alternate">
+              <i class="fa fa-rss"></i>
+              RSS
+            </a>
+          </div>
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/gongzhao1" target="_blank" title="GitHub">
+                  
+                    <i class="fa fa-fw fa-github"></i>
+                  
+                    
+                      GitHub
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://blog.csdn.net/zhao12795969" target="_blank" title="csdn">
+                  
+                    <i class="fa fa-fw fa-crosshairs"></i>
+                  
+                    
+                      csdn
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://www.jianshu.com/u/1dbca13c6043" target="_blank" title="简书">
+                  
+                    <i class="fa fa-fw fa-heartbeat"></i>
+                  
+                    
+                      简书
+                    
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+          <div class="links-of-blogroll motion-element links-of-blogroll-inline">
+            <div class="links-of-blogroll-title">
+              <i class="fa  fa-fw fa-globe"></i>
+              Links
+            </div>
+            <ul class="links-of-blogroll-list">
+              
+                <li class="links-of-blogroll-item">
+                  <a href="http://ccieh3c.com/" title="网络之路" target="_blank">网络之路</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="http://jm.taobao.org/" title="阿里云中间件" target="_blank">阿里云中间件</a>
+                </li>
+              
+            </ul>
+          </div>
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#前言"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#安装ansible"><span class="nav-number">2.</span> <span class="nav-text">安装ansible</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#配置ansible"><span class="nav-number">3.</span> <span class="nav-text">配置ansible</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#SSH秘钥认证"><span class="nav-number">3.1.</span> <span class="nav-text">SSH秘钥认证</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#添加被管理主机"><span class="nav-number">3.2.</span> <span class="nav-text">添加被管理主机</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#测试ansible"><span class="nav-number">3.3.</span> <span class="nav-text">测试ansible</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#hosts主机文件"><span class="nav-number">4.</span> <span class="nav-text">hosts主机文件</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#ansible常用模块"><span class="nav-number">5.</span> <span class="nav-text">ansible常用模块</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#远程命令模块（command-script-shell）"><span class="nav-number">5.1.</span> <span class="nav-text">远程命令模块（command / script / shell）</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#command"><span class="nav-number">5.1.1.</span> <span class="nav-text">command</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#script"><span class="nav-number">5.1.2.</span> <span class="nav-text">script</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#shell"><span class="nav-number">5.1.3.</span> <span class="nav-text">shell</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#copy模块"><span class="nav-number">5.2.</span> <span class="nav-text">copy模块</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#file模块"><span class="nav-number">5.3.</span> <span class="nav-text">file模块</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#unarchive"><span class="nav-number">5.4.</span> <span class="nav-text">unarchive</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#stat模块"><span class="nav-number">5.5.</span> <span class="nav-text">stat模块</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#get-url"><span class="nav-number">5.6.</span> <span class="nav-text">get_url</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#yum"><span class="nav-number">5.7.</span> <span class="nav-text">yum</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#corn"><span class="nav-number">5.8.</span> <span class="nav-text">corn</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#mount"><span class="nav-number">5.9.</span> <span class="nav-text">mount</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#service"><span class="nav-number">5.10.</span> <span class="nav-text">service</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#user"><span class="nav-number">5.11.</span> <span class="nav-text">user</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#ansible-playbook-详解"><span class="nav-number">6.</span> <span class="nav-text">ansible-playbook 详解</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#命令详解"><span class="nav-number">6.1.</span> <span class="nav-text">命令详解</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#YAML语法"><span class="nav-number">6.2.</span> <span class="nav-text">YAML语法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Playbook目录结构"><span class="nav-number">6.3.</span> <span class="nav-text">Playbook目录结构</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#核心组件"><span class="nav-number">6.4.</span> <span class="nav-text">核心组件</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#标签处理"><span class="nav-number">6.5.</span> <span class="nav-text">标签处理</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#playbook简单示例"><span class="nav-number">6.6.</span> <span class="nav-text">playbook简单示例</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#第一个示例"><span class="nav-number">6.6.1.</span> <span class="nav-text">第一个示例</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#第二个示例"><span class="nav-number">6.6.2.</span> <span class="nav-text">第二个示例</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#第三个示例"><span class="nav-number">6.6.3.</span> <span class="nav-text">第三个示例</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#第四个示例"><span class="nav-number">6.6.4.</span> <span class="nav-text">第四个示例</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#第五个示例"><span class="nav-number">6.6.5.</span> <span class="nav-text">第五个示例</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#使用ansible-playbook安装zabbix"><span class="nav-number">6.7.</span> <span class="nav-text">使用ansible-playbook安装zabbix</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#定义hosts"><span class="nav-number">6.7.1.</span> <span class="nav-text">定义hosts</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#定义入口文件install-zabbix-agent-yml"><span class="nav-number">6.7.2.</span> <span class="nav-text">定义入口文件install_zabbix_agent.yml</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#定义角色-install-zabbix-agent"><span class="nav-number">6.7.3.</span> <span class="nav-text">定义角色 install_zabbix_agent</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#建立tasks主文件"><span class="nav-number">6.7.4.</span> <span class="nav-text">建立tasks主文件</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#建立主变量文件"><span class="nav-number">6.7.5.</span> <span class="nav-text">建立主变量文件</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#建立模板文件"><span class="nav-number">6.7.6.</span> <span class="nav-text">建立模板文件</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#安装"><span class="nav-number">6.7.7.</span> <span class="nav-text">安装</span></a></li></ol></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+<div class="copyright">
+  
+  &copy;  2018 - 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">弓昭</span>
+</div>
+
+
+<div class="powered-by">
+	<i class="fa fa-user-md"></i><span id="busuanzi_container_site_uv">
+	  本站访客数:<span id="busuanzi_value_site_uv"></span>
+	</span>
+</div>
+
+
+<div class="theme-info">
+
+  <span class="post-count">博客全站共253.1k字</span>
+</div>
+
+
+
+        
+<div class="busuanzi-count">
+  <script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+
+  
+</div>
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.2"></script>
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.2"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+    <script type="text/javascript">
+      (function(d, s) {
+        var j, e = d.getElementsByTagName(s)[0];
+        if (typeof LivereTower === 'function') { return; }
+        j = d.createElement(s);
+        j.src = 'https://cdn-city.livere.com/js/embed.dist.js';
+        j.async = true;
+        e.parentNode.insertBefore(j, e);
+      })(document, 'script');
+    </script>
+  
+
+
+
+
+
+
+  
+
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url);
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
