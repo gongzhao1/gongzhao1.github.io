@@ -315,6 +315,378 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://gongzhao1.coding.me/Kubernetes集群监控之Prometheus-Operator/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="弓昭">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/uploads/panda.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="GZ">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/Kubernetes集群监控之Prometheus-Operator/" itemprop="url">Kubernetes集群监控之Prometheus Operator</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-02-18T14:27:32+08:00">
+                2020-02-18
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/监控/" itemprop="url" rel="index">
+                    <span itemprop="name">监控</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <p>[TOC]</p>
+<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><ul>
+<li><a href="https://github.com/helm/charts/tree/master/stable/prometheus-operator" target="_blank" rel="noopener">https://github.com/helm/charts/tree/master/stable/prometheus-operator</a></li>
+<li><a href="https://github.com/coreos/prometheus-operator" target="_blank" rel="noopener">https://github.com/coreos/prometheus-operator</a></li>
+<li><a href="https://www.servicemesher.com/blog/prometheus-operator-manual/" target="_blank" rel="noopener">https://www.servicemesher.com/blog/prometheus-operator-manual/</a></li>
+<li><a href="https://blog.csdn.net/travellersY/article/details/84632679" target="_blank" rel="noopener">https://blog.csdn.net/travellersY/article/details/84632679</a></li>
+</ul>
+<h1 id="Kubernetes-Operator-介绍"><a href="#Kubernetes-Operator-介绍" class="headerlink" title="Kubernetes Operator 介绍"></a>Kubernetes Operator 介绍</h1><p><code>Operator</code>是由<a href="https://coreos.com/" target="_blank" rel="noopener">CoreOS</a>公司开发的，用来扩展 Kubernetes API，特定的应用程序控制器，它用来创建、配置和管理复杂的有状态应用，如数据库、缓存和监控系统。<code>Operator</code>基于 Kubernetes 的资源和控制器概念之上构建，但同时又包含了应用程序特定的一些专业知识，比如创建一个数据库的<code>Operator</code>，则必须对创建的数据库的各种运维方式非常了解，创建<code>Operator</code>的关键是<code>CRD</code>（自定义资源）的设计。</p>
+<blockquote>
+<p><code>CRD</code>是对 Kubernetes API 的扩展，Kubernetes 中的每个资源都是一个 API 对象的集合，例如我们在YAML文件里定义的那些<code>spec</code>都是对 Kubernetes 中的资源对象的定义，所有的自定义资源可以跟 Kubernetes 中内建的资源一样使用 kubectl 操作。</p>
+</blockquote>
+<p><code>Operator</code>是将运维人员对软件操作的知识给代码化，同时利用 Kubernetes 强大的抽象来管理大规模的软件应用。目前<code>CoreOS</code>官方提供了几种<code>Operator</code>的实现，其中就包括我们今天的主角：<code>Prometheus Operator</code>，<code>Operator</code>的核心实现就是基于 Kubernetes 的以下两个概念：</p>
+<ul>
+<li>资源：对象的状态定义</li>
+<li>控制器：观测、分析和行动，以调节资源的分布</li>
+</ul>
+<p>当然我们如果有对应的需求也完全可以自己去实现一个<code>Operator</code>，接下来我们就来给大家详细介绍下<code>Prometheus-Operator</code>的使用方法。</p>
+<h1 id="Prometheus-Operator介绍"><a href="#Prometheus-Operator介绍" class="headerlink" title="Prometheus Operator介绍"></a>Prometheus Operator介绍</h1><p>Kubernetes的Prometheus Operator为Kubernetes服务和Prometheus实例的部署和管理提供了简单的监控定义。</p>
+<p>安装完毕后，Prometheus Operator提供了以下功能：</p>
+<ul>
+<li>创建/毁坏: 在Kubernetes namespace中更容易启动一个Prometheus实例，一个特定的应用程序或团队更容易使用Operator。</li>
+<li>简单配置: 配置Prometheus的基础东西，比如在Kubernetes的本地资源versions, persistence, retention policies, 和replicas。</li>
+<li>Target Services通过标签: 基于常见的Kubernetes label查询，自动生成监控target 配置；不需要学习普罗米修斯特定的配置语言。</li>
+</ul>
+<p>Prometheus Operator 架构图如下：</p>
+<p><img src="https://gongzhao-1256784911.cos.ap-shanghai.myqcloud.com/hexo/images/prometheus/24.png" alt="image"></p>
+<p>以上架构中的各组成部分以不同的资源方式运行在 Kubernetes 集群中，它们各自有不同的作用：</p>
+<ul>
+<li>Operator： Operator 资源会根据自定义资源（Custom Resource Definition / CRDs）来部署和管理 Prometheus Server，同时监控这些自定义资源事件的变化来做相应的处理，是整个系统的控制中心。</li>
+<li>Prometheus： Prometheus 资源是声明性地描述 Prometheus 部署的期望状态。</li>
+<li>Prometheus Server： Operator 根据自定义资源 Prometheus 类型中定义的内容而部署的 Prometheus Server 集群，这些自定义资源可以看作是用来管理 Prometheus Server 集群的 StatefulSets 资源。</li>
+<li>ServiceMonitor： ServiceMonitor 也是一个自定义资源，它描述了一组被 Prometheus 监控的 targets 列表。该资源通过 Labels 来选取对应的 Service Endpoint，让 Prometheus Server 通过选取的 Service 来获取 Metrics 信息。</li>
+<li>Service： Service 资源主要用来对应 Kubernetes 集群中的 Metrics Server Pod，来提供给 ServiceMonitor 选取让 Prometheus Server 来获取信息。简单的说就是 Prometheus 监控的对象，例如 Node Exporter Service、Mysql Exporter Service 等等。</li>
+<li>Alertmanager： Alertmanager 也是一个自定义资源类型，由 Operator 根据资源描述内容来部署 Alertmanager 集群。</li>
+</ul>
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/Kubernetes集群监控之Prometheus-Operator/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+    
+    
+    
+	
+	<div>
+	  
+	</div>
+	
+	<div>
+      
+	</div>
+	
+
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://gongzhao1.coding.me/Kubernetes集群监控之Prometheus/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="弓昭">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/uploads/panda.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="GZ">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/Kubernetes集群监控之Prometheus/" itemprop="url">Kubernetes集群监控之Prometheus</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-02-17T18:47:33+08:00">
+                2020-02-17
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/监控/" itemprop="url" rel="index">
+                    <span itemprop="name">监控</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <p>[TOC]</p>
+<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><ul>
+<li><a href="http://dockone.io/article/9269" target="_blank" rel="noopener">http://dockone.io/article/9269</a></li>
+<li><a href="http://dockone.io/article/5716" target="_blank" rel="noopener">http://dockone.io/article/5716</a></li>
+<li><a href="https://www.jianshu.com/p/fb5c82de935d" target="_blank" rel="noopener">https://www.jianshu.com/p/fb5c82de935d</a></li>
+<li><a href="https://github.com/prometheus/prometheus" target="_blank" rel="noopener">https://github.com/prometheus/prometheus</a></li>
+<li><a href="https://yunlzheng.gitbook.io/prometheus-book" target="_blank" rel="noopener">https://yunlzheng.gitbook.io/prometheus-book</a></li>
+<li><a href="https://prometheus.io/docs/introduction/overview/" target="_blank" rel="noopener">https://prometheus.io/docs/introduction/overview/</a></li>
+<li><a href="https://github.com/samber/awesome-prometheus-alerts" target="_blank" rel="noopener">https://github.com/samber/awesome-prometheus-alerts</a></li>
+</ul>
+<h1 id="监控目的"><a href="#监控目的" class="headerlink" title="监控目的"></a>监控目的</h1><p>在《SRE：Google运维解密》一书中指出，监控系统需要能够有效的支持白盒监控和黑盒监控。通过白盒能够了解其内部的实际运行状态，通过对监控指标的观察能够预判可能出现的问题，从而对潜在的不确定因素进行优化。而黑盒监控，常见的如HTTP探针，TCP探针等，可以在系统或者服务在发生故障时能够快速通知相关的人员进行处理。通过建立完善的监控体系，从而达到以下目的：</p>
+<ul>
+<li>长期趋势分析：通过对监控样本数据的持续收集和统计，对监控指标进行长期趋势分析。例如，通过对磁盘空间增长率的判断，我们可以提前预测在未来什么时间节点上需要对资源进行扩容。</li>
+<li>对照分析：两个版本的系统运行资源使用情况的差异如何？在不同容量情况下系统的并发和负载变化如何？通过监控能够方便的对系统进行跟踪和比较。</li>
+<li>告警：当系统出现或者即将出现故障时，监控系统需要迅速反应并通知管理员，从而能够对问题进行快速的处理或者提前预防问题的发生，避免出现对业务的影响。</li>
+<li>故障分析与定位：当问题发生后，需要对问题进行调查和处理。通过对不同监控指标以及历史数据的分析，能够找到并解决根源问题。</li>
+<li>数据可视化：通过可视化仪表盘能够直接获取系统的运行状态、资源使用情况、以及服务运行状态等直观的信息。</li>
+</ul>
+<p>而对于上一代监控系统而言，在使用过程中往往会面临以下问题：</p>
+<ul>
+<li>与业务脱离的监控：监控系统获取到的监控指标与业务本身也是一种分离的关系。好比客户可能关注的是服务的可用性、服务的SLA等级，而监控系统却只能根据系统负载去产生告警；</li>
+<li>运维管理难度大：Nagios这一类监控系统本身运维管理难度就比较大，需要有专业的人员进行安装，配置和管理，而且过程并不简单；</li>
+<li>可扩展性低： 监控系统自身难以扩展，以适应监控规模的变化；</li>
+<li>问题定位难度大：当问题产生之后（比如主机负载异常增加）对于用户而言，他们看到的依然是一个黑盒，他们无法了解主机上服务真正的运行情况，因此当故障发生后，这些告警信息并不能有效的支持用户对于故障根源问题的分析和定位。</li>
+</ul>
+<p>在上述需求中，我们可以提取出以下对于一个完善的监控解决方案的几个关键词：数据分析、趋势预测、告警、故障定位、可视化。</p>
+<p>除此以外，当前越来越多的产品公司迁移到云或者容器的情况下，对于监控解决方案而言还需要另外一个关键词：云原生。</p>
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/Kubernetes集群监控之Prometheus/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+    
+    
+    
+	
+	<div>
+	  
+	</div>
+	
+	<div>
+      
+	</div>
+	
+
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://gongzhao1.coding.me/基金定投之5G基金/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1631,323 +2003,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://gongzhao1.coding.me/从余额宝收益率看债券牛熊市/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="弓昭">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/uploads/panda.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="GZ">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/从余额宝收益率看债券牛熊市/" itemprop="url">从余额宝收益率看债券牛熊市</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-09-25T22:26:37+08:00">
-                2019-09-25
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/债券/" itemprop="url" rel="index">
-                    <span itemprop="name">债券</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><blockquote>
-<p><a href="https://mp.weixin.qq.com/s/kdSCq5XfYBK_uxMo_cCl3A" target="_blank" rel="noopener">https://mp.weixin.qq.com/s/kdSCq5XfYBK_uxMo_cCl3A</a></p>
-</blockquote>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/从余额宝收益率看债券牛熊市/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-	
-	<div>
-	  
-	</div>
-	
-	<div>
-      
-	</div>
-	
-
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://gongzhao1.coding.me/基金定投之主动型基金/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="弓昭">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/uploads/panda.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="GZ">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/基金定投之主动型基金/" itemprop="url">基金定投之主动型基金</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-09-25T21:46:26+08:00">
-                2019-09-25
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/基金/" itemprop="url" rel="index">
-                    <span itemprop="name">基金</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><blockquote>
-<p><a href="https://mp.weixin.qq.com/s/XOW3z_SfnGCdaTVZyHsDmA" target="_blank" rel="noopener">https://mp.weixin.qq.com/s/XOW3z_SfnGCdaTVZyHsDmA</a></p>
-<p><a href="https://mp.weixin.qq.com/s?__biz=MzU4Mzg0NDIyMA==&amp;mid=2247484343&amp;idx=1&amp;sn=306c2a3d950876bea169be8d8ce084fb&amp;chksm=fda3aba4cad422b2f577d87f60f407316b892096e597dda2f7c9ab04856c1b1df1978cf26eb8&amp;scene=21#wechat_redirect" target="_blank" rel="noopener">https://mp.weixin.qq.com/s?__biz=MzU4Mzg0NDIyMA==&amp;mid=2247484343&amp;idx=1&amp;sn=306c2a3d950876bea169be8d8ce084fb&amp;chksm=fda3aba4cad422b2f577d87f60f407316b892096e597dda2f7c9ab04856c1b1df1978cf26eb8&amp;scene=21#wechat_redirect</a></p>
-</blockquote>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/基金定投之主动型基金/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-	
-	<div>
-	  
-	</div>
-	
-	<div>
-      
-	</div>
-	
-
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -1997,7 +2052,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/archives/">
-                <span class="site-state-item-count">85</span>
+                <span class="site-state-item-count">87</span>
                 <span class="site-state-item-name">日志</span>
               </a>
             </div>
@@ -2019,7 +2074,7 @@
             
             <div class="site-state-item site-state-tags">
               <a href="/tags/index.html">
-                <span class="site-state-item-count">74</span>
+                <span class="site-state-item-count">76</span>
                 <span class="site-state-item-name">标签</span>
               </a>
             </div>
@@ -2139,7 +2194,7 @@
 
 <div class="theme-info">
 
-  <span class="post-count">博客全站共258.5k字</span>
+  <span class="post-count">博客全站共261.5k字</span>
 </div>
 
 
