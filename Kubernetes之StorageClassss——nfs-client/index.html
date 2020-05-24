@@ -103,7 +103,7 @@
 <meta property="og:description" content="[TOC] 0 参考 https://kubernetes.io/docs/concepts/storage/storage-classes/ http://tingcream.com/blogArticle/detail/28acd1174a49432ba733cf6bbfa077a5  1 简介 Kubernetes集群管理员通过提供不同的存储类，可以满足用户不同的服务质量级别、备份策略和任意">
 <meta property="og:locale" content="zh-Hans">
 <meta property="og:image" content="https://gongzhao-1256784911.cos.ap-shanghai.myqcloud.com/hexo/images/kubernetes/storageclass.png">
-<meta property="og:updated_time" content="2020-05-24T09:14:52.726Z">
+<meta property="og:updated_time" content="2020-05-24T15:37:51.854Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Kubernetes之StorageClassss——nfs-client">
 <meta name="twitter:description" content="[TOC] 0 参考 https://kubernetes.io/docs/concepts/storage/storage-classes/ http://tingcream.com/blogArticle/detail/28acd1174a49432ba733cf6bbfa077a5  1 简介 Kubernetes集群管理员通过提供不同的存储类，可以满足用户不同的服务质量级别、备份策略和任意">
@@ -419,6 +419,8 @@
 <h1 id="1-简介"><a href="#1-简介" class="headerlink" title="1 简介"></a>1 简介</h1><p> Kubernetes集群管理员通过提供不同的存储类，可以满足用户不同的服务质量级别、备份策略和任意策略要求的存储需求。动态存储卷供应使用StorageClass进行实现，其允许存储卷按需被创建。如果没有动态存储供应，Kubernetes集群的管理员将不得不通过手工的方式类创建新的存储卷。通过动态存储卷，Kubernetes将能够按照用户的需要，自动创建其需要的存储。</p>
 <p>比如，我们可能会在kubernetes集群中安装一些带持久化数据功能的服务，例如redis、mysql、mq、es等。因此，当有这类需求时，我们必须给整个集群给定一个特定的存储方案。本章我们是NFS的网络存储方案</p>
 <p><img src="https://gongzhao-1256784911.cos.ap-shanghai.myqcloud.com/hexo/images/kubernetes/storageclass.png" alt="image"></p>
+<a id="more"></a>
+
 <h2 id="2-部署"><a href="#2-部署" class="headerlink" title="2 部署"></a>2 部署</h2><h2 id="2-1-NFS服务器"><a href="#2-1-NFS服务器" class="headerlink" title="2.1 NFS服务器"></a>2.1 NFS服务器</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">yum install rpcbind  nfs-utils</span><br><span class="line"></span><br><span class="line">mkdir /nfs_data</span><br><span class="line"></span><br><span class="line">chmod +w /nfs_data</span><br><span class="line"></span><br><span class="line">chmod +x /nfs_data</span><br></pre></td></tr></table></figure>
 
 <p>编辑/etc/exports,内容如下：</p>

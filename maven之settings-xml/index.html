@@ -106,7 +106,7 @@
 <meta property="og:image" content="https://gongzhao-1256784911.cos.ap-shanghai.myqcloud.com/hexo/images/maven/2.webp">
 <meta property="og:image" content="https://gongzhao-1256784911.cos.ap-shanghai.myqcloud.com/hexo/images/maven/3.webp">
 <meta property="og:image" content="https://gongzhao-1256784911.cos.ap-shanghai.myqcloud.com/hexo/images/maven/4.webp">
-<meta property="og:updated_time" content="2020-05-24T15:29:59.624Z">
+<meta property="og:updated_time" content="2020-05-24T15:37:38.860Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="maven之settings.xml">
 <meta name="twitter:description" content="[TOC] 0 参考 https://www.cnblogs.com/wdliu/p/8312543.html  1 settings.xml详解1.1 声明规范123&amp;lt;settings xmlns=&quot;http://maven.apache.org/SETTINGS/1.0.0&quot;           xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-in">
@@ -427,6 +427,8 @@
 <h2 id="1-4-usePluginRegistry"><a href="#1-4-usePluginRegistry" class="headerlink" title="1.4 usePluginRegistry"></a>1.4 usePluginRegistry</h2><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">&lt;!--Maven是否需要使用plugin-registry.xml文件来管理插件版本。如果需要让Maven使用文件来管理插件版本，则设为true。默认为false。--&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">usePluginRegistry</span>&gt;</span>false<span class="tag">&lt;/<span class="name">usePluginRegistry</span>&gt;</span></span><br></pre></td></tr></table></figure>
 
 <h2 id="1-5-offline"><a href="#1-5-offline" class="headerlink" title="1.5 offline"></a>1.5 offline</h2><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">&lt;!--表示Maven是否需要在离线模式下运行。如果构建系统需要在离线模式下运行，则为true，默认为false。当由于网络设置原因或者安全因素，构建服务器不能连接远程仓库的时候，该配置就十分有用。 --&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">offline</span>&gt;</span>false<span class="tag">&lt;/<span class="name">offline</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<a id="more"></a>
 
 <h2 id="1-6-pluginGroups"><a href="#1-6-pluginGroups" class="headerlink" title="1.6 pluginGroups"></a>1.6 pluginGroups</h2><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">&lt;!--当插件的组织Id（groupId）没有显式提供时，供搜寻插件组织Id（groupId）的列表。该元素包含一个pluginGroup元素列表，每个子元素包含了一个组织Id（groupId）。当我们使用某个插件，并且没有在命令行为其提供组织Id（groupId）的时候，Maven就会使用该列表。默认情况下该列表包含了org.apache.maven.plugins和org.codehaus.mojo --&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">pluginGroups</span>&gt;</span></span><br><span class="line">  <span class="comment">&lt;!--plugin的组织Id（groupId） --&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">pluginGroup</span>&gt;</span>org.codehaus.mojo<span class="tag">&lt;/<span class="name">pluginGroup</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">pluginGroups</span>&gt;</span></span><br></pre></td></tr></table></figure>
 
