@@ -315,6 +315,330 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://gongzhao1.coding.me/OAuth详解/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="弓昭">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/uploads/panda.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="GZ">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/OAuth详解/" itemprop="url">OAuth详解</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-05-24T16:08:24+08:00">
+                2020-05-24
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p>[TOC]</p>
+<h1 id="0-参考文章"><a href="#0-参考文章" class="headerlink" title="0 参考文章"></a>0 参考文章</h1><ul>
+<li><a href="https://www.jianshu.com/p/b06944c92228" target="_blank" rel="noopener">https://www.jianshu.com/p/b06944c92228</a></li>
+<li><a href="http://www.ruanyifeng.com/blog/2014/05/oauth_2_0.html" target="_blank" rel="noopener">http://www.ruanyifeng.com/blog/2014/05/oauth_2_0.html</a></li>
+</ul>
+<h1 id="1-什么是OAuth"><a href="#1-什么是OAuth" class="headerlink" title="1 什么是OAuth"></a>1 什么是OAuth</h1><p>官网这样说…</p>
+<blockquote>
+<p>An <strong>open protocol</strong> to allow <strong>secure authorization</strong> in a <strong>simple</strong> and <strong>standard</strong> method from web, mobile and desktop applications.</p>
+</blockquote>
+<ul>
+<li>OAuth 即 <strong>O</strong>pen standard for <strong>Auth</strong>orization</li>
+<li>OAuth就是一个网络开放协议。为保证用户资源的安全授权提供了简易的标准</li>
+<li>在知乎上看到了一个比较直观的比喻，有助于初学者理解。<a href="https://link.jianshu.com?t=http://www.zhihu.com/question/19781476" target="_blank" rel="noopener">知乎话题链接</a></li>
+</ul>
+<h1 id="2-OAuth历史版本"><a href="#2-OAuth历史版本" class="headerlink" title="2 OAuth历史版本"></a>2 OAuth历史版本</h1><p><strong>2007-12</strong> OAuth 1.0发布并迅速成为工业标准。</p>
+<p><strong>2008-06</strong> OAuth 1.0 Revision A发布，这是个稍作修改的修订版本，主要修正一个安全方面的漏洞。</p>
+<p><strong>2010-04</strong>，OAuth 1.0 协议发布为 <a href="https://link.jianshu.com?t=http://www.rfcreader.com/#rfc5849" target="_blank" rel="noopener">RFC 5849</a></p>
+<p><strong>2011-05</strong> OAuth 2.0 草案发布</p>
+<p><strong>2012-10</strong> OAuth 2.0 协议发布为 <a href="https://link.jianshu.com?t=http://www.rfcreader.com/#rfc6749" target="_blank" rel="noopener">RFC 6749</a></p>
+<h1 id="3-OAuth-1-0"><a href="#3-OAuth-1-0" class="headerlink" title="3 OAuth 1.0"></a>3 OAuth 1.0</h1><p>OAuth 1.0 协议过于复杂，易用性差，所以并没有得到普及，下文中给出了授权的流程图，可以简单了解了解，现在很少有用的了。</p>
+<p><img src="https://gongzhao-1256784911.cos.ap-shanghai.myqcloud.com/hexo/images/OAuth/1.webp" alt="image"></p>
+<p>关于OAuth 1.0， 想了解的可以看看这些：</p>
+<ul>
+<li><a href="https://link.jianshu.com/?t=http://www.rfcreader.com/#rfc5849" target="_blank" rel="noopener">RFC 5849</a></li>
+<li><a href="https://link.jianshu.com/?t=http://blog.csdn.net/hereweare2009/article/details/3968582" target="_blank" rel="noopener">OAUTH协议简介</a></li>
+</ul>
+<h1 id="4-OAuth-2-0"><a href="#4-OAuth-2-0" class="headerlink" title="4 OAuth 2.0"></a>4 OAuth 2.0</h1><p>OAuth 2.0是目前的最新版本，OAuth 2.0不兼容OAuth 1.0。这篇文章主要讲讲OAuth 2.0，并以此展开。</p>
+<p><strong>先来说一个场景：</strong>比如你第一次打开简书官网，想要注册一个账号。你会看到简书允许你通过新浪微博账号登陆。当你点击之后，需要你登陆微博。之后会出现“是否同意简书获取你的个人信息”等等，如果你选择授权，之后会跳转回简书。你会发现你在简书的用户名就是你微博的用户名。然后，你会发出一条新的微博比如“我加入了简书，一个基于内容分享的社区！”(这只是举个例子，不知道简书有没有这样做)。</p>
+<p>好了，这回开始进入正题</p>
+<h2 id="4-1-角色（roles）"><a href="#4-1-角色（roles）" class="headerlink" title="4.1 角色（roles）"></a>4.1 角色（roles）</h2><p>OAuth 2.0 定义了<strong>四个角色</strong>：</p>
+<ul>
+<li><strong>资源拥有者(Resource Owner)</strong><br> 资源拥有者其实就是用户(user)，用户将会授权一个第三方应用可以获取他们的账户资源。当然第三方应用程序对于用户账户的操作是有限制的(比如，read access, read and write access)！这个限制就是用户授权时给予的权限范围(<strong>scope</strong>)<br> 上面场景中，微博账户就是资源拥有者。read access就比如读取微博用户名，write access就比如以你的名义发了一个微博。</li>
+<li><strong>客户端(Client)</strong><br> 客户端就是前面说的第三方应用程序，他们想要获取用户的账户资源，但在这么做之前必须经过授权<br> 上面场景中，简书就是客户端</li>
+<li><strong>资源服务器(Resource Server)</strong><br> 资源服务器存放用户账户以及账户信息和资源<br> 上面场景中，新浪微博就是资源服务器，同时也是授权服务器</li>
+<li><strong>授权服务器(Authorization Server)</strong><br> 授权服务器验证用户身份，并为第三方应用程序颁发授权令牌(access token)</li>
+</ul>
+<p>资源服务器与授权服务器可以是同一台服务器，这里分开主要是便于解释清楚OAuth协议。从程序开发者的角度，这两个都是service’s API会执行的事情。</p>
+<p>在了解完OAuth中的四个角色之后，我们看看这四个角色之间是如何互动的。下面是基本运行流程。</p>
+<p><img src="https://gongzhao-1256784911.cos.ap-shanghai.myqcloud.com/hexo/images/OAuth/2.webp" alt="image"></p>
+<ol>
+<li>应用程序向用户请求给予授权，以便获取服务器资源</li>
+</ol>
+<ul>
+<li>如果用户同意授权，应用程序将获得相应授权</li>
+<li>应用程序向授权服务器提供自己的身份证明(app key和app secret)和已被授权的证明(authorization grant)，并请求访问令牌(access token)</li>
+<li>如果应用程序的身份被核实，并且授权是有效地，那么授权服务器将会发放访问令牌给应用程序。<strong>此时，授权完成</strong></li>
+<li>应用程序向资源服务器出示访问令牌，并请求资源</li>
+<li>如果访问令牌是有效的(比如：是否伪造，是否越权，是否过期)，资源服务器将会为应用程序提供资源</li>
+</ul>
+<h2 id="4-2-应用程序注册-Application-Registration"><a href="#4-2-应用程序注册-Application-Registration" class="headerlink" title="4.2 应用程序注册(Application Registration)"></a>4.2 应用程序注册(Application Registration)</h2><p>对于一个应用程序来说，如果它想要使用OAuth，那么首先它要在服务提供商那里注册。一般出现在网站的“developer”或者“API”部分。</p>
+<p>应用程序要提供：</p>
+<ul>
+<li>应用程序名称(Application Name)</li>
+<li>应用程序网站(Application Website)</li>
+<li>回调URL(Redirect URI or Callback URL)</li>
+</ul>
+<p>在用户同意授权(或者拒绝)之后，服务提供商会将用户重新导向这个Callback URL，这个Callback URL要来负责处理授权码或者访问令牌。</p>
+<p>应用程序注册完成之后，服务提供商会颁发给应用程序一个“客户端认证信息(client credentials)”。Client Credential包括：</p>
+<ul>
+<li><p>Client Identifier</p>
+<p>(client ID/API key/consumer key)</p>
+<ul>
+<li>提供给服务提供商，用于<strong>识别</strong>(identify)应用程序</li>
+<li>用于构建提供给用户请求授权的URLs</li>
+</ul>
+</li>
+<li><p>Client Secret</p>
+<p>(secret key/API secret/consumer secret)</p>
+<ul>
+<li>提供给服务提供商，用于<strong>验证</strong>(authenticate)应用程序</li>
+<li>只有应用程序和服务提供商两者可知</li>
+</ul>
+</li>
+</ul>
+<h2 id="4-3-授权许可类型-Authorization-grant-types"><a href="#4-3-授权许可类型-Authorization-grant-types" class="headerlink" title="4.3 授权许可类型(Authorization grant types)"></a>4.3 授权许可类型(Authorization grant types)</h2><p><strong>OAuth 2.0 定义了四种授权模式：</strong></p>
+<ul>
+<li><strong>授权码模式</strong>(Authorization Code)<br> used with server-side Applications</li>
+<li><strong>隐式授权模式</strong>(Implicit)<br> used with Mobile Apps or Web Applications (applications that run on the user’s device)</li>
+<li><strong>资源拥有者密码凭证模式</strong>(Resource Owner Password Credentials)<br> used with trusted Applications, such as those owned by the service itself</li>
+<li><strong>客户端模式</strong>(Client Credentials)<br> used with Applications API access</li>
+</ul>
+<h2 id="4-4-授权码模式-Authorization-Code"><a href="#4-4-授权码模式-Authorization-Code" class="headerlink" title="4.4 授权码模式(Authorization Code)"></a>4.4 授权码模式(Authorization Code)</h2><ul>
+<li>授权码模式是最常见的一种授权模式，最为安全和完善。</li>
+<li>对于服务器端应用程序(server-side application)来说，可以保证Client Secret的安全性。应用程序必须能够和用户代理(user agent)进行交互，获取API授权码。</li>
+</ul>
+<p><img src="https://gongzhao-1256784911.cos.ap-shanghai.myqcloud.com/hexo/images/OAuth/3.webp" alt="image"></p>
+<p><strong>第一步：客户端把用户代理定向到授权终端(Authorizaiton Endpoint)</strong></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">https://www.example.com/v1/oauth/authorize?response_type=code&amp;client_id=CLIENT_ID&amp;redirect_uri=CALLBACK_URL&amp;scope=<span class="built_in">read</span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><strong><a href="https://link.jianshu.com?t=http://www.example.com/v1/oauth/authorize" target="_blank" rel="noopener">www.example.com/v1/oauth/authorize</a></strong>: API授权的终端(Authorization Endpoint)</li>
+<li><strong>client_id</strong>: 应用程序的client ID，用于API识别应用程序</li>
+<li><strong>redirect_uri</strong>：获得授权码之后，服务提供商重定向用户代理(比如浏览器)的地址</li>
+<li><strong>response_type</strong>：表明授权类型，默认值是code，即授权码模式(Authorization Code Grant)</li>
+<li><strong>scope</strong>: 即应用程序可以获得的授权级别(access level)，默认值为read</li>
+<li><strong>state</strong>: 表示客户端的当前状态，可以指定任意值，认证服务器会原封不动地返回这个值，用于抵制CSRF攻击。</li>
+</ul>
+<p><strong>第二步：用户授权应用程序</strong></p>
+<p>用户点击上述URI之后，用户首先要登陆，证明其身份。然后选择同意授权应用程序可以访问他们的账户或者拒绝。</p>
+<p><img src="https://gongzhao-1256784911.cos.ap-shanghai.myqcloud.com/hexo/images/OAuth/4.webp" alt="image"></p>
+<p><strong>第三步：应用程序获取授权码</strong></p>
+<p>如果用户同意授权，服务提供商会将用户代理重定向到第一步中的redirect_uri，并且会包含<strong>授权码</strong>。</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">https:<span class="comment">//www.jianshu.com/callback?code=AUTHORIZATION_CODE</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>第四步：应用程序请求授权令牌</strong></p>
+<p>应用程序向API token终端发送刚刚获得的授权码，以及认证信息。</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">https:<span class="comment">//www.example.com/v1/oauth/token?client_id=CLIENT_ID&amp;client_secret=CLIENT_SECRET&amp;grant_type=authorization_code&amp;code=AUTHORIZATION_CODE&amp;redirect_uri=CALLBACK_URL</span></span><br></pre></td></tr></table></figure>
+
+<p>URI中包括：</p>
+<ul>
+<li><strong><a href="https://link.jianshu.com?t=http://www.example.com/v1/oauth/token" target="_blank" rel="noopener">www.example.com/v1/oauth/token</a></strong>： API token的终端</li>
+<li><strong>client_id</strong>：即app key/consumer key，用于验证应用程序</li>
+<li><strong>client_secret</strong>： 即app secret/consumer secret，用于验证应用程序</li>
+<li><strong>grant_type</strong>：刚刚获得的授权码</li>
+<li><strong>redirect_uri</strong>: 重定向URI，与第一步一致</li>
+</ul>
+<p><strong>第五步：应用程序获得授权令牌</strong></p>
+<p>如果上一步验证有效，API将返回一个HTTP回复。</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#123;<span class="attr">"access_token"</span>:<span class="string">"ACCESS_TOKEN"</span>,<span class="attr">"token_type"</span>:<span class="string">"bearer"</span>,<span class="attr">"expires_in"</span>:<span class="number">2592000</span>,<span class="attr">"refresh_token"</span>:<span class="string">"REFRESH_TOKEN"</span>,<span class="attr">"scope"</span>:<span class="string">"read"</span>&#125;</span><br></pre></td></tr></table></figure>
+
+<p>HTTP回复中包含：</p>
+<ul>
+<li><strong>access_token</strong>：访问令牌</li>
+<li><strong>token_type</strong>：令牌类型，bearer类型或mac类型。<a href="https://link.jianshu.com?t=http://oauth2.thephpleague.com/token-types/" target="_blank" rel="noopener">详细</a></li>
+<li><strong>expires_in</strong>：过期时间，单位为秒。</li>
+<li><strong>refresh_token</strong>：更新令牌，用来获取下一次的访问令牌，可选项。</li>
+<li><strong>scope</strong>：权限范围，如果与客户端申请的范围一致，此项可省略。</li>
+</ul>
+<h2 id="4-5-隐式授权模式-Implicit"><a href="#4-5-隐式授权模式-Implicit" class="headerlink" title="4.5 隐式授权模式(Implicit)"></a>4.5 隐式授权模式(Implicit)</h2><ul>
+<li>隐式授权模式主要用于客户端应用程序(client-side application)，比如手机应用、桌面客户端应用程序和运行于浏览器上的web应用程序。</li>
+<li>因为没有server端，client secret的保密性不能得到保证。授权令牌给予用户代理(比如，浏览器)，再由用户代理交给应用程序。所以用户设备上的其他应用程序同样可以得到授权令牌。</li>
+<li>隐式授权模式中，应用程序不需要认证。</li>
+<li>隐式授权模式不支持refresh token。</li>
+</ul>
+<p><img src="https://gongzhao-1256784911.cos.ap-shanghai.myqcloud.com/hexo/images/OAuth/5.webp" alt="image"></p>
+<p><strong>第一步：客户端把用户代理定向到授权终端(Authorizaiton Endpoint)</strong></p>
+<ul>
+<li>授权终端是<code>https://www.example.com/authorize</code></li>
+<li>与授权码链接类似，只不过response_type=<code>token</code>而不是<code>code</code></li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">https://www.example.com/authorize?response_type=token&amp;client_id=CLIENT_ID&amp;redirect_uri=CALLBACK_URL&amp;scope=<span class="built_in">read</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>第二步：用户授权应用程序</strong></p>
+<p>用户点击上述URI之后，用户首先要登陆，证明其身份。然后选择同意授权应用程序可访问他们的账户或者拒绝。</p>
+<p><img src="https://gongzhao-1256784911.cos.ap-shanghai.myqcloud.com/hexo/images/OAuth/6.webp" alt="image"></p>
+<p><strong>第三步：用户代理收到授权令牌</strong></p>
+<p>假设用户同意授权，授权服务器重定向用户代理到第一步提到的redirect_uri。并在URI fragment中包含授权令牌(但不能查看)。</p>
+<figure class="highlight ruby"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="symbol">https:</span>/<span class="regexp">/www.example.com/callback</span><span class="comment">#token=ACCESS_TOKEN</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>第四步：用户代理向资源服务器发出请求</strong></p>
+<p>用户代理依照重定向的指令，向资源服务器发出请求，但并不包含上一步中得到的授权令牌(#后面的部分)。用户代理将完整的重定向URI保存在本地。</p>
+<p><strong>第五步：资源服务器返回一个网页</strong></p>
+<p>资源服务器会返回一个网页(通常是一个HTML文件内嵌一段脚本)。这段内嵌的脚本(script)可以访问第三步中用户代理保存在本地的完整的重定向URI，并从中提取授权令牌。</p>
+<p><strong>第六步：用户代理提取授权令牌</strong></p>
+<p>用户代理执行上面提到的脚本，提取出授权令牌。然后将授权令牌传递给应用程序。</p>
+<h2 id="4-6-资源拥有者密码凭证模式-Resource-Owner-Password-Credentials"><a href="#4-6-资源拥有者密码凭证模式-Resource-Owner-Password-Credentials" class="headerlink" title="4.6 资源拥有者密码凭证模式(Resource Owner Password Credentials)"></a>4.6 资源拥有者密码凭证模式(Resource Owner Password Credentials)</h2><ul>
+<li>在资源拥有者密码凭证模式中，用户直接向应用程序提供其认证信息(即用户名和密码)。应用程序依此向授权服务器获取授权令牌。</li>
+<li>这种模式适用于用户对应用程序高度信任的情况。比如是用户操作系统的一部分。</li>
+<li>认证服务器只有在其他授权模式无法执行的情况下，才能考虑使用这种模式。</li>
+</ul>
+<p><img src="https://gongzhao-1256784911.cos.ap-shanghai.myqcloud.com/hexo/images/OAuth/7.webp" alt="image"></p>
+<p><strong>第一步：用户传递认证信息</strong></p>
+<p>用户将用户名和密码交给应用程序。</p>
+<p><strong>第二步：应用程序请求授权令牌</strong></p>
+<ul>
+<li>应用程序得到用户认证信息后，向授权服务器请求授权令牌。</li>
+<li>请求授权令牌终端<code>https://www.example.com/token</code></li>
+<li>response_type=<code>password</code>，前面提到的两种分别是<code>code</code>和<code>token</code>。</li>
+</ul>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">https:<span class="comment">//www.example.com/token?grant_type=password&amp;username=USERNAME&amp;password=PASSWORD&amp;client_id=CLIENT_ID</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>第三步：授权服务器返回授权令牌</strong></p>
+<p>如果用户的认证信息得到验证，授权服务器将向应用程序返回授权令牌。</p>
+<h2 id="4-7-客户端模式-Client-Credentials"><a href="#4-7-客户端模式-Client-Credentials" class="headerlink" title="4.7 客户端模式(Client Credentials)"></a>4.7 客户端模式(Client Credentials)</h2><ul>
+<li>客户端模式应用于应用程序想要以自己的名义与授权服务器以及资源服务器进行互动。</li>
+<li>比如应用程序想要修改自身注册信息或者redirect URI。又或者想要获取资源服务器中不与具体用户相关的信息。比如一个应用程序想要获取新浪微博中含有#happy的微博。</li>
+<li>严格意义上说，客户端模式并不是OAuth协议要解决的问题，因为并未涉及授权。</li>
+</ul>
+<p><img src="https://gongzhao-1256784911.cos.ap-shanghai.myqcloud.com/hexo/images/OAuth/8.webp" alt="image"></p>
+<p><strong>第一步：应用程序请求授权令牌</strong></p>
+<ul>
+<li>应用程序向授权服务器提供自身认证信息(client ID和client secret)，并请求授权令牌。</li>
+<li>请求授权令牌终端<code>https://www.example.com/token</code></li>
+<li>response_type=<code>client_credentials</code>，前面提到的两种分别是<code>code</code>、<code>token</code>和<code>password</code>。</li>
+</ul>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">https:<span class="comment">//www.example.com/token?grant_type=client_credentials&amp;client_id=CLIENT_ID&amp;client_secret=CLIENT_SECRET</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>第二步：授权服务器返回授权令牌</strong></p>
+<p>授权服务器验证认证信息，向应用程序返回授权令牌。</p>
+<h2 id="4-8-更新令牌-Refresh-Token"><a href="#4-8-更新令牌-Refresh-Token" class="headerlink" title="4.8 更新令牌(Refresh Token)"></a>4.8 更新令牌(Refresh Token)</h2><ul>
+<li>如果授权令牌过期，在进行API请求时会报错<code>Invalid Token Error</code></li>
+<li>如果在获取授权令牌时，同时获得了refresh token，那么我们可以向授权服务器申请更新令牌。</li>
+<li>grant_type = <code>refresh_token</code></li>
+<li>scope：表示申请的授权范围，不可以超出上一次申请的范围，如果省略该参数，则表示与上一次一致。</li>
+</ul>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">https:<span class="comment">//www.example.com/v1/oauth/token?grant_type=refresh_token&amp;client_id=CLIENT_ID&amp;client_secret=CLIENT_SECRET&amp;refresh_token=REFRESH_TOKEN</span></span><br></pre></td></tr></table></figure>
+          
+        
+      
+    </div>
+    
+    
+    
+	
+	<div>
+	  
+	</div>
+	
+	<div>
+      
+	</div>
+	
+
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://gongzhao1.coding.me/Kubernetes之Ingress/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1812,175 +2136,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://gongzhao1.coding.me/基金之优秀的基金经理/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="弓昭">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/uploads/panda.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="GZ">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/基金之优秀的基金经理/" itemprop="url">基金之优秀的基金经理</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-03-01T12:12:29+08:00">
-                2020-03-01
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/基金经理/" itemprop="url" rel="index">
-                    <span itemprop="name">基金经理</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <p>[TOC]</p>
-<h1 id="转载（二鸟说）"><a href="#转载（二鸟说）" class="headerlink" title="转载（二鸟说）"></a>转载（二鸟说）</h1><ul>
-<li><a href="https://mp.weixin.qq.com/s/Fz6phgA53lrWeC4Cb7T9uw" target="_blank" rel="noopener">https://mp.weixin.qq.com/s/Fz6phgA53lrWeC4Cb7T9uw</a></li>
-<li><a href="https://mp.weixin.qq.com/s/npdQZWezBIvYoFdSM7KcGg" target="_blank" rel="noopener">https://mp.weixin.qq.com/s/npdQZWezBIvYoFdSM7KcGg</a></li>
-</ul>
-<h2 id="公募基金主动管理TOP50"><a href="#公募基金主动管理TOP50" class="headerlink" title="公募基金主动管理TOP50"></a>公募基金主动管理TOP50</h2><blockquote>
-<p>需要说明一下，指数基金仅有体现主动管理能力的指数增强基金入选，被动管理的指数基金不在此之列。债券基金也是只有体现大类资产配置和权益管理能力的二级债基、绝对收益基金入选，纯债基金不在研究范围。</p>
-</blockquote>
-<p>权益类公募赚钱不少，但投资者体验较差，这已经是讨论了多年的话题。除了投资者追涨杀跌、高买低卖之外，基金的实际表现与投资者预期的差距也是不容忽视的原因。</p>
-<p>很多投资者认为：主动型基金你既然提计了1.5%的管理费，那你就应该给我把活全干了。首先你要给我做大类资产配置，还要给我择股选券，然后还要给我择时。再说白一点，既要涨的快、赚钱多，又要波动低、回撤小。这就是很多基民的要求。</p>
-<p>要求无可厚非，但现实与理想还是有较大差距的。基金经理是人不是神。大类资产配置、择股选券、择时这三大能力很少有人能通吃的。能做好一项，就是成功的基金经理了，能做好两项绝对是TOP级。基金经理都有自己的能力圈。你要求他的能力圈无限扩大，这是违背客观规律的。</p>
-<p>对基金经理来说，承认自己的能力圈、恪守自己的能力圈，这也是对基民负责。投资者应该是要较为深刻的了解基金经理的投资体系和能力圈，进而选择适合自己的产品。</p>
-<p>成功的基金经理，都有自己的风格，基本都能贴个标签。这个基金是什么特点、怎么使用，基民一目了然。标签实际上就是把晦涩难懂的投资术语通俗化的过程。</p>
-<p>下面我把《<a href="http://mp.weixin.qq.com/s?__biz=MzI4MTYyODkxMw==&mid=2247485713&idx=1&sn=47fd68182d73b98126ead3c492b9e338&chksm=eba7108fdcd0999913691a6a2cb155e66af88da7a155d855c103151f808cf7fd3cfe8f75a6e3&scene=21#wechat_redirect" target="_blank" rel="noopener">公募基金主动管理TOP50人名单，价值连城，拿走不谢</a>》里面列的主要基金经理，都贴一个标签，供大家参考。（名单有所调整和补充）</p>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/基金之优秀的基金经理/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-	
-	<div>
-	  
-	</div>
-	
-	<div>
-      
-	</div>
-	
-
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -2030,7 +2185,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/archives/">
-                <span class="site-state-item-count">84</span>
+                <span class="site-state-item-count">85</span>
                 <span class="site-state-item-name">日志</span>
               </a>
             </div>
@@ -2052,7 +2207,7 @@
             
             <div class="site-state-item site-state-tags">
               <a href="/tags/index.html">
-                <span class="site-state-item-count">73</span>
+                <span class="site-state-item-count">74</span>
                 <span class="site-state-item-name">标签</span>
               </a>
             </div>
@@ -2172,7 +2327,7 @@
 
 <div class="theme-info">
 
-  <span class="post-count">博客全站共255.2k字</span>
+  <span class="post-count">博客全站共258.5k字</span>
 </div>
 
 
