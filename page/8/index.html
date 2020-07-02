@@ -315,6 +315,661 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://gongzhao1.coding.me/CentOS7利用rsync搭建内网yum源镜像服务器/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="弓昭">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/uploads/panda.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="GZ">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/CentOS7利用rsync搭建内网yum源镜像服务器/" itemprop="url">CentOS7利用rsync搭建内网yum源镜像服务器</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-01-08T21:38:38+08:00">
+                2019-01-08
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/服务部署/" itemprop="url" rel="index">
+                    <span itemprop="name">服务部署</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <h2 id="rsync同步基本说明"><a href="#rsync同步基本说明" class="headerlink" title="rsync同步基本说明"></a>rsync同步基本说明</h2><p>rsync的目的是实现本地主机和远程主机上的文件同步(包括本地推到远程，远程拉到本地两种同步方式)，也可以实现本地不同路径下文件的同步，但不能实现远程路径1到远程路径2之间的同步(scp可以实现)。</p>
+<p>不考虑rsync的实现细节，就文件同步而言，涉及了源文件和目标文件的概念，还涉及了以哪边文件为同步基准。例如，想让目标主机上的文件和本地文件保持同步，则是以本地文件为同步基准，将本地文件作为源文件推送到目标主机上。反之，如果想让本地主机上的文件和目标主机上的文件保持同步，则目标主机上的文件为同步基准，实现方式是将目标主机上的文件作为源文件拉取到本地。当然，要保持本地的两个文件相互同步，rsync也一样能实现，这就像Linux中cp命令一样，以本地某文件作为源，另一文件作为目标文件，但请注意，虽然rsync和cp能达到相同的目的，但它们的实现方式是不一样的。</p>
+<p>既然是文件同步，在同步过程中必然会涉及到源和目标两文件之间版本控制的问题，例如是否要删除源主机上没有但目标上多出来的文件，目标文件比源文件更新(newer than source)时是否仍要保持同步，遇到软链接时是拷贝软链接本身还是拷贝软链接所指向的文件，目标文件已存在时是否要先对其做个备份等等。</p>
+<p><strong>rsync同步过程中由两部分模式组成：决定哪些文件需要同步的检查模式以及文件同步时的同步模式。</strong></p>
+<ol>
+<li>检查模式是指按照指定规则来检查哪些文件需要被同步，例如哪些文件是明确被排除不传输的。<strong>默认情况下，rsync使用”quick check”算法快速检查源文件和目标文件的大小、mtime(修改时间)是否一致，如果不一致则需要传输。</strong>当然，也可以通过在rsync命令行中指定某些选项来改变quick check的检查模式，比如”–size-only”选项表示”quick check”将仅检查文件大小不同的文件作为待传输文件。rsync支持非常多的选项，其中检查模式的自定义性是非常有弹性的。</li>
+<li>同步模式是指在文件确定要被同步后，在同步过程发生之前要做哪些额外工作。例如上文所说的是否要先删除源主机上没有但目标主机上有的文件，是否要先备份已存在的目标文件，是否要追踪链接文件等额外操作。rsync也提供非常多的选项使得同步模式变得更具弹性。</li>
+</ol>
+<p>相对来说，为rsync手动指定同步模式的选项更常见一些，只有在有特殊需求时才指定检查模式，因为大多数检查模式选项都可能会影响rsync的性能。</p>
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/CentOS7利用rsync搭建内网yum源镜像服务器/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+    
+    
+    
+	
+	<div>
+	  
+	</div>
+	
+	<div>
+      
+	</div>
+	
+
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://gongzhao1.coding.me/CentOS7安装配置mysql5-5为utf-8编码/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="弓昭">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/uploads/panda.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="GZ">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/CentOS7安装配置mysql5-5为utf-8编码/" itemprop="url">CentOS7安装配置mysql5.5为utf-8编码</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-01-02T23:02:43+08:00">
+                2019-01-02
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/服务部署/" itemprop="url" rel="index">
+                    <span itemprop="name">服务部署</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <h2 id="安装步骤"><a href="#安装步骤" class="headerlink" title="安装步骤"></a>安装步骤</h2><h3 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">yum -y install mariadb mariadb-server</span><br></pre></td></tr></table></figure>
+
+<h3 id="启动"><a href="#启动" class="headerlink" title="启动"></a>启动</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">systemctl start mariadb</span><br></pre></td></tr></table></figure>
+
+<h3 id="开机启动"><a href="#开机启动" class="headerlink" title="开机启动"></a>开机启动</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">systemctl enable mariadb</span><br></pre></td></tr></table></figure>
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/CentOS7安装配置mysql5-5为utf-8编码/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+    
+    
+    
+	
+	<div>
+	  
+	</div>
+	
+	<div>
+      
+	</div>
+	
+
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://gongzhao1.coding.me/内部CA服务器和自签名证书/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="弓昭">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/uploads/panda.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="GZ">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/内部CA服务器和自签名证书/" itemprop="url">内部CA服务器和自签名证书</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-01-02T22:31:58+08:00">
+                2019-01-02
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/服务部署/" itemprop="url" rel="index">
+                    <span itemprop="name">服务部署</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <h2 id="相关介绍"><a href="#相关介绍" class="headerlink" title="相关介绍"></a>相关介绍</h2><p>在HTTPS的传输过程中，有一个非常关键的角色——数字证书，那什么是数字证书？又有什么作用呢？</p>
+<p>所谓数字证书，是一种用于电脑的身份识别机制。由数字证书颁发机构（CA）对使用私钥创建的签名请求文件做的签名（盖章），表示CA结构对证书持有者的认可。数字证书拥有以下几个优点：</p>
+<ol>
+<li>使用数字证书能够提高用户的可信度</li>
+<li>数字证书中的公钥，能够与服务端的私钥配对使用，实现数据传输过程中的加密和解密</li>
+<li>在证认使用者身份期间，使用者的敏感个人数据并不会被传输至证书持有者的网络系统上</li>
+</ol>
+<p>X.509证书包含三个文件：key，csr，crt。</p>
+<ul>
+<li>key是服务器上的私钥文件，用于对发送给客户端数据的加密，以及对从客户端接收到数据的解密</li>
+<li>csr是证书签名请求文件，用于提交给证书颁发机构（CA）对证书签名</li>
+<li>crt是由证书颁发机构（CA）签名后的证书，或者是开发者自签名的证书，包含证书持有人的信息，持有人的公钥，以及签署者的签名等信息</li>
+</ul>
+<p>备注：在密码学中，X.509是一个标准，规范了公开秘钥认证、证书吊销列表、授权凭证、凭证路径验证算法等。</p>
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/内部CA服务器和自签名证书/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+    
+    
+    
+	
+	<div>
+	  
+	</div>
+	
+	<div>
+      
+	</div>
+	
+
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://gongzhao1.coding.me/Ubuntu16.04-hadoop3.1.0安装与配置/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="弓昭">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/uploads/panda.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="GZ">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/Ubuntu16.04-hadoop3.1.0安装与配置/" itemprop="url">Ubuntu16.04-hadoop3.1.0安装与配置</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-12-26T20:22:53+08:00">
+                2018-12-26
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/大数据/" itemprop="url" rel="index">
+                    <span itemprop="name">大数据</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><blockquote>
+<p>本文尝试源码安装部署hadoop3.1.0</p>
+<p>系统为ubuntu16.04</p>
+<p>需要具有一定基础，一些基本操作只是简略带过</p>
+<p>我主要把各个部署方案的配置文件综合了起来，把一些常用的配置以及说明都写了上来</p>
+<p>适合快速部署hadoop的朋友</p>
+</blockquote>
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/Ubuntu16.04-hadoop3.1.0安装与配置/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+    
+    
+    
+	
+	<div>
+	  
+	</div>
+	
+	<div>
+      
+	</div>
+	
+
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://gongzhao1.coding.me/CentOS7-NFS服务的安装配置详解/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -955,172 +1610,6 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://gongzhao1.coding.me/Ubuntu16.04 安装erlangOTP20.3和RabbitMQ3.7.7/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="弓昭">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/uploads/panda.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="GZ">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/Ubuntu16.04 安装erlangOTP20.3和RabbitMQ3.7.7/" itemprop="url">Ubuntu16.04 安装erlangOTP20.3和RabbitMQ3.7.7</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-12-24T20:22:53+08:00">
-                2018-12-24
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/中间件/" itemprop="url" rel="index">
-                    <span itemprop="name">中间件</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <h2 id="安装步骤"><a href="#安装步骤" class="headerlink" title="安装步骤"></a>安装步骤</h2><h3 id="安装JDK"><a href="#安装JDK" class="headerlink" title="安装JDK"></a>安装JDK</h3><h3 id="安装Erlang"><a href="#安装Erlang" class="headerlink" title="安装Erlang"></a>安装Erlang</h3><h4 id="下载deb安装包"><a href="#下载deb安装包" class="headerlink" title="下载deb安装包"></a>下载deb安装包</h4><p><a href="https://www.erlang-solutions.com/resources/download.html" target="_blank" rel="noopener">https://www.erlang-solutions.com/resources/download.html</a></p>
-<p>下载对应版本安装包</p>
-<h4 id="安装依赖环境"><a href="#安装依赖环境" class="headerlink" title="安装依赖环境"></a>安装依赖环境</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">apt-get install libncurses5-dev</span><br><span class="line">apt-get install libssl-dev</span><br><span class="line">apt-get install m4</span><br><span class="line">apt-get install unixodbc unixodbc-dev</span><br><span class="line">apt-get install freeglut3-dev</span><br><span class="line">apt-get install xsltproc</span><br><span class="line">apt-get install fop</span><br><span class="line">apt-get install tk8.5</span><br><span class="line">apt-get install libwxbase3.0-0v5 libwxgtk3.0-0v5 libsctp1 libnotify4</span><br></pre></td></tr></table></figure>
-
-<h4 id="安装erlang"><a href="#安装erlang" class="headerlink" title="安装erlang"></a>安装erlang</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">dpkg -i esl-erlang_20.3-1~ubuntu~xenial_amd64.deb</span><br></pre></td></tr></table></figure>
-
-<h3 id="安装RabbitMQ"><a href="#安装RabbitMQ" class="headerlink" title="安装RabbitMQ"></a>安装RabbitMQ</h3><h4 id="配置apt源"><a href="#配置apt源" class="headerlink" title="配置apt源"></a>配置apt源</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">echo &quot;deb https://dl.bintray.com/rabbitmq/debian xenial main&quot; | sudo tee /etc/apt/sources.list.d/bintray.rabbitmq.list</span><br></pre></td></tr></table></figure>
-
-<h4 id="导入gpg-key"><a href="#导入gpg-key" class="headerlink" title="导入gpg key"></a>导入gpg key</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">wget -O- https://dl.bintray.com/rabbitmq/Keys/rabbitmq-release-signing-key.asc |      sudo apt-key add -</span><br></pre></td></tr></table></figure>
-
-<h4 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">apt-get update</span><br><span class="line">apt-get install rabbitmq-server</span><br></pre></td></tr></table></figure>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/Ubuntu16.04 安装erlangOTP20.3和RabbitMQ3.7.7/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-	
-	<div>
-	  
-	</div>
-	
-	<div>
-      
-	</div>
-	
-
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://gongzhao1.coding.me/Vagrant 使用配置详解/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1277,7 +1766,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://gongzhao1.coding.me/ss-local+privoxy 代理/">
+    <link itemprop="mainEntityOfPage" href="https://gongzhao1.coding.me/Ubuntu16.04 安装erlangOTP20.3和RabbitMQ3.7.7/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="弓昭">
@@ -1296,7 +1785,7 @@
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/ss-local+privoxy 代理/" itemprop="url">ss-local+privoxy 代理</a></h1>
+                <a class="post-title-link" href="/Ubuntu16.04 安装erlangOTP20.3和RabbitMQ3.7.7/" itemprop="url">Ubuntu16.04 安装erlangOTP20.3和RabbitMQ3.7.7</a></h1>
         
 
         <div class="post-meta">
@@ -1331,8 +1820,8 @@
               
               
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/科学上网/" itemprop="url" rel="index">
-                    <span itemprop="name">科学上网</span>
+                  <a href="/categories/中间件/" itemprop="url" rel="index">
+                    <span itemprop="name">中间件</span>
                   </a>
                 </span>
 
@@ -1369,500 +1858,24 @@
 
       
         
-          <p>[TOC]</p>
-<h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><blockquote>
-<p>ss-local 是 shadowsocks 的本地 socks5 服务器，因此，如果需要使用 ss-local 提供的 socks5 代理，就必须让应用程序使用 socks5 协议与之通信。但是很可惜，除了部分浏览器、软件直接支持 socks5 协议外，其它的都只支持 http 代理。因此，我们需要借助 privoxy 来将 http 代理协议转换为 socks5 代理协议，与后端的 ss-local 进行通信。</p>
-</blockquote>
+          <h2 id="安装步骤"><a href="#安装步骤" class="headerlink" title="安装步骤"></a>安装步骤</h2><h3 id="安装JDK"><a href="#安装JDK" class="headerlink" title="安装JDK"></a>安装JDK</h3><h3 id="安装Erlang"><a href="#安装Erlang" class="headerlink" title="安装Erlang"></a>安装Erlang</h3><h4 id="下载deb安装包"><a href="#下载deb安装包" class="headerlink" title="下载deb安装包"></a>下载deb安装包</h4><p><a href="https://www.erlang-solutions.com/resources/download.html" target="_blank" rel="noopener">https://www.erlang-solutions.com/resources/download.html</a></p>
+<p>下载对应版本安装包</p>
+<h4 id="安装依赖环境"><a href="#安装依赖环境" class="headerlink" title="安装依赖环境"></a>安装依赖环境</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">apt-get install libncurses5-dev</span><br><span class="line">apt-get install libssl-dev</span><br><span class="line">apt-get install m4</span><br><span class="line">apt-get install unixodbc unixodbc-dev</span><br><span class="line">apt-get install freeglut3-dev</span><br><span class="line">apt-get install xsltproc</span><br><span class="line">apt-get install fop</span><br><span class="line">apt-get install tk8.5</span><br><span class="line">apt-get install libwxbase3.0-0v5 libwxgtk3.0-0v5 libsctp1 libnotify4</span><br></pre></td></tr></table></figure>
+
+<h4 id="安装erlang"><a href="#安装erlang" class="headerlink" title="安装erlang"></a>安装erlang</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">dpkg -i esl-erlang_20.3-1~ubuntu~xenial_amd64.deb</span><br></pre></td></tr></table></figure>
+
+<h3 id="安装RabbitMQ"><a href="#安装RabbitMQ" class="headerlink" title="安装RabbitMQ"></a>安装RabbitMQ</h3><h4 id="配置apt源"><a href="#配置apt源" class="headerlink" title="配置apt源"></a>配置apt源</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">echo &quot;deb https://dl.bintray.com/rabbitmq/debian xenial main&quot; | sudo tee /etc/apt/sources.list.d/bintray.rabbitmq.list</span><br></pre></td></tr></table></figure>
+
+<h4 id="导入gpg-key"><a href="#导入gpg-key" class="headerlink" title="导入gpg key"></a>导入gpg key</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">wget -O- https://dl.bintray.com/rabbitmq/Keys/rabbitmq-release-signing-key.asc |      sudo apt-key add -</span><br></pre></td></tr></table></figure>
+
+<h4 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">apt-get update</span><br><span class="line">apt-get install rabbitmq-server</span><br></pre></td></tr></table></figure>
           <!--noindex-->
           <div class="post-button text-center">
-            <a class="btn" href="/ss-local+privoxy 代理/#more" rel="contents">
+            <a class="btn" href="/Ubuntu16.04 安装erlangOTP20.3和RabbitMQ3.7.7/#more" rel="contents">
               阅读全文 &raquo;
             </a>
           </div>
           <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-	
-	<div>
-	  
-	</div>
-	
-	<div>
-      
-	</div>
-	
-
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://gongzhao1.coding.me/ubuntu16.04 使用docker安装mongodb/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="弓昭">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/uploads/panda.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="GZ">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/ubuntu16.04 使用docker安装mongodb/" itemprop="url">ubuntu16.04 使用docker安装mongodb</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-12-24T20:22:53+08:00">
-                2018-12-24
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/服务部署/" itemprop="url" rel="index">
-                    <span itemprop="name">服务部署</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <h2 id="安装步骤"><a href="#安装步骤" class="headerlink" title="安装步骤"></a>安装步骤</h2><h3 id="安装docker-ce"><a href="#安装docker-ce" class="headerlink" title="安装docker-ce"></a>安装docker-ce</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">添加tuna镜像源</span><br><span class="line">apt-get install docker-ce</span><br></pre></td></tr></table></figure>
-
-<h3 id="拉取镜像"><a href="#拉取镜像" class="headerlink" title="拉取镜像"></a>拉取镜像</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker pull mongo:3.6</span><br></pre></td></tr></table></figure>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/ubuntu16.04 使用docker安装mongodb/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-	
-	<div>
-	  
-	</div>
-	
-	<div>
-      
-	</div>
-	
-
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://gongzhao1.coding.me/在域环境下配置组策略批量安装客户端常用软件/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="弓昭">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/uploads/panda.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="GZ">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/在域环境下配置组策略批量安装客户端常用软件/" itemprop="url">在域环境下配置组策略批量安装客户端常用软件</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-12-24T20:22:53+08:00">
-                2018-12-24
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/操作系统/" itemprop="url" rel="index">
-                    <span itemprop="name">操作系统</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="部署方法："><a href="#部署方法：" class="headerlink" title="部署方法："></a>部署方法：</h2><h3 id="前期准备"><a href="#前期准备" class="headerlink" title="前期准备"></a>前期准备</h3><p>(一)   在主域控制器的F盘，新建一个目录，命名为“软件安装共享”，设置共享后，并确保user组用户具有读取，执行权限。（最好在“软件安装共享”的安全属性配置向下继承）</p>
-<p>(二)   打开主域控制器上的“Active Directory用户与计算机”右键“testx.com”属性，选择“组策略”“编辑”，进入“组策略编辑器”</p>
-<p>(三)   注意：将用户liyuan加入到Domain Administrators 安全组、Enterprise Administrators 安全组或 Group Policy Creator Owners 安全组。</p>
-<h3 id="以发布用户方式安装"><a href="#以发布用户方式安装" class="headerlink" title="以发布用户方式安装"></a>以发布用户方式安装</h3><ol>
-<li><p>依次展开“用户配置”“软件设置”“软件安装”。</p>
-</li>
-<li><p>新建一个“程序包”，在“文件名”后的文本框内输入UNC路径</p>
-</li>
-</ol>
-<p>（例如// 192.168.0.1）软件安装共享\ apache_2.2.4-win32-x86-no_ssl.msi</p>
-<ol start="3">
-<li><p>选择“apache_2.2.4-win32-x86-no_ssl.msi”软件后，点打开</p>
-</li>
-<li><p>配置部署方法为“已发布”</p>
-</li>
-<li><p>确定后，登陆客户端client-01进行测试。（测试失败可使用gpupdate/force命令刷新组策略后，重试。）</p>
-</li>
-<li><p>在客户端的“添加/删除程序”中“添加新程序”，找到“apache_2.2.4-win32-x86-no_ssl.msi”双击安装。</p>
-</li>
-</ol>
-<h3 id="以指派用户方式安装"><a href="#以指派用户方式安装" class="headerlink" title="以指派用户方式安装"></a>以指派用户方式安装</h3><ol>
-<li><p>在部署软件时 选择“已指派”</p>
-</li>
-<li><p>选择“apache_2.2.4-win32-x86-no_ssl.msi”属性，选中“在登录时安装此应用程序”</p>
-</li>
-<li><p>登录客户端，自动安装软件，可卸载。</p>
-</li>
-</ol>
-<h3 id="以指派计算机方式安装"><a href="#以指派计算机方式安装" class="headerlink" title="以指派计算机方式安装"></a>以指派计算机方式安装</h3><ol>
-<li><p>在“AD用户与计算机”下，新建一个组织单元us，将computers下的client01客户端，移动到us里面。</p>
-</li>
-<li><p>右键“us”选择“属性”，点击“组策略”，新建一个策略。</p>
-</li>
-<li><p>点击“编辑”，展开“计算机设置”“软件设置”，在“软件安装”上右键，新建一个“程序包”</p>
-</li>
-</ol>
-<p>文件名后面的文本框最好用完整的计算机名，如\ ninglian-1.testx.com\软件安装共享\ apache_2.2.4-win32-x86-no_ssl.msi</p>
-<ol start="4">
-<li><p>默认部署类型“已指派”</p>
-</li>
-<li><p>在客户端上登录，显示如下界面，说明该软件通过组策略安装成功。</p>
-</li>
-</ol>
-
-          
-        
-      
-    </div>
-    
-    
-    
-	
-	<div>
-	  
-	</div>
-	
-	<div>
-      
-	</div>
-	
-
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://gongzhao1.coding.me/给普通用户添加sudo权限/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="弓昭">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/uploads/panda.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="GZ">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/给普通用户添加sudo权限/" itemprop="url">给普通用户添加sudo权限</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-12-24T20:22:53+08:00">
-                2018-12-24
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">echo &quot;&#123;username&#125; ALL = (root) NOPASSWD:ALL&quot; | sudo tee /etc/sudoers.d/&#123;username&#125;</span><br><span class="line">sudo chmod 0440 /etc/sudoers.d/&#123;username&#125;</span><br></pre></td></tr></table></figure>
-
-
-          
         
       
     </div>
@@ -1910,7 +1923,7 @@
 
   
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/page/7/"><i class="fa fa-angle-left"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/7/">7</a><span class="page-number current">8</span><a class="page-number" href="/page/9/">9</a><a class="extend next" rel="next" href="/page/9/"><i class="fa fa-angle-right"></i></a>
+    <a class="extend prev" rel="prev" href="/page/7/"><i class="fa fa-angle-left"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/7/">7</a><span class="page-number current">8</span><a class="page-number" href="/page/9/">9</a><a class="page-number" href="/page/10/">10</a><a class="extend next" rel="next" href="/page/9/"><i class="fa fa-angle-right"></i></a>
   </nav>
 
 
@@ -1955,7 +1968,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/archives/">
-                <span class="site-state-item-count">89</span>
+                <span class="site-state-item-count">93</span>
                 <span class="site-state-item-name">日志</span>
               </a>
             </div>
@@ -1966,7 +1979,7 @@
             
             <div class="site-state-item site-state-categories">
               <a href="/categories/index.html">
-                <span class="site-state-item-count">26</span>
+                <span class="site-state-item-count">28</span>
                 <span class="site-state-item-name">分类</span>
               </a>
             </div>
@@ -1977,7 +1990,7 @@
             
             <div class="site-state-item site-state-tags">
               <a href="/tags/index.html">
-                <span class="site-state-item-count">77</span>
+                <span class="site-state-item-count">78</span>
                 <span class="site-state-item-name">标签</span>
               </a>
             </div>
@@ -2097,7 +2110,7 @@
 
 <div class="theme-info">
 
-  <span class="post-count">博客全站共279.1k字</span>
+  <span class="post-count">博客全站共282.9k字</span>
 </div>
 
 

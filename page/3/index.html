@@ -315,6 +315,682 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://gongzhao1.coding.me/Kubernetes之存储详解/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="弓昭">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/uploads/panda.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="GZ">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/Kubernetes之存储详解/" itemprop="url">Kubernetes之存储详解</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-02-27T23:42:55+08:00">
+                2020-02-27
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/kubernetes/" itemprop="url" rel="index">
+                    <span itemprop="name">kubernetes</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <p>[TOC]</p>
+<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><ul>
+<li><a href="https://www.kubernetes.org.cn/pvpvcstorageclass" target="_blank" rel="noopener">https://www.kubernetes.org.cn/pvpvcstorageclass</a></li>
+<li><a href="https://www.jianshu.com/p/99e610067bc8" target="_blank" rel="noopener">https://www.jianshu.com/p/99e610067bc8</a></li>
+</ul>
+<h1 id="简书介绍"><a href="#简书介绍" class="headerlink" title="简书介绍"></a>简书介绍</h1><p>前面我们学习了Kubernetes中的Volume，我们可以发现前文中的Volume（无论何种类型）和使用它的Pod都是一种静态绑定关系，在Pod定义文件中，同时定义了它使用的Volume。在这种情况下，Volume是Pod的附属品，我们无法像创建其他资源（例如Pod，Node，Deployment等等）一样创建一个Volume。</p>
+<p>因此Kubernetes提出了PersistentVolume（PV）的概念。PersistentVolume和Volume一样，代表了集群中的一块存储区域，然而Kubernetes将PersistentVolume抽象成了一种集群资源，类似于集群中的Node对象，这意味着我们可以使用Kubernetes API来创建PersistentVolume对象。PV与Volume最大的不同是PV拥有着独立于Pod的生命周期。</p>
+<p>而PersistentVolumeClaim（PVC）代表了用户对PV资源的请求。用户需要使用PV资源时，只需要创建一个PVC对象（包括指定使用何种存储资源，使用多少GB，以何种模式使用PV等信息），Kubernetes会自动为我们分配我们所需的PV。如果把PersistentVolume类比成集群中的Node，那么PersistentVolumeClaim就相当于集群中的Pod，Kubernetes为Pod分配可用的Node，为PersistentVolumeClaim分配可用的PersistentVolume。</p>
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/Kubernetes之存储详解/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+    
+    
+    
+	
+	<div>
+	  
+	</div>
+	
+	<div>
+      
+	</div>
+	
+
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://gongzhao1.coding.me/Kubernetes集群监控之pushgateway/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="弓昭">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/uploads/panda.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="GZ">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/Kubernetes集群监控之pushgateway/" itemprop="url">Kubernetes集群监控之pushgateway</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-02-20T16:20:35+08:00">
+                2020-02-20
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/监控/" itemprop="url" rel="index">
+                    <span itemprop="name">监控</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <p>[TOC]</p>
+<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><ul>
+<li><a href="https://www.cnblogs.com/xiao987334176/p/9933963.html" target="_blank" rel="noopener">https://www.cnblogs.com/xiao987334176/p/9933963.html</a></li>
+<li><a href="https://www.jianshu.com/p/e59793e8c0c2" target="_blank" rel="noopener">https://www.jianshu.com/p/e59793e8c0c2</a></li>
+</ul>
+<h1 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h1><p><a href="https://github.com/prometheus/pushgateway" target="_blank" rel="noopener">Pushgateway</a> 是 Prometheus 生态中一个重要工具，使用它的原因主要是：</p>
+<ul>
+<li>Prometheus 采用 pull 模式，可能由于不在一个子网或者防火墙原因，导致 Prometheus 无法直接拉取各个 target 数据。</li>
+<li>在监控业务数据的时候，需要将不同数据汇总, 由 Prometheus 统一收集。</li>
+</ul>
+<p>由于以上原因，不得不使用 pushgateway，但在使用之前，有必要了解一下它的一些弊端：</p>
+<ul>
+<li>将多个节点数据汇总到 pushgateway, 如果 pushgateway 挂了，受影响比多个 target 大。</li>
+<li>Prometheus 拉取状态 <code>up</code> 只针对 pushgateway, 无法做到对每个节点有效。</li>
+<li>Pushgateway 可以持久化推送给它的所有监控数据。</li>
+</ul>
+<p>因此，即使你的监控已经下线，prometheus 还会拉取到旧的监控数据，需要手动清理 pushgateway 不要的数据。 </p>
+<p>拓扑图如下：</p>
+<p><img src="https://gongzhao-1256784911.cos.ap-shanghai.myqcloud.com/hexo/images/prometheus/23.png" alt="image"></p>
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/Kubernetes集群监控之pushgateway/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+    
+    
+    
+	
+	<div>
+	  
+	</div>
+	
+	<div>
+      
+	</div>
+	
+
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://gongzhao1.coding.me/Kubernetes集群监控之exporter/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="弓昭">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/uploads/panda.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="GZ">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/Kubernetes集群监控之exporter/" itemprop="url">Kubernetes集群监控之exporter</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-02-19T18:57:27+08:00">
+                2020-02-19
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/监控/" itemprop="url" rel="index">
+                    <span itemprop="name">监控</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <p>[TOC]</p>
+<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><p><a href="https://prometheus.io/docs/instrumenting/exporters/" target="_blank" rel="noopener">https://prometheus.io/docs/instrumenting/exporters/</a></p>
+<p>blackbox_exporter:</p>
+<ul>
+<li><a href="https://github.com/prometheus/blackbox_exporter" target="_blank" rel="noopener">https://github.com/prometheus/blackbox_exporter</a></li>
+<li><a href="https://yunlzheng.gitbook.io/prometheus-book/part-ii-prometheus-jin-jie/exporter/commonly-eporter-usage/install_blackbox_exporter" target="_blank" rel="noopener">https://yunlzheng.gitbook.io/prometheus-book/part-ii-prometheus-jin-jie/exporter/commonly-eporter-usage/install_blackbox_exporter</a></li>
+<li><a href="https://blog.csdn.net/qq_25934401/article/details/84325356" target="_blank" rel="noopener">https://blog.csdn.net/qq_25934401/article/details/84325356</a></li>
+</ul>
+<p>node_exporter</p>
+<ul>
+<li><a href="https://github.com/prometheus/node_exporter" target="_blank" rel="noopener">https://github.com/prometheus/node_exporter</a></li>
+<li><a href="https://www.cnblogs.com/bigberg/p/10118137.html" target="_blank" rel="noopener">https://www.cnblogs.com/bigberg/p/10118137.html</a></li>
+</ul>
+<p>mysql_exporter:</p>
+<ul>
+<li><a href="https://github.com/prometheus/mysqld_exporter" target="_blank" rel="noopener">https://github.com/prometheus/mysqld_exporter</a></li>
+</ul>
+<p>jmx_exporter:</p>
+<ul>
+<li><a href="https://github.com/prometheus/jmx_exporter" target="_blank" rel="noopener">https://github.com/prometheus/jmx_exporter</a></li>
+<li><a href="https://www.cnblogs.com/caizhenghui/p/9132414.html" target="_blank" rel="noopener">https://www.cnblogs.com/caizhenghui/p/9132414.html</a></li>
+</ul>
+<h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>大部分exporter都可以在<a href="https://github.com/prometheus中搜到" target="_blank" rel="noopener">https://github.com/prometheus中搜到</a></p>
+<p>以及可以使用<code>helm search node-exporter</code>来进行搜索</p>
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/Kubernetes集群监控之exporter/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+    
+    
+    
+	
+	<div>
+	  
+	</div>
+	
+	<div>
+      
+	</div>
+	
+
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://gongzhao1.coding.me/Kubernetes集群监控之grafana/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="弓昭">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/uploads/panda.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="GZ">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/Kubernetes集群监控之grafana/" itemprop="url">Kubernetes集群监控之grafana</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-02-19T18:29:37+08:00">
+                2020-02-19
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/监控/" itemprop="url" rel="index">
+                    <span itemprop="name">监控</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <p>[TOC]</p>
+<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><ul>
+<li><a href="https://segmentfault.com/a/1190000016237454" target="_blank" rel="noopener">https://segmentfault.com/a/1190000016237454</a></li>
+<li><a href="https://blog.csdn.net/wzygis/article/details/52727067" target="_blank" rel="noopener">https://blog.csdn.net/wzygis/article/details/52727067</a></li>
+</ul>
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/Kubernetes集群监控之grafana/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+    
+    
+    
+	
+	<div>
+	  
+	</div>
+	
+	<div>
+      
+	</div>
+	
+
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://gongzhao1.coding.me/Kubernetes集群监控之alertmanager/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1354,663 +2030,11 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://gongzhao1.coding.me/Python笔记之正则表达式/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="弓昭">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/uploads/panda.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="GZ">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/Python笔记之正则表达式/" itemprop="url">Python笔记之正则表达式</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-10-31T22:20:07+08:00">
-                2019-10-31
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/python/" itemprop="url" rel="index">
-                    <span itemprop="name">python</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <p>[TOC]</p>
-<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><blockquote>
-<p><a href="https://www.runoob.com/python/python-reg-expressions.html" target="_blank" rel="noopener">https://www.runoob.com/python/python-reg-expressions.html</a></p>
-</blockquote>
-<h1 id="Python-正则表达式"><a href="#Python-正则表达式" class="headerlink" title="Python 正则表达式"></a>Python 正则表达式</h1><p>正则表达式是一个特殊的字符序列，它能帮助你方便的检查一个字符串是否与某种模式匹配。</p>
-<p>Python 自1.5版本起增加了re 模块，它提供 Perl 风格的正则表达式模式。</p>
-<p>re 模块使 Python 语言拥有全部的正则表达式功能。</p>
-<p>compile 函数根据一个模式字符串和可选的标志参数生成一个正则表达式对象。该对象拥有一系列方法用于正则表达式匹配和替换。</p>
-<p>re 模块也提供了与这些方法功能完全一致的函数，这些函数使用一个模式字符串做为它们的第一个参数。</p>
-<p>本章节主要介绍Python中常用的正则表达式处理函数。</p>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/Python笔记之正则表达式/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-	
-	<div>
-	  
-	</div>
-	
-	<div>
-      
-	</div>
-	
-
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://gongzhao1.coding.me/Python笔记之json字符串相互转换/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="弓昭">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/uploads/panda.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="GZ">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/Python笔记之json字符串相互转换/" itemprop="url">Python笔记之json字符串相互转换</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-10-30T23:57:30+08:00">
-                2019-10-30
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/python/" itemprop="url" rel="index">
-                    <span itemprop="name">python</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <blockquote>
-<p>json和字符串之间的转换，主要使用到<strong><code>json</code></strong>库中的<strong><code>json.loads()</code></strong>函数<strong><code>json.dumps()</code></strong>含函数。<br> 所以我们首先要导入<strong><code>json</code></strong>库。</p>
-</blockquote>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> json</span><br></pre></td></tr></table></figure>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/Python笔记之json字符串相互转换/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-	
-	<div>
-	  
-	</div>
-	
-	<div>
-      
-	</div>
-	
-
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://gongzhao1.coding.me/基金定投之中证500/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="弓昭">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/uploads/panda.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="GZ">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/基金定投之中证500/" itemprop="url">基金定投之中证500</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-10-17T23:01:41+08:00">
-                2019-10-17
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/基金/" itemprop="url" rel="index">
-                    <span itemprop="name">基金</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><blockquote>
-<p><a href="https://mp.weixin.qq.com/s?__biz=MzU4Mzg0NDIyMA==&amp;mid=2247486579&amp;idx=1&amp;sn=24446e21f6f2c7c74c526520a1ab46c9&amp;chksm=fda3a460cad42d764d5b07c006353722dac9895b0f93a8965af83b4fcba62f1c99ad2cd837d3&amp;scene=21#wechat_redirect" target="_blank" rel="noopener">https://mp.weixin.qq.com/s?__biz=MzU4Mzg0NDIyMA==&amp;mid=2247486579&amp;idx=1&amp;sn=24446e21f6f2c7c74c526520a1ab46c9&amp;chksm=fda3a460cad42d764d5b07c006353722dac9895b0f93a8965af83b4fcba62f1c99ad2cd837d3&amp;scene=21#wechat_redirect</a></p>
-<p><a href="https://xueqiu.com/7084328572/133811192" target="_blank" rel="noopener">https://xueqiu.com/7084328572/133811192</a></p>
-</blockquote>
-<h1 id="概念"><a href="#概念" class="headerlink" title="概念"></a>概念</h1><p><strong>中证500</strong></p>
-<p>中证500指数由全部A股中剔除沪深300指数成份股及总市值排名前300名的股票后，总市值排名靠前的500只股票组成，综合反映中国A股市场中一批中小市值公司的股票价格表现。</p>
-<p><strong>500低波动</strong></p>
-<p>中证500行业中性低波动指数在中证500指数二级行业内选取低波动特征的股票为样本，保持行业中性的同时，行业内股票采用波动率倒数加权。</p>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/基金定投之中证500/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-	
-	<div>
-	  
-	</div>
-	
-	<div>
-      
-	</div>
-	
-
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://gongzhao1.coding.me/债券之可转债/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="弓昭">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/uploads/panda.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="GZ">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/债券之可转债/" itemprop="url">债券之可转债</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-10-08T21:10:56+08:00">
-                2019-10-08
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/债券/" itemprop="url" rel="index">
-                    <span itemprop="name">债券</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <p>[TOC]</p>
-<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><blockquote>
-<p><a href="https://mp.weixin.qq.com/s?__biz=MzU4Mzg0NDIyMA==&amp;mid=2247485137&amp;idx=1&amp;sn=ee281a07df7ea2ef8c39689a0d2c2648&amp;chksm=fda3aec2cad427d474fd1765a1bae41e5d8cc23dd80db70dacbc5ddcc859d4733fcef5034ab0&amp;scene=21#wechat_redirect" target="_blank" rel="noopener">https://mp.weixin.qq.com/s?__biz=MzU4Mzg0NDIyMA==&amp;mid=2247485137&amp;idx=1&amp;sn=ee281a07df7ea2ef8c39689a0d2c2648&amp;chksm=fda3aec2cad427d474fd1765a1bae41e5d8cc23dd80db70dacbc5ddcc859d4733fcef5034ab0&amp;scene=21#wechat_redirect</a></p>
-<p><a href="https://mp.weixin.qq.com/s/NRvgiR7HajUIbS8QeF7Yxg" target="_blank" rel="noopener">https://mp.weixin.qq.com/s/NRvgiR7HajUIbS8QeF7Yxg</a></p>
-<p><a href="https://mp.weixin.qq.com/s/dsYye1IpcAYetNB6WzWfPg" target="_blank" rel="noopener">https://mp.weixin.qq.com/s/dsYye1IpcAYetNB6WzWfPg</a></p>
-</blockquote>
-<p>最近可转债发行又再次密集，在当前行情，我<strong>建议积极</strong>参与网上可转债申购。<a href="http://mp.weixin.qq.com/s?__biz=MzU4Mzg0NDIyMA==&mid=2247485137&idx=1&sn=ee281a07df7ea2ef8c39689a0d2c2648&chksm=fda3aec2cad427d474fd1765a1bae41e5d8cc23dd80db70dacbc5ddcc859d4733fcef5034ab0&scene=21#wechat_redirect" target="_blank" rel="noopener">可转债申购的黄金期：风险低&amp;中签高</a></p>
-<p>现在申购可转债：1. 中签率高 2. 潜在收益还可以 3.风险较小（3200申购，2800上市平均亏损25元）</p>
-<p>同时可转债是非常好的投资品种，如果想进一步了解可转债的特点，可以详细看这一篇。主要讲解可转债的条款，对理解可转债的风险和机会很有帮助。</p>
-<p>下面以113024核建转债为例进行介绍，可转债条款基本都是大同小异，大体逻辑都是一样的。</p>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/债券之可转债/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-	
-	<div>
-	  
-	</div>
-	
-	<div>
-      
-	</div>
-	
-
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/page/2/"><i class="fa fa-angle-left"></i></a><a class="page-number" href="/">1</a><a class="page-number" href="/page/2/">2</a><span class="page-number current">3</span><a class="page-number" href="/page/4/">4</a><span class="space">&hellip;</span><a class="page-number" href="/page/9/">9</a><a class="extend next" rel="next" href="/page/4/"><i class="fa fa-angle-right"></i></a>
+    <a class="extend prev" rel="prev" href="/page/2/"><i class="fa fa-angle-left"></i></a><a class="page-number" href="/">1</a><a class="page-number" href="/page/2/">2</a><span class="page-number current">3</span><a class="page-number" href="/page/4/">4</a><span class="space">&hellip;</span><a class="page-number" href="/page/10/">10</a><a class="extend next" rel="next" href="/page/4/"><i class="fa fa-angle-right"></i></a>
   </nav>
 
 
@@ -2055,7 +2079,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/archives/">
-                <span class="site-state-item-count">89</span>
+                <span class="site-state-item-count">93</span>
                 <span class="site-state-item-name">日志</span>
               </a>
             </div>
@@ -2066,7 +2090,7 @@
             
             <div class="site-state-item site-state-categories">
               <a href="/categories/index.html">
-                <span class="site-state-item-count">26</span>
+                <span class="site-state-item-count">28</span>
                 <span class="site-state-item-name">分类</span>
               </a>
             </div>
@@ -2077,7 +2101,7 @@
             
             <div class="site-state-item site-state-tags">
               <a href="/tags/index.html">
-                <span class="site-state-item-count">77</span>
+                <span class="site-state-item-count">78</span>
                 <span class="site-state-item-name">标签</span>
               </a>
             </div>
@@ -2197,7 +2221,7 @@
 
 <div class="theme-info">
 
-  <span class="post-count">博客全站共279.1k字</span>
+  <span class="post-count">博客全站共282.9k字</span>
 </div>
 
 
