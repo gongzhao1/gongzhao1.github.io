@@ -97,14 +97,14 @@
 <meta name="description" content="SSL 证书提供了一种在互联网上身份验证的方式,是用来标识和证明通信双方身份的数字信息文件。使用SSL 证书的网站，可以保证用户和服务器间信息交换的保密性，具有不可窃听、不可更改、不可否认、不可冒充的功能。 SSL证书由浏览器中“受信任的根证书颁发机构”在验证服务器身份后颁发,具有网站身份验证和加密传输双重功能. SSL工具箱：https://www.myssl.cn/tools/">
 <meta name="keywords" content="证书">
 <meta property="og:type" content="article">
-<meta property="og:title" content="常见证书详解">
-<meta property="og:url" content="https://gongzhao1.coding.me/常见证书详解/index.html">
+<meta property="og:title" content="常见证书详解及openssl相互转换">
+<meta property="og:url" content="https://gongzhao1.coding.me/常见证书详解及openssl相互转换/index.html">
 <meta property="og:site_name" content="GZ">
 <meta property="og:description" content="SSL 证书提供了一种在互联网上身份验证的方式,是用来标识和证明通信双方身份的数字信息文件。使用SSL 证书的网站，可以保证用户和服务器间信息交换的保密性，具有不可窃听、不可更改、不可否认、不可冒充的功能。 SSL证书由浏览器中“受信任的根证书颁发机构”在验证服务器身份后颁发,具有网站身份验证和加密传输双重功能. SSL工具箱：https://www.myssl.cn/tools/">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2020-04-08T14:20:25.884Z">
+<meta property="og:updated_time" content="2020-07-02T16:15:22.309Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="常见证书详解">
+<meta name="twitter:title" content="常见证书详解及openssl相互转换">
 <meta name="twitter:description" content="SSL 证书提供了一种在互联网上身份验证的方式,是用来标识和证明通信双方身份的数字信息文件。使用SSL 证书的网站，可以保证用户和服务器间信息交换的保密性，具有不可窃听、不可更改、不可否认、不可冒充的功能。 SSL证书由浏览器中“受信任的根证书颁发机构”在验证服务器身份后颁发,具有网站身份验证和加密传输双重功能. SSL工具箱：https://www.myssl.cn/tools/">
 
 
@@ -134,13 +134,13 @@
 
 
 
-  <link rel="canonical" href="https://gongzhao1.coding.me/常见证书详解/">
+  <link rel="canonical" href="https://gongzhao1.coding.me/常见证书详解及openssl相互转换/">
 
 
 
 
 
-  <title>常见证书详解 | GZ</title>
+  <title>常见证书详解及openssl相互转换 | GZ</title>
   
 
 
@@ -315,7 +315,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://gongzhao1.coding.me/常见证书详解/">
+    <link itemprop="mainEntityOfPage" href="https://gongzhao1.coding.me/常见证书详解及openssl相互转换/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="弓昭">
@@ -332,7 +332,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">常见证书详解</h1>
+          <h1 class="post-title" itemprop="name headline">常见证书详解及openssl相互转换</h1>
         
 
         <div class="post-meta">
@@ -392,47 +392,53 @@
 <p>SSL工具箱：<a href="https://www.myssl.cn/tools/" target="_blank" rel="noopener">https://www.myssl.cn/tools/</a></p>
 <a id="more"></a>
 
-<h1 id="常见证书格式及相互转化"><a href="#常见证书格式及相互转化" class="headerlink" title="常见证书格式及相互转化"></a>常见证书格式及相互转化</h1><p>PKCS 全称是 Public-Key Cryptography Standards ，是由 RSA 实验室与其它安全系统开发商为促进公钥密码的发展而制订的一系列标准，PKCS 目前共发布过 15 个标准。 常用的有：<br>PKCS#7 Cryptographic Message Syntax Standard<br>PKCS#10 Certification Request Standard<br>PKCS#12 Personal Information Exchange Syntax Standard</p>
-<p>X.509是常见通用的证书格式。所有的证书都符合为Public Key Infrastructure (PKI) 制定的 ITU-T X509 国际标准。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">PKCS#7 常用的后缀是： .P7B .P7C .SPC</span><br><span class="line"></span><br><span class="line">PKCS#12 常用的后缀有： .P12 .PFX</span><br></pre></td></tr></table></figure>
+<h1 id="常见证书格式及相互转化"><a href="#常见证书格式及相互转化" class="headerlink" title="常见证书格式及相互转化"></a>常见证书格式及相互转化</h1><ul>
+<li><p>PKCS#7：Cryptographic Message Syntax Standard</p>
+</li>
+<li><p>PKCS#10：Certification Request Standard</p>
+</li>
+<li><p>PKCS#12：Personal Information Exchange Syntax Standard</p>
+</li>
+<li><p>X.509：是常见通用的证书格式。所有的证书都符合为Public Key Infrastructure (PKI) 制定的 ITU-T X509 国际标准。</p>
+</li>
+<li><p>PKCS#7：常用的后缀是： .P7B .P7C .SPC</p>
+</li>
+<li><p>PKCS#12：常用的后缀有： .P12 .PFX</p>
+</li>
+<li><p>X.509：DER 编码(ASCII)的后缀是： .DER .CER .CRT</p>
+</li>
+<li><p>X.509：PAM 编码(Base64)的后缀是： .PEM .CER .CRT</p>
+</li>
+<li><p>.cer/.crt：是用于存放证书，它是2进制形式存放的，不含私钥。</p>
+</li>
+<li><p>.pem：跟crt/cer的区别是它以Ascii来表示。</p>
+</li>
+<li><p>pfx/p12：用于存放个人证书/私钥，他通常包含保护密码，2进制方式</p>
+</li>
+<li><p>p10：是证书请求</p>
+</li>
+<li><p>p7r：是CA对证书请求的回复，只用于导入</p>
+</li>
+<li><p>p7b：以树状展示证书链(certificate chain)，同时也支持单个证书，不含私钥。</p>
+</li>
+</ul>
+<h1 id="openssl转化命令"><a href="#openssl转化命令" class="headerlink" title="openssl转化命令"></a>openssl转化命令</h1><p>将<code>DER</code>文件(<code>.crt .cer .der</code>)转换为<code>PEM</code></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">openssl x509 -inform der -<span class="keyword">in</span> certificate.cer -out certificate.pem</span><br><span class="line">or</span><br><span class="line">openssl x509 -outform pem -<span class="keyword">in</span> your-cert.crt -out your-cert.pem</span><br></pre></td></tr></table></figure>
 
-<blockquote>
-<p>pfx/p12用于存放个人证书/私钥，他通常包含保护密码，2进制方式<br>p10是证书请求<br>p7r是CA对证书请求的回复，只用于导入<br>p7b以树状展示证书链(certificate chain)，同时也支持单个证书，不含私钥。</p>
-</blockquote>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">X.509 DER 编码(ASCII)的后缀是： .DER .CER .CRT</span><br><span class="line"></span><br><span class="line">X.509 PAM 编码(Base64)的后缀是： .PEM .CER .CRT</span><br></pre></td></tr></table></figure>
+<p>将<code>PEM</code>文件转换为<code>DER</code></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">openssl x509 -outform der -<span class="keyword">in</span> certificate.pem -out certificate.der</span><br></pre></td></tr></table></figure>
 
-<blockquote>
-<p>der,cer文件一般是二进制格式的，只放证书，不含私钥</p>
-<p>crt文件可能是二进制的，也可能是文本格式的，应该以文本格式居多，功能同der/cer</p>
-<p>pem文件一般是文本格式的，可以放证书或者私钥，或者两者都有<br>pem如果只含私钥的话，一般用.key扩展名，而且可以有密码保护</p>
-</blockquote>
-<h1 id="openssl常用命令"><a href="#openssl常用命令" class="headerlink" title="openssl常用命令"></a>openssl常用命令</h1><p>用openssl创建CA证书的RSA密钥(PEM格式)：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">openssl genrsa -des3 -out ca.key 1024</span><br></pre></td></tr></table></figure>
+<p>将包含私钥和证书的<code>PKCS＃12</code>文件(<code>.pfx .p12</code>)转换为<code>PEM</code></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">openssl pkcs12 -<span class="keyword">in</span> keyStore.pfx -out keyStore.pem -nodes</span><br><span class="line">or</span><br><span class="line">openssl pkcs12 -nocerts -nodes -<span class="keyword">in</span> cert.p12 -out private.pem</span><br></pre></td></tr></table></figure>
 
-<p>用openssl创建CA证书(PEM格式,假如有效期为一年)：</p>
-<p>(openssl是可以生成DER格式的CA证书的，最好用IE将PEM格式的CA证书转换成DER格式的CA证书。)</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">openssl req -new -x509 -days 365 -key ca.key -out ca.crt -config openssl.cnf</span><br></pre></td></tr></table></figure>
-
-<p>x509到pfx</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">pkcs12 -export –in keys/client1.crt -inkey keys/client1.key -out keys/client1.pfx</span><br></pre></td></tr></table></figure>
+<p>将<code>PEM</code>证书文件和私钥转换为<code>PKCS＃12(.pfx .p12)</code></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">openssl pkcs12 -<span class="built_in">export</span> -out certificate.pfx -inkey privateKey.key -<span class="keyword">in</span> certificate.crt -certfile CACert.crt</span><br><span class="line">or</span><br><span class="line">openssl pkcs12 -<span class="built_in">export</span> –<span class="keyword">in</span> keys/client1.crt -inkey keys/client1.key -out keys/client1.pfx</span><br></pre></td></tr></table></figure>
 
 <p>PEM格式的ca.key转换为Microsoft可以识别的pvk格式。</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">pvk -in ca.key -out ca.pvk -nocrypt -topvk</span><br></pre></td></tr></table></figure>
 
-<p>PKCS#12 到 PEM 的转换</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">openssl pkcs12 -nocerts -nodes -in cert.p12 -out private.pem</span><br></pre></td></tr></table></figure>
-
 <p>从 PFX 格式文件中提取私钥格式文件 (.key)</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">openssl pkcs12 -in mycert.pfx -nocerts -nodes -out mycert.key</span><br></pre></td></tr></table></figure>
-
-<p>转换 pem 到到 spc</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">openssl crl2pkcs7 -nocrl -certfile venus.pem -outform DER -out venus.spc</span><br></pre></td></tr></table></figure>
-
-<p>PEM 到 PKCS#12 的转换</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">openssl pkcs12 -export -in Cert.pem -out Cert.p12 -inkey key.pem</span><br></pre></td></tr></table></figure>
-
-<p>合并证书文件（crt）和私钥文件（key）</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cat client.crt client.key &gt; client.pem</span><br></pre></td></tr></table></figure>
 
 
       
@@ -460,12 +466,12 @@
   <!-- JS库 sweetalert 可修改路径 -->
   <script src="https://cdn.bootcss.com/jquery/2.0.0/jquery.min.js"></script>
   <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
-  <p><span>本文标题:</span><a href="/常见证书详解/">常见证书详解</a></p>
+  <p><span>本文标题:</span><a href="/常见证书详解及openssl相互转换/">常见证书详解及openssl相互转换</a></p>
   <p><span>文章作者:</span><a href="/" title="访问 弓昭 的个人博客">弓昭</a></p>
   <p><span>发布时间:</span>2019年08月11日 - 22:53</p>
-  <p><span>最后更新:</span>2020年04月08日 - 22:20</p>
-  <p><span>原始链接:</span><a href="/常见证书详解/" title="常见证书详解">https://gongzhao1.coding.me/常见证书详解/</a>
-    <span class="copy-path" title="点击复制文章链接"><i class="fa fa-clipboard" data-clipboard-text="https://gongzhao1.coding.me/常见证书详解/" aria-label="复制成功！"></i></span>
+  <p><span>最后更新:</span>2020年07月03日 - 00:15</p>
+  <p><span>原始链接:</span><a href="/常见证书详解及openssl相互转换/" title="常见证书详解及openssl相互转换">https://gongzhao1.coding.me/常见证书详解及openssl相互转换/</a>
+    <span class="copy-path" title="点击复制文章链接"><i class="fa fa-clipboard" data-clipboard-text="https://gongzhao1.coding.me/常见证书详解及openssl相互转换/" aria-label="复制成功！"></i></span>
   </p>
   <p><span>联系邮箱:</span>gongzhao1@foxmail.com</p>  
 </div>
@@ -747,7 +753,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#常见证书格式及相互转化"><span class="nav-number">1.</span> <span class="nav-text">常见证书格式及相互转化</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#openssl常用命令"><span class="nav-number">2.</span> <span class="nav-text">openssl常用命令</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#常见证书格式及相互转化"><span class="nav-number">1.</span> <span class="nav-text">常见证书格式及相互转化</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#openssl转化命令"><span class="nav-number">2.</span> <span class="nav-text">openssl转化命令</span></a></li></ol></div>
             
 
           </div>
@@ -788,7 +794,7 @@
 
 <div class="theme-info">
 
-  <span class="post-count">博客全站共282.9k字</span>
+  <span class="post-count">博客全站共282.7k字</span>
 </div>
 
 
