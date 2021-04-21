@@ -76,7 +76,7 @@
 <link href="/css/main.css?v=5.1.2" rel="stylesheet" type="text/css">
 
 
-  <meta name="keywords" content="nfs,centos7,">
+  <meta name="keywords" content="centos7,nfs,">
 
 
 
@@ -95,10 +95,10 @@
 
 
 <meta name="description" content="NFS介绍在Linux下实现文件共享有多种方式，NFS就是其中之一。网络文件系统(NFS)协议是由Sun MicroSystem在20世纪80年代为了提供对共享文件的远程访问而设计和实现的。该协议采用Client/Server模型，通过使用Sun开发的远程过程调用协议(RPC Protocol)来实现运行在一台计算机上的程序来调用在另一台远程机器上运行的子程序，并且，它提供的外部数据表示(XDR)">
-<meta name="keywords" content="nfs,centos7">
+<meta name="keywords" content="centos7,nfs">
 <meta property="og:type" content="article">
 <meta property="og:title" content="CentOS7-NFS服务的安装配置详解">
-<meta property="og:url" content="https://gongzhao1.coding.me/CentOS7-NFS服务的安装配置详解/index.html">
+<meta property="og:url" content="https://gongzhao1.gitee.io/CentOS7-NFS服务的安装配置详解/index.html">
 <meta property="og:site_name" content="GZ">
 <meta property="og:description" content="NFS介绍在Linux下实现文件共享有多种方式，NFS就是其中之一。网络文件系统(NFS)协议是由Sun MicroSystem在20世纪80年代为了提供对共享文件的远程访问而设计和实现的。该协议采用Client/Server模型，通过使用Sun开发的远程过程调用协议(RPC Protocol)来实现运行在一台计算机上的程序来调用在另一台远程机器上运行的子程序，并且，它提供的外部数据表示(XDR)">
 <meta property="og:locale" content="zh-Hans">
@@ -134,7 +134,7 @@
 
 
 
-  <link rel="canonical" href="https://gongzhao1.coding.me/CentOS7-NFS服务的安装配置详解/">
+  <link rel="canonical" href="https://gongzhao1.gitee.io/CentOS7-NFS服务的安装配置详解/">
 
 
 
@@ -181,7 +181,7 @@
       </a>
     </div>
       
-        <p class="site-subtitle">痛苦是财富，这话是扯淡。少年，痛苦就是痛苦，对痛苦的思考才是财富</p>
+        <p class="site-subtitle">对痛苦的思考才是财富</p>
       
   </div>
 
@@ -315,7 +315,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://gongzhao1.coding.me/CentOS7-NFS服务的安装配置详解/">
+    <link itemprop="mainEntityOfPage" href="https://gongzhao1.gitee.io/CentOS7-NFS服务的安装配置详解/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="弓昭">
@@ -481,8 +481,8 @@
   <p><span>文章作者:</span><a href="/" title="访问 弓昭 的个人博客">弓昭</a></p>
   <p><span>发布时间:</span>2018年12月24日 - 20:22</p>
   <p><span>最后更新:</span>2020年04月08日 - 22:20</p>
-  <p><span>原始链接:</span><a href="/CentOS7-NFS服务的安装配置详解/" title="CentOS7-NFS服务的安装配置详解">https://gongzhao1.coding.me/CentOS7-NFS服务的安装配置详解/</a>
-    <span class="copy-path" title="点击复制文章链接"><i class="fa fa-clipboard" data-clipboard-text="https://gongzhao1.coding.me/CentOS7-NFS服务的安装配置详解/" aria-label="复制成功！"></i></span>
+  <p><span>原始链接:</span><a href="/CentOS7-NFS服务的安装配置详解/" title="CentOS7-NFS服务的安装配置详解">https://gongzhao1.gitee.io/CentOS7-NFS服务的安装配置详解/</a>
+    <span class="copy-path" title="点击复制文章链接"><i class="fa fa-clipboard" data-clipboard-text="https://gongzhao1.gitee.io/CentOS7-NFS服务的安装配置详解/" aria-label="复制成功！"></i></span>
   </p>
   <p><span>联系邮箱:</span>gongzhao1@foxmail.com</p>  
 </div>
@@ -544,9 +544,9 @@
       
         <div class="post-tags">
           
-            <a href="/tags/nfs/" rel="tag"><i class="fa fa-tag"></i>nfs</a>
-          
             <a href="/tags/centos7/" rel="tag"><i class="fa fa-tag"></i>centos7</a>
+          
+            <a href="/tags/nfs/" rel="tag"><i class="fa fa-tag"></i>nfs</a>
           
         </div>
       
@@ -649,7 +649,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/archives/">
-                <span class="site-state-item-count">93</span>
+                <span class="site-state-item-count">101</span>
                 <span class="site-state-item-name">日志</span>
               </a>
             </div>
@@ -660,7 +660,7 @@
             
             <div class="site-state-item site-state-categories">
               <a href="/categories/index.html">
-                <span class="site-state-item-count">28</span>
+                <span class="site-state-item-count">30</span>
                 <span class="site-state-item-name">分类</span>
               </a>
             </div>
@@ -671,7 +671,7 @@
             
             <div class="site-state-item site-state-tags">
               <a href="/tags/index.html">
-                <span class="site-state-item-count">78</span>
+                <span class="site-state-item-count">83</span>
                 <span class="site-state-item-name">标签</span>
               </a>
             </div>
@@ -790,7 +790,7 @@
 <div class="copyright">
   
   &copy;  2018 - 
-  <span itemprop="copyrightYear">2020</span>
+  <span itemprop="copyrightYear">2021</span>
   <span class="with-love">
     <i class="fa fa-heart"></i>
   </span>
@@ -807,7 +807,7 @@
 
 <div class="theme-info">
 
-  <span class="post-count">博客全站共282.7k字</span>
+  <span class="post-count">博客全站共299.7k字</span>
 </div>
 
 

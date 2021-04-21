@@ -76,7 +76,7 @@
 <link href="/css/main.css?v=5.1.2" rel="stylesheet" type="text/css">
 
 
-  <meta name="keywords" content="证书,">
+  <meta name="keywords" content="openssl,">
 
 
 
@@ -95,14 +95,14 @@
 
 
 <meta name="description" content="SSL 证书提供了一种在互联网上身份验证的方式,是用来标识和证明通信双方身份的数字信息文件。使用SSL 证书的网站，可以保证用户和服务器间信息交换的保密性，具有不可窃听、不可更改、不可否认、不可冒充的功能。 SSL证书由浏览器中“受信任的根证书颁发机构”在验证服务器身份后颁发,具有网站身份验证和加密传输双重功能. SSL工具箱：https://www.myssl.cn/tools/">
-<meta name="keywords" content="证书">
+<meta name="keywords" content="openssl">
 <meta property="og:type" content="article">
 <meta property="og:title" content="常见证书详解及openssl相互转换">
-<meta property="og:url" content="https://gongzhao1.coding.me/常见证书详解及openssl相互转换/index.html">
+<meta property="og:url" content="https://gongzhao1.gitee.io/常见证书详解及openssl相互转换/index.html">
 <meta property="og:site_name" content="GZ">
 <meta property="og:description" content="SSL 证书提供了一种在互联网上身份验证的方式,是用来标识和证明通信双方身份的数字信息文件。使用SSL 证书的网站，可以保证用户和服务器间信息交换的保密性，具有不可窃听、不可更改、不可否认、不可冒充的功能。 SSL证书由浏览器中“受信任的根证书颁发机构”在验证服务器身份后颁发,具有网站身份验证和加密传输双重功能. SSL工具箱：https://www.myssl.cn/tools/">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2020-07-02T16:15:22.309Z">
+<meta property="og:updated_time" content="2021-04-21T12:39:05.317Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="常见证书详解及openssl相互转换">
 <meta name="twitter:description" content="SSL 证书提供了一种在互联网上身份验证的方式,是用来标识和证明通信双方身份的数字信息文件。使用SSL 证书的网站，可以保证用户和服务器间信息交换的保密性，具有不可窃听、不可更改、不可否认、不可冒充的功能。 SSL证书由浏览器中“受信任的根证书颁发机构”在验证服务器身份后颁发,具有网站身份验证和加密传输双重功能. SSL工具箱：https://www.myssl.cn/tools/">
@@ -134,7 +134,7 @@
 
 
 
-  <link rel="canonical" href="https://gongzhao1.coding.me/常见证书详解及openssl相互转换/">
+  <link rel="canonical" href="https://gongzhao1.gitee.io/常见证书详解及openssl相互转换/">
 
 
 
@@ -181,7 +181,7 @@
       </a>
     </div>
       
-        <p class="site-subtitle">痛苦是财富，这话是扯淡。少年，痛苦就是痛苦，对痛苦的思考才是财富</p>
+        <p class="site-subtitle">对痛苦的思考才是财富</p>
       
   </div>
 
@@ -315,7 +315,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://gongzhao1.coding.me/常见证书详解及openssl相互转换/">
+    <link itemprop="mainEntityOfPage" href="https://gongzhao1.gitee.io/常见证书详解及openssl相互转换/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="弓昭">
@@ -354,6 +354,28 @@
             
           </span>
 
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/证书/" itemprop="url" rel="index">
+                    <span itemprop="name">证书</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
           
 
           
@@ -422,7 +444,7 @@
 <li><p>p7b：以树状展示证书链(certificate chain)，同时也支持单个证书，不含私钥。</p>
 </li>
 </ul>
-<h1 id="openssl转化命令"><a href="#openssl转化命令" class="headerlink" title="openssl转化命令"></a>openssl转化命令</h1><p>将<code>DER</code>文件(<code>.crt .cer .der</code>)转换为<code>PEM</code></p>
+<h1 id="openssl常用命令"><a href="#openssl常用命令" class="headerlink" title="openssl常用命令"></a>openssl常用命令</h1><p>将<code>DER</code>文件(<code>.crt .cer .der</code>)转换为<code>PEM</code></p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">openssl x509 -inform der -<span class="keyword">in</span> certificate.cer -out certificate.pem</span><br><span class="line">or</span><br><span class="line">openssl x509 -outform pem -<span class="keyword">in</span> your-cert.crt -out your-cert.pem</span><br></pre></td></tr></table></figure>
 
 <p>将<code>PEM</code>文件转换为<code>DER</code></p>
@@ -439,6 +461,15 @@
 
 <p>从 PFX 格式文件中提取私钥格式文件 (.key)</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">openssl pkcs12 -in mycert.pfx -nocerts -nodes -out mycert.key</span><br></pre></td></tr></table></figure>
+
+<p>将PKCS#8编码的私钥转化成PKCS#1编码</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">openssl rsa -<span class="keyword">in</span> privkey.pem  -out privkey-rsa.pem</span><br></pre></td></tr></table></figure>
+
+<p>获取服务器的证书</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">openssl s_client -host api.mailgun.net -port 443 -prexit -showcerts</span><br></pre></td></tr></table></figure>
+
+<p>使用openssl测试双向认证</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">openssl s_client -connect test.com:443 -cert device.pem -key device.key -CAfile trusted-chain.pem</span><br></pre></td></tr></table></figure>
 
 
       
@@ -469,9 +500,9 @@
   <p><span>本文标题:</span><a href="/常见证书详解及openssl相互转换/">常见证书详解及openssl相互转换</a></p>
   <p><span>文章作者:</span><a href="/" title="访问 弓昭 的个人博客">弓昭</a></p>
   <p><span>发布时间:</span>2019年08月11日 - 22:53</p>
-  <p><span>最后更新:</span>2020年07月03日 - 00:15</p>
-  <p><span>原始链接:</span><a href="/常见证书详解及openssl相互转换/" title="常见证书详解及openssl相互转换">https://gongzhao1.coding.me/常见证书详解及openssl相互转换/</a>
-    <span class="copy-path" title="点击复制文章链接"><i class="fa fa-clipboard" data-clipboard-text="https://gongzhao1.coding.me/常见证书详解及openssl相互转换/" aria-label="复制成功！"></i></span>
+  <p><span>最后更新:</span>2021年04月21日 - 20:39</p>
+  <p><span>原始链接:</span><a href="/常见证书详解及openssl相互转换/" title="常见证书详解及openssl相互转换">https://gongzhao1.gitee.io/常见证书详解及openssl相互转换/</a>
+    <span class="copy-path" title="点击复制文章链接"><i class="fa fa-clipboard" data-clipboard-text="https://gongzhao1.gitee.io/常见证书详解及openssl相互转换/" aria-label="复制成功！"></i></span>
   </p>
   <p><span>联系邮箱:</span>gongzhao1@foxmail.com</p>  
 </div>
@@ -533,7 +564,7 @@
       
         <div class="post-tags">
           
-            <a href="/tags/证书/" rel="tag"><i class="fa fa-tag"></i>证书</a>
+            <a href="/tags/openssl/" rel="tag"><i class="fa fa-tag"></i>openssl</a>
           
         </div>
       
@@ -636,7 +667,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/archives/">
-                <span class="site-state-item-count">93</span>
+                <span class="site-state-item-count">101</span>
                 <span class="site-state-item-name">日志</span>
               </a>
             </div>
@@ -647,7 +678,7 @@
             
             <div class="site-state-item site-state-categories">
               <a href="/categories/index.html">
-                <span class="site-state-item-count">28</span>
+                <span class="site-state-item-count">30</span>
                 <span class="site-state-item-name">分类</span>
               </a>
             </div>
@@ -658,7 +689,7 @@
             
             <div class="site-state-item site-state-tags">
               <a href="/tags/index.html">
-                <span class="site-state-item-count">78</span>
+                <span class="site-state-item-count">83</span>
                 <span class="site-state-item-name">标签</span>
               </a>
             </div>
@@ -753,7 +784,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#常见证书格式及相互转化"><span class="nav-number">1.</span> <span class="nav-text">常见证书格式及相互转化</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#openssl转化命令"><span class="nav-number">2.</span> <span class="nav-text">openssl转化命令</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#常见证书格式及相互转化"><span class="nav-number">1.</span> <span class="nav-text">常见证书格式及相互转化</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#openssl常用命令"><span class="nav-number">2.</span> <span class="nav-text">openssl常用命令</span></a></li></ol></div>
             
 
           </div>
@@ -777,7 +808,7 @@
 <div class="copyright">
   
   &copy;  2018 - 
-  <span itemprop="copyrightYear">2020</span>
+  <span itemprop="copyrightYear">2021</span>
   <span class="with-love">
     <i class="fa fa-heart"></i>
   </span>
@@ -794,7 +825,7 @@
 
 <div class="theme-info">
 
-  <span class="post-count">博客全站共282.7k字</span>
+  <span class="post-count">博客全站共299.7k字</span>
 </div>
 
 

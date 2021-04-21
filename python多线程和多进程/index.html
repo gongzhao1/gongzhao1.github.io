@@ -1,0 +1,1333 @@
+<!DOCTYPE html>
+
+
+
+
+<html class="theme-next muse" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.2" rel="stylesheet" type="text/css">
+
+
+  <meta name="keywords" content="python,">
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="GZ" type="application/atom+xml">
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.2">
+
+
+
+
+
+
+<meta name="description" content="概念 进程是操作系统分配资源的最小单元, 线程是操作系统调度的最小单元。 一个应用程序至少包括1个进程，而1个进程包括1个或多个线程，线程的尺度更小。 每个进程在执行过程中拥有独立的内存单元，而一个进程的多个线程在执行过程中共享内存。">
+<meta name="keywords" content="python">
+<meta property="og:type" content="article">
+<meta property="og:title" content="python多线程和多进程">
+<meta property="og:url" content="https://gongzhao1.gitee.io/python多线程和多进程/index.html">
+<meta property="og:site_name" content="GZ">
+<meta property="og:description" content="概念 进程是操作系统分配资源的最小单元, 线程是操作系统调度的最小单元。 一个应用程序至少包括1个进程，而1个进程包括1个或多个线程，线程的尺度更小。 每个进程在执行过程中拥有独立的内存单元，而一个进程的多个线程在执行过程中共享内存。">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2021-04-21T12:39:05.302Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="python多线程和多进程">
+<meta name="twitter:description" content="概念 进程是操作系统分配资源的最小单元, 线程是操作系统调度的最小单元。 一个应用程序至少包括1个进程，而1个进程包括1个或多个线程，线程的尺度更小。 每个进程在执行过程中拥有独立的内存单元，而一个进程的多个线程在执行过程中共享内存。">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: false,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://gongzhao1.gitee.io/python多线程和多进程/">
+
+
+
+
+
+  <title>python多线程和多进程 | GZ</title>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">GZ</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">对痛苦的思考才是财富</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br>
+            
+            关于
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br>
+            
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off" placeholder="搜索..." spellcheck="false" type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://gongzhao1.gitee.io/python多线程和多进程/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="弓昭">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/uploads/panda.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="GZ">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">python多线程和多进程</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-12-24T21:50:41+08:00">
+                2020-12-24
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/python/" itemprop="url" rel="index">
+                    <span itemprop="name">python</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+            <span class="post-meta-divider">|</span>
+            <span class="page-pv"><i class="fa fa-file-o"></i>
+            <span class="busuanzi-value" id="busuanzi_value_page_pv"></span>次阅读
+            </span>
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="概念"><a href="#概念" class="headerlink" title="概念"></a>概念</h1><ul>
+<li>进程是操作系统分配资源的最小单元, 线程是操作系统调度的最小单元。</li>
+<li>一个应用程序至少包括1个进程，而1个进程包括1个或多个线程，线程的尺度更小。</li>
+<li>每个进程在执行过程中拥有独立的内存单元，而一个进程的多个线程在执行过程中共享内存。<a id="more"></a>
+<h1 id="python多线程"><a href="#python多线程" class="headerlink" title="python多线程"></a>python多线程</h1>python多线程有两种实现方式<ol>
+<li>实例化一个threading.Thread的对象，并传入一个初始化函数对象（initial function )作为线程执行的入口</li>
+<li>继承threading.Thread，并重写run函数</li>
+</ol>
+</li>
+</ul>
+<h2 id="多线程实现"><a href="#多线程实现" class="headerlink" title="多线程实现"></a>多线程实现</h2><p><strong>方式一</strong><br>创建threading.Thread对象</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> threading</span><br><span class="line"><span class="keyword">import</span> time</span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">tstart</span><span class="params">(arg)</span>:</span></span><br><span class="line"> time.sleep(<span class="number">0.5</span>)</span><br><span class="line"> print(<span class="string">"%s running...."</span> % arg)</span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">'__main__'</span>:</span><br><span class="line"> t1 = threading.Thread(target=tstart, args=(<span class="string">'This is thread 1'</span>,))</span><br><span class="line"> t2 = threading.Thread(target=tstart, args=(<span class="string">'This is thread 2'</span>,))</span><br><span class="line"> t1.start()</span><br><span class="line"> t2.start()</span><br><span class="line"> print(<span class="string">"This is main function"</span>)</span><br></pre></td></tr></table></figure>
+
+<p>结果</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">This is main function</span><br><span class="line">This is thread 2 running....</span><br><span class="line">This is thread 1 running....</span><br></pre></td></tr></table></figure>
+
+<p><strong>方式二</strong><br>继承threading.Thread，并重写run</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> threading</span><br><span class="line"><span class="keyword">import</span> time</span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">CustomThread</span><span class="params">(threading.Thread)</span>:</span></span><br><span class="line"> <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self, thread_name)</span>:</span></span><br><span class="line">  <span class="comment"># step 1: call base __init__ function</span></span><br><span class="line">  super(CustomThread, self).__init__(name=thread_name)</span><br><span class="line">  self._tname = thread_name</span><br><span class="line"> <span class="function"><span class="keyword">def</span> <span class="title">run</span><span class="params">(self)</span>:</span></span><br><span class="line">  <span class="comment"># step 2: overide run function</span></span><br><span class="line">  time.sleep(<span class="number">0.5</span>)</span><br><span class="line">  print(<span class="string">"This is %s running...."</span> % self._tname)</span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">"__main__"</span>:</span><br><span class="line"> t1 = CustomThread(<span class="string">"thread 1"</span>)</span><br><span class="line"> t2 = CustomThread(<span class="string">"thread 2"</span>)</span><br><span class="line"> t1.start()</span><br><span class="line"> t2.start()</span><br><span class="line"> print(<span class="string">"This is main function"</span>)</span><br></pre></td></tr></table></figure>
+
+<p> 结果<br> <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"> This is main function</span><br><span class="line">This is thread 2 running....</span><br><span class="line">This is thread 1 running....</span><br></pre></td></tr></table></figure></p>
+<p>上面两种方法本质上都是直接或者间接使用threading.Thread类</p>
+<blockquote>
+<p>threading.Thread(group=None, target=None, name=None, args=(), kwargs={})</p>
+</blockquote>
+<p>关联上面两种创建线程的方式:</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> threading</span><br><span class="line"><span class="keyword">import</span> time</span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">CustomThread</span><span class="params">(threading.Thread)</span>:</span></span><br><span class="line"> <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self, thread_name, target = None)</span>:</span></span><br><span class="line">  <span class="comment"># step 1: call base __init__ function</span></span><br><span class="line">  super(CustomThread, self).__init__(name=thread_name, target=target, args = (thread_name,))</span><br><span class="line">  self._tname = thread_name</span><br><span class="line"> <span class="function"><span class="keyword">def</span> <span class="title">run</span><span class="params">(self)</span>:</span></span><br><span class="line">  <span class="comment"># step 2: overide run function</span></span><br><span class="line">  <span class="comment"># time.sleep(0.5)</span></span><br><span class="line">  <span class="comment"># print("This is %s running....@run" % self._tname)</span></span><br><span class="line">  super(CustomThread, self).run()</span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">target</span><span class="params">(arg)</span>:</span></span><br><span class="line"> time.sleep(<span class="number">0.5</span>)</span><br><span class="line"> print(<span class="string">"This is %s running....@target"</span> % arg)</span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">"__main__"</span>:</span><br><span class="line"> t1 = CustomThread(<span class="string">"thread 1"</span>, target)</span><br><span class="line"> t2 = CustomThread(<span class="string">"thread 2"</span>, target)</span><br><span class="line"> t1.start()</span><br><span class="line"> t2.start()</span><br><span class="line"> print(<span class="string">"This is main function"</span>)</span><br></pre></td></tr></table></figure>
+
+<p> 结果：<br> <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"> This is main function</span><br><span class="line">This is thread 1 running....@target</span><br><span class="line">This is thread 2 running....@target</span><br></pre></td></tr></table></figure></p>
+<p>上面这段代码说明：</p>
+<ol>
+<li>两种方式创建线程，指定的参数最终都会传给threading.Thread类；</li>
+<li>传给线程的目标函数是在基类Thread的run函数体中被调用的，如果run没有被重写的话。</li>
+</ol>
+<p>threading模块的一些属性和方法可以参照官网，这里重点介绍一下threading.Thread对象的方法<br>下面是threading.Thread提供的线程对象方法和属性：</p>
+<ul>
+<li>start()：创建线程后通过start启动线程，等待CPU调度，为run函数执行做准备；</li>
+<li>run()：线程开始执行的入口函数，函数体中会调用用户编写的target函数，或者执行被重载的run函数；</li>
+<li>join([timeout])：阻塞挂起调用该函数的线程，直到被调用线程执行完成或超时。通常会在主线程中调用该方法，等待其他线程执行完成。</li>
+<li>name、getName()&amp;setName()：线程名称相关的操作；</li>
+<li>ident：整数类型的线程标识符，线程开始执行前（调用start之前）为None；</li>
+<li>isAlive()、is_alive()：start函数执行之后到run函数执行完之前都为True；</li>
+<li>daemon、isDaemon()&amp;setDaemon()：守护线程相关；</li>
+</ul>
+<p>这些是我们创建线程之后通过线程对象对线程进行管理和获取线程信息的方法。</p>
+<h2 id="多线程执行"><a href="#多线程执行" class="headerlink" title="多线程执行"></a>多线程执行</h2><p>在主线程中创建若线程之后，他们之间没有任何协作和同步，除主线程之外每个线程都是从run开始被执行，直到执行完毕。<br><strong>join</strong><br>我们可以通过join方法让主线程阻塞，等待其创建的线程执行完成。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> threading</span><br><span class="line"><span class="keyword">import</span> time</span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">tstart</span><span class="params">(arg)</span>:</span></span><br><span class="line"> print(<span class="string">"%s running....at: %s"</span> % (arg,time.time()))</span><br><span class="line"> time.sleep(<span class="number">1</span>)</span><br><span class="line"> print(<span class="string">"%s is finished! at: %s"</span> % (arg,time.time()))</span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">'__main__'</span>:</span><br><span class="line"> t1 = threading.Thread(target=tstart, args=(<span class="string">'This is thread 1'</span>,))</span><br><span class="line"> t1.start()</span><br><span class="line"> t1.join() <span class="comment"># 当前线程阻塞，等待t1线程执行完成</span></span><br><span class="line"> print(<span class="string">"This is main function at：%s"</span> % time.time())</span><br></pre></td></tr></table></figure>
+
+<p> 结果：<br> <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"> This is thread 1 running....at: 1564906617.43</span><br><span class="line">This is thread 1 is finished! at: 1564906618.43</span><br><span class="line">This is main function at：1564906618.43</span><br></pre></td></tr></table></figure></p>
+<p>如果不加任何限制，当主线程执行完毕之后，当前程序并不会结束，必须等到所有线程都结束之后才能结束当前进程。<br>将上面程序中的t1.join()去掉，执行结果如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">This is thread 1 running....at: 1564906769.52</span><br><span class="line">This is main function at：1564906769.52</span><br><span class="line">This is thread 1 is finished! at: 1564906770.52</span><br></pre></td></tr></table></figure>
+
+<p><strong>deamon守护线程</strong><br>可以通过将创建的线程指定为守护线程（daemon），这样主线程执行完毕之后会立即结束未执行完的线程，然后结束程序。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> threading</span><br><span class="line"><span class="keyword">import</span> time</span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">tstart</span><span class="params">(arg)</span>:</span></span><br><span class="line">  print(<span class="string">"%s running....at: %s"</span> % (arg,time.time()))</span><br><span class="line">  time.sleep(<span class="number">1</span>)</span><br><span class="line">  print(<span class="string">"%s is finished! at: %s"</span> % (arg,time.time()))</span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">'__main__'</span>:</span><br><span class="line">  t1 = threading.Thread(target=tstart, args=(<span class="string">'This is thread 1'</span>,))</span><br><span class="line">  t1.setDaemon(<span class="keyword">True</span>)</span><br><span class="line">  t1.start()</span><br><span class="line">  <span class="comment"># t1.join()  # 当前线程阻塞，等待t1线程执行完成</span></span><br><span class="line">  print(<span class="string">"This is main function at：%s"</span> % time.time())</span><br></pre></td></tr></table></figure>
+
+<p>  结果：<br>  <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">  This is thread 1 running....at: 1564906847.85</span><br><span class="line">This is main function at：1564906847.85</span><br></pre></td></tr></table></figure></p>
+<h1 id="python多进程"><a href="#python多进程" class="headerlink" title="python多进程"></a>python多进程</h1><p>相比较于threading模块用于创建python多线程，python提供multiprocessing用于创建多进程。先看一下创建进程的两种方式。</p>
+<h2 id="多进程实现"><a href="#多进程实现" class="headerlink" title="多进程实现"></a>多进程实现</h2><p>创建进程的方式和创建线程的方式类似：<br>1.实例化一个multiprocessing.Process的对象，并传入一个初始化函数对象（initial function )作为新建进程执行入口；<br>2.继承multiprocessing.Process，并重写run函数；</p>
+<p><strong>方式一</strong></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> multiprocessing <span class="keyword">import</span> Process </span><br><span class="line"><span class="keyword">import</span> os, time</span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">pstart</span><span class="params">(name)</span>:</span></span><br><span class="line">  <span class="comment"># time.sleep(0.1)</span></span><br><span class="line">  print(<span class="string">"Process name: %s, pid: %s "</span>%(name, os.getpid()))</span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">"__main__"</span>: </span><br><span class="line">  subproc = Process(target=pstart, args=(<span class="string">'subprocess'</span>,)) </span><br><span class="line">  subproc.start() </span><br><span class="line">  subproc.join()</span><br><span class="line">  print(<span class="string">"subprocess pid: %s"</span>%subproc.pid)</span><br><span class="line">  print(<span class="string">"current process pid: %s"</span> % os.getpid())</span><br></pre></td></tr></table></figure>
+
+<p>结果：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">Process name: subprocess, pid: 4888 </span><br><span class="line">subprocess pid: 4888</span><br><span class="line">current process pid: 9912</span><br></pre></td></tr></table></figure>
+
+<p><strong>方式二</strong></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> multiprocessing <span class="keyword">import</span> Process </span><br><span class="line"><span class="keyword">import</span> os, time</span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">CustomProcess</span><span class="params">(Process)</span>:</span></span><br><span class="line">  <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self, p_name, target=None)</span>:</span></span><br><span class="line">    <span class="comment"># step 1: call base __init__ function()</span></span><br><span class="line">    super(CustomProcess, self).__init__(name=p_name, target=target, args=(p_name,))</span><br><span class="line"></span><br><span class="line">  <span class="function"><span class="keyword">def</span> <span class="title">run</span><span class="params">(self)</span>:</span></span><br><span class="line">    <span class="comment"># step 2:</span></span><br><span class="line">    <span class="comment"># time.sleep(0.1)</span></span><br><span class="line">    print(<span class="string">"Custom Process name: %s, pid: %s "</span>%(self.name, os.getpid()))</span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">'__main__'</span>:</span><br><span class="line">  p1 = CustomProcess(<span class="string">"process_1"</span>)</span><br><span class="line">  p1.start()</span><br><span class="line">  p1.join()</span><br><span class="line">  print(<span class="string">"subprocess pid: %s"</span>%p1.pid)</span><br><span class="line">  print(<span class="string">"current process pid: %s"</span> % os.getpid())</span><br></pre></td></tr></table></figure>
+
+<h1 id="python多进程和多线程比较"><a href="#python多进程和多线程比较" class="headerlink" title="python多进程和多线程比较"></a>python多进程和多线程比较</h1><p>先来看两个例子：</p>
+<p>开启两个python线程分别做一亿次加一操作，和单独使用一个线程做一亿次加一操作：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">tstart</span><span class="params">(arg)</span>:</span></span><br><span class="line">  var = <span class="number">0</span></span><br><span class="line">  <span class="keyword">for</span> i <span class="keyword">in</span> xrange(<span class="number">100000000</span>):</span><br><span class="line">    var += <span class="number">1</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">'__main__'</span>:</span><br><span class="line">  t1 = threading.Thread(target=tstart, args=(<span class="string">'This is thread 1'</span>,))</span><br><span class="line">  t2 = threading.Thread(target=tstart, args=(<span class="string">'This is thread 2'</span>,))</span><br><span class="line">  start_time = time.time()</span><br><span class="line">  t1.start()</span><br><span class="line">  t2.start()</span><br><span class="line">  t1.join()</span><br><span class="line">  t2.join()</span><br><span class="line">  print(<span class="string">"Two thread cost time: %s"</span> % (time.time() - start_time))</span><br><span class="line">  start_time = time.time()</span><br><span class="line">  tstart(<span class="string">"This is thread 0"</span>)</span><br><span class="line">  print(<span class="string">"Main thread cost time: %s"</span> % (time.time() - start_time))</span><br></pre></td></tr></table></figure>
+
+<p>结果：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Two thread cost time: 20.6570000648</span><br><span class="line">Main thread cost time: 2.52800011635</span><br></pre></td></tr></table></figure>
+
+<p>使用两个进程进行上面的操作</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">pstart</span><span class="params">(arg)</span>:</span></span><br><span class="line">  var = <span class="number">0</span></span><br><span class="line">  <span class="keyword">for</span> i <span class="keyword">in</span> xrange(<span class="number">100000000</span>):</span><br><span class="line">    var += <span class="number">1</span></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">'__main__'</span>:</span><br><span class="line">  p1 = Process(target = pstart, args = (<span class="string">"1"</span>, ))</span><br><span class="line">  p2 = Process(target = pstart, args = (<span class="string">"2"</span>, ))</span><br><span class="line">  start_time = time.time()</span><br><span class="line">  p1.start()</span><br><span class="line">  p2.start()</span><br><span class="line">  p1.join()</span><br><span class="line">  p2.join()</span><br><span class="line">  print(<span class="string">"Two process cost time: %s"</span> % (time.time() - start_time))</span><br><span class="line">  start_time = time.time()</span><br><span class="line">  pstart(<span class="string">"0"</span>)</span><br><span class="line">  print(<span class="string">"Current process cost time: %s"</span> % (time.time() - start_time))</span><br></pre></td></tr></table></figure>
+
+<p>结果：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Two process cost time: 2.91599988937</span><br><span class="line">Current process cost time: 2.52400016785</span><br></pre></td></tr></table></figure>
+
+<p><strong>对比分析</strong><br>双进程并行执行和单进程执行相同的运算代码，耗时基本相同，双进程耗时会稍微多一些，可能的原因是进程创建和销毁会进行系统调用，造成额外的时间开销。</p>
+<p>但是对于python线程，双线程并行执行耗时比单线程要高的多，效率相差近10倍。如果将两个并行线程改成串行执行，即：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">t1.start()</span><br><span class="line">t1.join()</span><br><span class="line">t2.start()</span><br><span class="line">t2.join()</span><br></pre></td></tr></table></figure>
+
+<p>结果</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Two thread cost time: 5.12199997902</span><br><span class="line">Main thread cost time: 2.54200005531</span><br></pre></td></tr></table></figure>
+
+<p>可以看到三个线程串行执行，每一个执行的时间基本相同。</p>
+<p>本质原因双线程是并发执行的，而不是真正的并行执行。原因就在于GIL锁。<br><strong>GIL锁</strong><br>提起python多线程就不得不提一下GIL(Global Interpreter Lock 全局解释器锁)，这是目前占统治地位的python解释器CPython中为了保证数据安全所实现的一种锁。不管进程中有多少线程，只有拿到了GIL锁的线程才可以在CPU上运行，即时是多核处理器。对一个进程而言，不管有多少线程，任一时刻，只会有一个线程在执行。对于CPU密集型的线程，其效率不仅仅不高，反而有可能比较低。python多线程比较适用于IO密集型的程序。对于的确需要并行运行的程序，可以考虑多进程。</p>
+<p>多线程对锁的争夺，CPU对线程的调度，线程之间的切换等均会有时间开销。<br><strong>下面简单的比较一下线程与进程</strong></p>
+<ul>
+<li>进程是资源分配的基本单位，线程是CPU执行和调度的基本单位；</li>
+<li>通信/同步方式：<ul>
+<li>进程：<ul>
+<li>通信方式：管道，FIFO，消息队列，信号，共享内存，socket，stream流；</li>
+<li>同步方式：PV信号量，管程</li>
+</ul>
+</li>
+<li>线程：<ul>
+<li>同步方式：互斥锁，递归锁，条件变量，信号量</li>
+<li>通信方式：位于同一进程的线程共享进程资源，因此线程间没有类似于进程间用于数据传递的通信方式，线程间的通信主要是用于线程同步。</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>CPU上真正执行的是线程，线程比进程轻量，其切换和调度代价比进程要小；</li>
+<li>线程间对于共享的进程数据需要考虑线程安全问题，由于进程之间是隔离的，拥有独立的内存空间资源，相对比较安全，只能通过上面列出的IPC(Inter-Process Communication)进行数据传输；</li>
+<li>系统有一个个进程组成，每个进程包含代码段、数据段、堆空间和栈空间，以及操作系统共享部分 ，有等待，就绪和运行三种状态；</li>
+<li>一个进程可以包含多个线程，线程之间共享进程的资源（文件描述符、全局变量、堆空间等），寄存器变量和栈空间等是线程私有的；</li>
+<li>操作系统中一个进程挂掉不会影响其他进程，如果一个进程中的某个线程挂掉而且OS对线程的支持是多对一模型，那么会导致当前进程挂掉；</li>
+<li>如果CPU和系统支持多线程与多进程，多个进程并行执行的同时，每个进程中的线程也可以并行执行，这样才能最大限度的榨取硬件的性能；</li>
+</ul>
+<p><strong>线程和进程的上下文切换</strong><br>进程切换过程切换牵涉到非常多的东西，寄存器内容保存到任务状态段TSS，切换页表，堆栈等。简单来说可以分为下面两步：</p>
+<ol>
+<li>页全局目录切换，使CPU到新进程的线性地址空间寻址；</li>
+<li>切换内核态堆栈和硬件上下文，硬件上下文包含CPU寄存器的内容，存放在TSS中；</li>
+</ol>
+<p>线程运行于进程地址空间，切换过程不涉及到空间的变换，只牵涉到第二步；<br><strong>使用多线程还是多进程</strong></p>
+<ul>
+<li>CPU密集型：程序需要占用CPU进行大量的运算和数据处理；</li>
+<li>I/O密集型：程序中需要频繁的进行I/O操作；例如网络中socket数据传输和读取等；</li>
+</ul>
+<p>由于python多线程并不是并行执行，因此较适合与I/O密集型程序，多进程并行执行适用于CPU密集型程序；</p>
+
+      
+    </div>
+    
+    
+    
+	
+	<div>
+	  
+		<div>
+    
+        <div style="text-align:center;color: #ccc;font-size:14px;">--------------------本文结束，感谢您的阅读--------------------</div>
+    
+</div>
+	  
+	</div>
+	
+	<div>
+      
+        
+      
+	</div>
+	
+
+
+    
+
+    
+      <div>
+        <div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center;">
+  <div></div>
+  <button id="rewardButton" disable="enable" onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}">
+    <span>Donate</span>
+  </button>
+  <div id="QR" style="display: none;">
+
+    
+      <div id="wechat" style="display: inline-block">
+        <img id="wechat_qr" src="/images/wechat.jpg" alt="弓昭 WeChat Pay">
+        <p>WeChat Pay</p>
+      </div>
+    
+
+    
+      <div id="alipay" style="display: inline-block">
+        <img id="alipay_qr" src="/images/ali.jpg" alt="弓昭 Alipay">
+        <p>Alipay</p>
+      </div>
+    
+
+    
+
+  </div>
+</div>
+
+      </div>
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/python/" rel="tag"><i class="fa fa-tag"></i>python</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/python3之os-shutil模块/" rel="next" title="python3之os,shutil模块">
+                <i class="fa fa-chevron-left"></i> python3之os,shutil模块
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/Javascript实现Base64、Hex、Bytes、String之间的互相转换/" rel="prev" title="Javascript实现Base64、Hex、Bytes、String之间的互相转换">
+                Javascript实现Base64、Hex、Bytes、String之间的互相转换 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div id="lv-container" data-id="city" data-uid="MTAyMC80MTcyNy8xODI3Mw=="></div>
+    
+  </div>
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image" src="/uploads/panda.jpg" alt="弓昭">
+          <p class="site-author-name" itemprop="name">弓昭</p>
+           
+              <p class="site-description motion-element" itemprop="description">弓昭的个人主页，主要涉及网络、运维、前端、Python等等知识</p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives/">
+                <span class="site-state-item-count">101</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">30</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">83</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+          <div class="feed-link motion-element">
+            <a href="/atom.xml" rel="alternate">
+              <i class="fa fa-rss"></i>
+              RSS
+            </a>
+          </div>
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/gongzhao1" target="_blank" title="GitHub">
+                  
+                    <i class="fa fa-fw fa-github"></i>
+                  
+                    
+                      GitHub
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://blog.csdn.net/zhao12795969" target="_blank" title="csdn">
+                  
+                    <i class="fa fa-fw fa-crosshairs"></i>
+                  
+                    
+                      csdn
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://www.jianshu.com/u/1dbca13c6043" target="_blank" title="简书">
+                  
+                    <i class="fa fa-fw fa-heartbeat"></i>
+                  
+                    
+                      简书
+                    
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+          <div class="links-of-blogroll motion-element links-of-blogroll-inline">
+            <div class="links-of-blogroll-title">
+              <i class="fa  fa-fw fa-globe"></i>
+              Links
+            </div>
+            <ul class="links-of-blogroll-list">
+              
+                <li class="links-of-blogroll-item">
+                  <a href="http://ccieh3c.com/" title="网络之路" target="_blank">网络之路</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="http://jm.taobao.org/" title="阿里云中间件" target="_blank">阿里云中间件</a>
+                </li>
+              
+            </ul>
+          </div>
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#概念"><span class="nav-number">1.</span> <span class="nav-text">概念</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#python多线程"><span class="nav-number">2.</span> <span class="nav-text">python多线程</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#多线程实现"><span class="nav-number">2.1.</span> <span class="nav-text">多线程实现</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#多线程执行"><span class="nav-number">2.2.</span> <span class="nav-text">多线程执行</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#python多进程"><span class="nav-number">3.</span> <span class="nav-text">python多进程</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#多进程实现"><span class="nav-number">3.1.</span> <span class="nav-text">多进程实现</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#python多进程和多线程比较"><span class="nav-number">4.</span> <span class="nav-text">python多进程和多线程比较</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+<div class="copyright">
+  
+  &copy;  2018 - 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">弓昭</span>
+</div>
+
+
+<div class="powered-by">
+	<i class="fa fa-user-md"></i><span id="busuanzi_container_site_uv">
+	  本站访客数:<span id="busuanzi_value_site_uv"></span>
+	</span>
+</div>
+
+
+<div class="theme-info">
+
+  <span class="post-count">博客全站共299.7k字</span>
+</div>
+
+
+
+        
+<div class="busuanzi-count">
+  <script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+
+  
+</div>
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.2"></script>
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.2"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+    <script type="text/javascript">
+      (function(d, s) {
+        var j, e = d.getElementsByTagName(s)[0];
+        if (typeof LivereTower === 'function') { return; }
+        j = d.createElement(s);
+        j.src = 'https://cdn-city.livere.com/js/embed.dist.js';
+        j.async = true;
+        e.parentNode.insertBefore(j, e);
+      })(document, 'script');
+    </script>
+  
+
+
+
+
+
+
+  
+
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url);
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
