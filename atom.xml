@@ -6,7 +6,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="https://gongzhao1.gitee.io/"/>
-  <updated>2021-04-21T12:53:23.688Z</updated>
+  <updated>2021-04-21T12:39:05.303Z</updated>
   <id>https://gongzhao1.gitee.io/</id>
   
   <author>
@@ -15,27 +15,6 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
-  
-  <entry>
-    <title>test</title>
-    <link href="https://gongzhao1.gitee.io/test/"/>
-    <id>https://gongzhao1.gitee.io/test/</id>
-    <published>2021-04-21T12:48:24.000Z</published>
-    <updated>2021-04-21T12:53:23.688Z</updated>
-    
-    <content type="html"><![CDATA[<h1 id="Test"><a href="#Test" class="headerlink" title="Test"></a>Test</h1>]]></content>
-    
-    <summary type="html">
-    
-      
-      
-        &lt;h1 id=&quot;Test&quot;&gt;&lt;a href=&quot;#Test&quot; class=&quot;headerlink&quot; title=&quot;Test&quot;&gt;&lt;/a&gt;Test&lt;/h1&gt;
-      
-    
-    </summary>
-    
-    
-  </entry>
   
   <entry>
     <title>使用cert-manager签发免费证书</title>
@@ -719,6 +698,54 @@
 &lt;li&gt;&lt;a href=&quot;https://www.liaoxuefeng.com/wiki/1016959663602400/1017648783851616&quot; target=&quot;_blank&quot; rel=&quot;noopener&quot;&gt;https://www.liaoxuefeng.com/wiki/1016959663602400/1017648783851616&lt;/a&gt;&lt;/li&gt;
 &lt;li&gt;&lt;a href=&quot;https://blog.csdn.net/watfe/article/details/84943732&quot; target=&quot;_blank&quot; rel=&quot;noopener&quot;&gt;https://blog.csdn.net/watfe/article/details/84943732&lt;/a&gt;&lt;/li&gt;
 &lt;/ul&gt;
+    
+    </summary>
+    
+      <category term="python" scheme="https://gongzhao1.gitee.io/categories/python/"/>
+    
+    
+      <category term="python" scheme="https://gongzhao1.gitee.io/tags/python/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>python之基础知识</title>
+    <link href="https://gongzhao1.gitee.io/python%E4%B9%8B%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86/"/>
+    <id>https://gongzhao1.gitee.io/python之基础知识/</id>
+    <published>2020-03-15T07:37:14.000Z</published>
+    <updated>2020-04-08T14:20:25.871Z</updated>
+    
+    <content type="html"><![CDATA[<h1 id="python变量下划线小结"><a href="#python变量下划线小结" class="headerlink" title="python变量下划线小结"></a>python变量下划线小结</h1><h2 id="下划线类型"><a href="#下划线类型" class="headerlink" title="下划线类型"></a>下划线类型</h2><p>在python模块或类里面，一些变量的命名上有时会有下划线，表示了变量的特性和被访问限制</p><table><thead><tr><th>描述</th><th>例如</th><th>访问限制</th></tr></thead><tbody><tr><td>前面单下划线</td><td><code>_var</code></td><td>变量所在模块/类以外的地方也能访问该变量，但最好不要</td></tr><tr><td>前面双下划线</td><td><code>__privateVar</code></td><td>变量所在模块/类以外的地方不能访问该变量，这是私有变量</td></tr><tr><td>前后双下划线</td><td>如<code>__name__</code>和<code>__init__</code></td><td>Python内置特殊变量，哪儿都可以访问</td></tr></tbody></table><h2 id="什么是-name"><a href="#什么是-name" class="headerlink" title="什么是__name__"></a>什么是<code>__name__</code></h2><p>一个python脚本，比如 hello.py，就是一个模块，这个模块的名字叫hello；一个模块既可以被其它模块导入（importable），也可以被直接执行（executable）.</p><p><code>__name__</code>是python的内置变量。如果一个模块是被直接执行的话，那么这个模块的<code>__name__</code>变量的值就是 <code>__main__</code>值；而如果这个模块是被其它模块导入的，那么这个模块的<code>__name__</code>变量的值就是模块的名字。</p><a id="more"></a>]]></content>
+    
+    <summary type="html">
+    
+      &lt;h1 id=&quot;python变量下划线小结&quot;&gt;&lt;a href=&quot;#python变量下划线小结&quot; class=&quot;headerlink&quot; title=&quot;python变量下划线小结&quot;&gt;&lt;/a&gt;python变量下划线小结&lt;/h1&gt;&lt;h2 id=&quot;下划线类型&quot;&gt;&lt;a href=&quot;#下划线类型&quot; class=&quot;headerlink&quot; title=&quot;下划线类型&quot;&gt;&lt;/a&gt;下划线类型&lt;/h2&gt;&lt;p&gt;在python模块或类里面，一些变量的命名上有时会有下划线，表示了变量的特性和被访问限制&lt;/p&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;描述&lt;/th&gt;
+&lt;th&gt;例如&lt;/th&gt;
+&lt;th&gt;访问限制&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;&lt;tr&gt;
+&lt;td&gt;前面单下划线&lt;/td&gt;
+&lt;td&gt;&lt;code&gt;_var&lt;/code&gt;&lt;/td&gt;
+&lt;td&gt;变量所在模块/类以外的地方也能访问该变量，但最好不要&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;前面双下划线&lt;/td&gt;
+&lt;td&gt;&lt;code&gt;__privateVar&lt;/code&gt;&lt;/td&gt;
+&lt;td&gt;变量所在模块/类以外的地方不能访问该变量，这是私有变量&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;前后双下划线&lt;/td&gt;
+&lt;td&gt;如&lt;code&gt;__name__&lt;/code&gt;和&lt;code&gt;__init__&lt;/code&gt;&lt;/td&gt;
+&lt;td&gt;Python内置特殊变量，哪儿都可以访问&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;&lt;/table&gt;
+&lt;h2 id=&quot;什么是-name&quot;&gt;&lt;a href=&quot;#什么是-name&quot; class=&quot;headerlink&quot; title=&quot;什么是__name__&quot;&gt;&lt;/a&gt;什么是&lt;code&gt;__name__&lt;/code&gt;&lt;/h2&gt;&lt;p&gt;一个python脚本，比如 hello.py，就是一个模块，这个模块的名字叫hello；一个模块既可以被其它模块导入（importable），也可以被直接执行（executable）.&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;__name__&lt;/code&gt;是python的内置变量。如果一个模块是被直接执行的话，那么这个模块的&lt;code&gt;__name__&lt;/code&gt;变量的值就是 &lt;code&gt;__main__&lt;/code&gt;值；而如果这个模块是被其它模块导入的，那么这个模块的&lt;code&gt;__name__&lt;/code&gt;变量的值就是模块的名字。&lt;/p&gt;
     
     </summary>
     
